@@ -58,15 +58,15 @@ app.delete('/users/:id', (req, res) =>{
 });
 
 app.put('/users/changePassword', (req, res) => {
-    const { id, newPassword } = req.body;
+    const { userId, newPassword } = req.body;
 
     // Verificar si el ID y la nueva contraseña están presentes en el cuerpo de la solicitud
-    if (!id || !newPassword) {
+    if (!userId || !newPassword) {
         res.status(400).json({ error: 'Se requiere el ID y la nueva contraseña en el cuerpo de la solicitud.' });
         return;
     }
     const selectQuery = 'SELECT password, salt FROM Usuario WHERE id = ?';
-    db.get(selectQuery, id, (err, row) => {
+    db.get(selectQuery, userId, (err, row) => {
         if (err) {
             console.error('Error al consultar la contraseña del usuario:', err.message);
             res.status(500).send('Error del servidor al consultar la contraseña del usuario: ' + err.message);
@@ -90,16 +90,61 @@ app.put('/users/changePassword', (req, res) => {
         if (currentPassword !== newPassword) {
             // Actualizar la contraseña del usuario
             const updateQuery = 'UPDATE Usuario SET password = ? WHERE id = ?';
-            db.run(updateQuery, [newPassword, id], function(err) {
+            db.run(updateQuery, [newPassword, userId], function(err) {
                 if (err) {
                     console.error('Error al actualizar la contraseña del usuario:', err.message);
                     res.status(500).send('Error del servidor al actualizar la contraseña del usuario: ' + err.message);
                     return;
                 }
-                res.send(`Contraseña del usuario con ID ${id} actualizada correctamente.`);
+                res.send(`Contraseña del usuario con ID ${userId} actualizada correctamente.`);
             });
         } else {
             res.status(400).json({ error: 'La nueva contraseña no puede ser igual a la contraseña actual.' });
         }
+    });
+});
+
+app.put('/users/changeCountry', (req, res) => {
+    const { userId, newCountryId } = req.body;
+
+    // Verificar si el ID de usuario y el ID de país están presentes en el cuerpo de la solicitud
+    if (!userId || !newCountryId) {
+        res.status(400).json({ error: 'Se requiere el ID de usuario y el ID de país en el cuerpo de la solicitud.' });
+        return;
+    }
+
+    // Lógica para cambiar el país del usuario
+    // Por ejemplo, podrías ejecutar una consulta SQL para actualizar el país del usuario en la base de datos
+    const updateQuery = 'UPDATE Usuario SET paisOrigen = ? WHERE id = ?';
+    db.run(updateQuery, [newCountryId, userId], function(err) {
+        if (err) {
+            console.error('Error al cambiar el país del usuario:', err.message);
+            res.status(500).send('Error del servidor al cambiar el país del usuario: ' + err.message);
+            return;
+        }
+        res.send(`País del usuario con ID ${userId} cambiado correctamente.`);
+    });
+});
+
+
+app.post('/users/changeFoto', (req, res) => {
+    const { userId, newPhoto } = req.body;
+
+    // Verificar si el ID de usuario y el ID de país están presentes en el cuerpo de la solicitud
+    if (!userId || !newPhoto) {
+        res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
+        return;
+    }
+
+    //Guardar y obtener el path de la foto aqui
+    const newPhotoPath = ""
+    const updateQuery = 'UPDATE Usuario SET fotoPerfil = ? WHERE id = ?';
+    db.run(updateQuery, [newPhotoPath, userId], function(err) {
+        if (err) {
+            console.error('Error al cambiar la foto del usuario:', err.message);
+            res.status(500).send('Error del servidor al cambiar la foto del usuario: ' + err.message);
+            return;
+        }
+        res.send(`Foto del usuario con ID ${userId} cambiado correctamente.`);
     });
 });
