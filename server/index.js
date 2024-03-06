@@ -15,18 +15,36 @@ var lastId
 app.listen(3000, () => {
     console.log('Servidor iniciado en el puerto 3000');
 });
+
+
+//Peticiones para Usuario
+
 app.get('/users', (req, res) => {
     const sqlQuery = 'SELECT * FROM Usuario';
 
     db.all(sqlQuery, [], (err, rows) => {
         if (err) {
-            console.error('Error al obtener destinos:', err.message);
+            console.error('Error al obtener usuarios:', err.message);
             res.status(500).send('Error del servidor al obtener usuarios: ' + err.message)
             return;
         }
         res.json(rows)
     });
-    // Lógica para manejar la solicitud GET a /users
+});
+
+
+app.get('/users/:id', (req, res) => {
+    const id = req.params.id
+    const sqlQuery = 'SELECT * FROM Usuario WHERE id = ?';
+
+    db.all(sqlQuery, id, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener usuario:', err.message);
+            res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
+            return;
+        }
+        res.json(rows)
+    });
 });
 
 app.post('/users', (req, res) =>{
@@ -148,3 +166,6 @@ app.post('/users/changeFoto', (req, res) => {
         res.send(`Foto del usuario con ID ${userId} cambiado correctamente.`);
     });
 });
+
+
+//Peticiones para Destino
