@@ -2,6 +2,10 @@ const sqlite3 = require('sqlite3').verbose();
 const express = require('express');
 const bcrypt = require('bcrypt')
 const app = express();
+const fs = require('fs');
+
+const CheckIfBDNull = require('./seedsDB.js');
+// import { CheckIfBDNull } from './seedsDB.js';
 
 const dbPath = 'TFMDB.db';
 const router = express.Router();
@@ -27,6 +31,38 @@ async function getPass(contrasenya, salt) {
     pass = bcrypt.hash(contrasenya, salt)
     return pass;
 }
+
+app.post('/restartDbData', async (req, res) => {
+    try {
+        // Read the SQL script content
+        const sqlScript = fs.readFileSync('./CreateDatabaseTFM.sql', 'utf-8');
+
+        // Ejecutar el script SQL
+        await new Promise((resolve, reject) => {
+            db.exec(sqlScript, function(err) {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
+
+        // Cerrar la conexión actual a la base de datos
+        db.close();
+
+        // Crear una nueva conexión a la base de datos
+        db = new sqlite3.Database(dbPath);
+
+        // Llamar a CheckIfBDNull después de asegurarse de que el script SQL se haya ejecutado correctamente
+        await CheckIfBDNull();
+
+        res.status(200).json("Base de datos poblada de 0");
+    } catch (error) {
+        console.error('Error al ejecutar el script SQL:', error.message);
+        res.status(500).json({ error: 'Error del servidor al ejecutar el script SQL: ' + error.message });
+    }
+});
 
 //Peticiones para Usuario
 
@@ -201,7 +237,7 @@ app.post('/login', (req, res) => {
                 //Se crea el token de sesion en la base de datos
 
             }
-            else{
+            else {
                 res.status(404).send('Usuario o contraseña son incorrectos.')
             }
         }

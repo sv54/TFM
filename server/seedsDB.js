@@ -27,15 +27,6 @@ var usuariosEjemplo = [
 		paisOrigen: 211,
 		metaViajes: 3,
 		fotoPerfil: 'ruta/a/la/foto_pedro.jpg'
-	},
-    {
-		nombre: 'Serhii',
-		email: 'serhii@example.com',
-		password: '123456',
-		salt: null,
-		paisOrigen: 211,
-		metaViajes: 3,
-		fotoPerfil: 'serhii.jpg'
 	}
 ];
 
@@ -246,6 +237,16 @@ const destinoEjemplo = [
 	}
 ];
 
+const usuarioSerhii = {
+    nombre: 'Serhii',
+    email: 'serhii@example.com',
+    password: '123456',
+    salt: null,
+    paisOrigen: 211,
+    metaViajes: 3,
+    fotoPerfil: 'serhii.jpg'
+}
+
 const sqlite3 = require('sqlite3').verbose();
 
 const dbPath = 'TFMDB.db';
@@ -267,13 +268,12 @@ async function getPass(contrasenya, salt) {
 
 async function insertarSerhii(){
     const salt = await getSalt()
-    const pass = await getPass(usuariosEjemplo[3].password, salt)
+    const pass = await getPass(usuarioSerhii.password, salt)
 
-    usuariosEjemplo[3].salt = salt
-    usuariosEjemplo[3].password = pass
+    usuarioSerhii.salt = salt
+    usuarioSerhii.password = pass
 
-    console.log(pass)
-    insertUsuario(usuariosEjemplo[3], ConsoleLog)
+    insertUsuario(usuarioSerhii, ConsoleLog)
 }
 
 function getAllDestinos(callback) {
@@ -306,15 +306,15 @@ function getAllUsuarios(callback) {
 
 
 
-insertarSerhii()
-CheckIfBDNull()
+// insertarSerhii()
+// CheckIfBDNull()
 // getAllDestinos(ConsoleLog)
 // getAllUsuarios(ConsoleLog)
 
 function poblarUsuarios() {
 	for (let i = 0; i < usuariosEjemplo.length; i++) {
 		insertUsuario(usuariosEjemplo[i], ConsoleLog)
-		console.log(usuariosEjemplo[i].nombre);
+		// console.log(usuariosEjemplo[i].nombre);
 	}
 }
 
@@ -327,17 +327,17 @@ function poblarDestino() {
 
 function ConsoleLog(mensaje, rows) {
 	if (rows != null) {
-		console.log('Callback:', rows);
+		// console.log('Callback:', rows);
 	}
 	else if (mensaje != null) {
-		console.log('Callback:', mensaje);
+		// console.log('Callback:', mensaje);
 	}
 	else {
-		console.log('Callback:', "NULL");
+		// console.log('Callback:', "NULL");
 	}
 }
 
-function CheckIfBDNull() {
+async function CheckIfBDNull() {
 	const sqlQuery = 'SELECT COUNT(*) AS count FROM Destino';
 
 	db.get(sqlQuery, (err, row) => {
@@ -345,11 +345,12 @@ function CheckIfBDNull() {
 			console.error('Error al buscar destino:', err.message);
 			return;
 		}
-
+        console.log(row)
 		if (row.count == 0) {
 			console.log("La base de datos esta vacia! Se rellena con datos ejemplo...")
 			poblarDestino()
 			poblarUsuarios()
+            insertarSerhii()
 		}
 	});
 }
@@ -382,7 +383,4 @@ function insertDestino(destinoData, callback) {
     });
 }
 
-module.exports = {
-	usuariosEjemplo,
-	destinoEjemplo
-};
+module.exports = CheckIfBDNull;
