@@ -198,6 +198,8 @@ app.post('/login', (req, res) => {
             if (hashedPassword == rows.password) {
                 console.log(rows)
                 res.json(rows)
+                //Se crea el token de sesion en la base de datos
+
             }
             else{
                 res.status(404).send('Usuario o contraseña son incorrectos.')
@@ -229,6 +231,8 @@ app.post('/register', (req, res) => {
                     res.sendStatus(500).send('Error del servidor al crear usuario: ' + err.message)
                     return;
                 }
+                //Se crea el token de sesion en la base de datos
+
                 // Obtener el ID del usuario insertado
                 lastId = this.lastID
                 res.status(201).json(this.lastID)

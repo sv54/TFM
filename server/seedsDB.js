@@ -1,5 +1,6 @@
+const bcrypt = require('bcrypt')
 
-const usuariosEjemplo = [
+var usuariosEjemplo = [
 	{
 		nombre: 'Juan',
 		email: 'juan@example.com',
@@ -26,6 +27,15 @@ const usuariosEjemplo = [
 		paisOrigen: 211,
 		metaViajes: 3,
 		fotoPerfil: 'ruta/a/la/foto_pedro.jpg'
+	},
+    {
+		nombre: 'Serhii',
+		email: 'serhii@example.com',
+		password: '123456',
+		salt: null,
+		paisOrigen: 211,
+		metaViajes: 3,
+		fotoPerfil: 'serhii.jpg'
 	}
 ];
 
@@ -243,7 +253,28 @@ var db = new sqlite3.Database(dbPath);
 
 
 
+async function getSalt() {
+    const saltSerhii = bcrypt.genSalt(10);
+    const salt = await saltSerhii;
+    return salt;
+}
 
+async function getPass(contrasenya, salt) {
+
+    pass = bcrypt.hash(contrasenya, salt)
+    return pass;
+}
+
+async function insertarSerhii(){
+    const salt = await getSalt()
+    const pass = await getPass(usuariosEjemplo[3].password, salt)
+
+    usuariosEjemplo[3].salt = salt
+    usuariosEjemplo[3].password = pass
+
+    console.log(pass)
+    insertUsuario(usuariosEjemplo[3], ConsoleLog)
+}
 
 function getAllDestinos(callback) {
 	const sqlQuery = 'SELECT * FROM Destino';
@@ -275,9 +306,10 @@ function getAllUsuarios(callback) {
 
 
 
+insertarSerhii()
 CheckIfBDNull()
-getAllDestinos(ConsoleLog)
-getAllUsuarios(ConsoleLog)
+// getAllDestinos(ConsoleLog)
+// getAllUsuarios(ConsoleLog)
 
 function poblarUsuarios() {
 	for (let i = 0; i < usuariosEjemplo.length; i++) {
