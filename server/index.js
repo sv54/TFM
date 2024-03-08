@@ -3,12 +3,40 @@ const express = require('express');
 const bcrypt = require('bcrypt')
 const app = express();
 const fs = require('fs');
+const multer = require('multer');
+const path = require('path');
+const uuid = require('uuid')
 
 const CheckIfBDNull = require('./seedsDB.js');
 // import { CheckIfBDNull } from './seedsDB.js';
 
 const dbPath = 'TFMDB.db';
-const router = express.Router();
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/img/');
+    },
+    filename: function (req, file, cb) {
+        const extention = path.extname(file.originalname);
+        const filename = uuid.v4() + extention;
+        cb(null, filename);
+    }
+});
+
+const storageProfile = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/imgProfile/');
+    },
+    filename: function (req, file, cb) {
+        const extention = path.extname(file.originalname);
+        const filename = uuid.v4() + extention;
+        cb(null, filename);
+    }
+});
+
+const uploadPhoto = multer({ storage: storageProfile });
+const upload = multer({ storage: storage });
+
 app.use(express.json());
 
 // Crear una instancia de la base de datos
@@ -32,6 +60,14 @@ async function getPass(contrasenya, salt) {
     return pass;
 }
 
+app.post('/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+      return res.status(400).send('No se ha subido ningún archivo');
+    }
+    
+    res.status(200).send('Imagen subida correctamente');
+  });
+
 app.post('/restartDbData', async (req, res) => {
     try {
         // Read the SQL script content
@@ -39,7 +75,7 @@ app.post('/restartDbData', async (req, res) => {
 
         // Ejecutar el script SQL
         await new Promise((resolve, reject) => {
-            db.exec(sqlScript, function(err) {
+            db.exec(sqlScript, function (err) {
                 if (err) {
                     reject(err);
                 } else {
@@ -192,25 +228,58 @@ app.put('/usuario/changeCountry', (req, res) => {
 });
 
 
-app.post('/usuario/changeFoto', (req, res) => {
-    const { userId, newPhoto } = req.body;
+app.put('/usuario/changeFoto/:id', uploadPhoto.single('image'), (req, res) => {
+    const id = req.params.id
 
     // Verificar si el ID de usuario y el ID de país están presentes en el cuerpo de la solicitud
-    if (!userId || !newPhoto) {
+    if (!id || !req.file) {
         res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
         return;
     }
 
     //Guardar y obtener el path de la foto aqui
-    const newPhotoPath = ""
+    const newPhotoPath = req.file.filename;
+    console.log(newPhotoPath)
+
     const updateQuery = 'UPDATE Usuario SET fotoPerfil = ? WHERE id = ?';
-    db.run(updateQuery, [newPhotoPath, userId], function (err) {
+    db.run(updateQuery, [newPhotoPath, id], function (err) {
         if (err) {
             console.error('Error al cambiar la foto del usuario:', err.message);
             res.status(500).send('Error del servidor al cambiar la foto del usuario: ' + err.message);
             return;
         }
-        res.send(`Foto del usuario con ID ${userId} cambiado correctamente.`);
+        res.send(`Foto del usuario con ID ${id} cambiado correctamente.`);
+    });
+});
+
+app.get('/usuario/foto/:id', (req, res) => {
+    const id = req.params.id;
+
+    const getPhotoQuery = 'SELECT fotoPerfil FROM Usuario WHERE id = ?';
+    db.get(getPhotoQuery, [id], (err, row) => {
+        if (err) {
+            console.error('Error al obtener la foto del usuario:', err.message);
+            res.status(500).send('Error del servidor al obtener la foto del usuario: ' + err.message);
+            return;
+        }
+
+        if (!row) {
+            res.status(404).send('Foto del usuario no encontrada');
+            return;
+        }
+
+        const photoFilename = row.fotoPerfil;
+        const photoPath = path.join(__dirname, 'public', 'imgProfile', photoFilename);
+        console.log(photoPath)
+        fs.access(photoPath, fs.constants.F_OK, (err) => {
+            if (err) {
+                console.error('Error al acceder al archivo de la foto:', err.message);
+                res.status(404).send('Foto del usuario no encontrada');
+                return;
+            }
+
+            res.sendFile(photoPath);
+        });
     });
 });
 
