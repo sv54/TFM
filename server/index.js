@@ -8,7 +8,6 @@ const path = require('path');
 const uuid = require('uuid')
 
 const CheckIfBDNull = require('./seedsDB.js');
-// import { CheckIfBDNull } from './seedsDB.js';
 
 const dbPath = 'TFMDB.db';
 
@@ -70,7 +69,7 @@ app.post('/upload', upload.single('image'), (req, res) => {
 
 app.post('/restartDbData', async (req, res) => {
     try {
-        // Read the SQL script content
+
         const sqlScript = fs.readFileSync('./CreateDatabaseTFM.sql', 'utf-8');
 
         // Ejecutar el script SQL
@@ -84,16 +83,13 @@ app.post('/restartDbData', async (req, res) => {
             });
         });
 
-        // Cerrar la conexión actual a la base de datos
         db.close();
-
-        // Crear una nueva conexión a la base de datos
         db = new sqlite3.Database(dbPath);
-
-        // Llamar a CheckIfBDNull después de asegurarse de que el script SQL se haya ejecutado correctamente
         await CheckIfBDNull();
 
-        res.status(200).json("Base de datos poblada de 0");
+
+
+        res.status(200).json("Base de datos poblada con datos ejemplo");
     } catch (error) {
         console.error('Error al ejecutar el script SQL:', error.message);
         res.status(500).json({ error: 'Error del servidor al ejecutar el script SQL: ' + error.message });
@@ -105,12 +101,13 @@ app.post('/restartDbData', async (req, res) => {
 app.get('/usuario', (req, res) => {
     const sqlQuery = 'SELECT * FROM Usuario';
 
-    db.get(sqlQuery, [], (err, rows) => {
+    db.all(sqlQuery, [], (err, rows) => {
         if (err) {
             console.error('Error al obtener usuarios:', err.message);
             res.status(500).send('Error del servidor al obtener usuarios: ' + err.message)
             return;
         }
+
         res.json(rows)
     });
 });
@@ -124,6 +121,11 @@ app.get('/usuario/:id', (req, res) => {
         if (err) {
             console.error('Error al obtener usuario:', err.message);
             res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
+            return;
+        }
+        if (!rows) {
+            console.log('No se encontró ningún usuario con el ID proporcionado:', id);
+            res.status(404).send('No se encontró ningún usuario con el ID proporcionado');
             return;
         }
         res.json(rows)
@@ -161,13 +163,12 @@ app.delete('/usuario/:id', (req, res) => {
 app.put('/usuario/changePassword', (req, res) => {
     const { userId, newPassword } = req.body;
 
-    // Verificar si el ID y la nueva contraseña están presentes en el cuerpo de la solicitud
     if (!userId || !newPassword) {
         res.status(400).json({ error: 'Se requiere el ID y la nueva contraseña en el cuerpo de la solicitud.' });
         return;
     }
     const selectQuery = 'SELECT password, salt FROM Usuario WHERE id = ?';
-    db.get(selectQuery, userId, (err, row) => {
+    db.get(selectQuery, userId, async (err, row) => {
         if (err) {
             console.error('Error al consultar la contraseña del usuario:', err.message);
             res.status(500).send('Error del servidor al consultar la contraseña del usuario: ' + err.message);
@@ -182,16 +183,14 @@ app.put('/usuario/changePassword', (req, res) => {
 
         const currentPassword = row.password;
         const salt = row.salt;
+        const hashedPassword = await bcrypt.hash(newPassword, salt)
+        //console.log(currentPassword, salt)
 
-        console.log(currentPassword, salt)
-
-        //Hacer aqui conversion a hash de contraseña nueva con el salt
-
-        // Verificar si la nueva contraseña es diferente de la contraseña actual
-        if (currentPassword !== newPassword) {
+        if (currentPassword !== hashedPassword) {
             // Actualizar la contraseña del usuario
+            
             const updateQuery = 'UPDATE Usuario SET password = ? WHERE id = ?';
-            db.run(updateQuery, [newPassword, userId], function (err) {
+            db.run(updateQuery, [hashedPassword, userId], function (err) {
                 if (err) {
                     console.error('Error al actualizar la contraseña del usuario:', err.message);
                     res.status(500).send('Error del servidor al actualizar la contraseña del usuario: ' + err.message);
@@ -208,14 +207,11 @@ app.put('/usuario/changePassword', (req, res) => {
 app.put('/usuario/changeCountry', (req, res) => {
     const { userId, newCountryId } = req.body;
 
-    // Verificar si el ID de usuario y el ID de país están presentes en el cuerpo de la solicitud
     if (!userId || !newCountryId) {
         res.status(400).json({ error: 'Se requiere el ID de usuario y el ID de país en el cuerpo de la solicitud.' });
         return;
     }
 
-    // Lógica para cambiar el país del usuario
-    // Por ejemplo, podrías ejecutar una consulta SQL para actualizar el país del usuario en la base de datos
     const updateQuery = 'UPDATE Usuario SET paisOrigen = ? WHERE id = ?';
     db.run(updateQuery, [newCountryId, userId], function (err) {
         if (err) {
@@ -230,16 +226,13 @@ app.put('/usuario/changeCountry', (req, res) => {
 
 app.put('/usuario/changeFoto/:id', uploadPhoto.single('image'), (req, res) => {
     const id = req.params.id
-
-    // Verificar si el ID de usuario y el ID de país están presentes en el cuerpo de la solicitud
     if (!id || !req.file) {
         res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
         return;
     }
 
-    //Guardar y obtener el path de la foto aqui
+    //obtener el path de la foto
     const newPhotoPath = req.file.filename;
-    console.log(newPhotoPath)
 
     const updateQuery = 'UPDATE Usuario SET fotoPerfil = ? WHERE id = ?';
     db.run(updateQuery, [newPhotoPath, id], function (err) {
@@ -270,7 +263,6 @@ app.get('/usuario/foto/:id', (req, res) => {
 
         const photoFilename = row.fotoPerfil;
         const photoPath = path.join(__dirname, 'public', 'imgProfile', photoFilename);
-        console.log(photoPath)
         fs.access(photoPath, fs.constants.F_OK, (err) => {
             if (err) {
                 console.error('Error al acceder al archivo de la foto:', err.message);
@@ -297,13 +289,13 @@ app.post('/login', (req, res) => {
             res.status(404).send('Usuario o contraseña son incorrectos.')
         }
         else {
-
+            
             const hashedPassword = await bcrypt.hash(password, rows.salt)
 
             if (hashedPassword == rows.password) {
                 console.log(rows)
                 res.json(rows)
-                //Se crea el token de sesion en la base de datos
+                // TODO crear el token de sesion en la base de datos
 
             }
             else {
@@ -328,7 +320,12 @@ app.post('/register', (req, res) => {
 
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(password, salt)
-            fotoPerfil = "ruta sin asignar"
+            if(!req.file){
+                fotoPerfil = "ruta sin asignar"
+            }
+            else{
+
+            }
             const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
             db.run(sqlQuery, [nombre, email, hashedPassword, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
                 if (err) {
@@ -336,11 +333,11 @@ app.post('/register', (req, res) => {
                     res.sendStatus(500).send('Error del servidor al crear usuario: ' + err.message)
                     return;
                 }
-                //Se crea el token de sesion en la base de datos
+                //TODO crear el token de sesion en la base de datos
 
                 // Obtener el ID del usuario insertado
                 lastId = this.lastID
-                res.status(201).json(this.lastID)
+                res.status(201).json({"lastId": this.lastID})
             });
 
 
@@ -355,7 +352,7 @@ app.post('/register', (req, res) => {
 
 
 app.post('/signOut', (req, res) => {
-    //Se borraria el token de la base de datos?
+    //TODO borrar el token de la base de datos?
 });
 
 
@@ -364,7 +361,7 @@ app.post('/signOut', (req, res) => {
 app.get('/destino', (req, res) => {
     const sqlQuery = 'SELECT * FROM Destino';
 
-    db.get(sqlQuery, [], (err, rows) => {
+    db.all(sqlQuery, [], (err, rows) => {
         if (err) {
             console.error('Error al obtener destino:', err.message);
             res.status(500).send('Error del servidor al obtener destino: ' + err.message)
@@ -401,7 +398,9 @@ app.post('/destino', (req, res) => {
         }
         // Obtener el ID del destino insertado
         lastId = this.lastID
-        res.status(201).json(this.lastID)
+        res.status(201).json({
+            "lastId": this.lastID
+        })
     });
 });
 

@@ -311,16 +311,16 @@ function getAllUsuarios(callback) {
 // getAllDestinos(ConsoleLog)
 // getAllUsuarios(ConsoleLog)
 
-function poblarUsuarios() {
+async function poblarUsuarios() {
 	for (let i = 0; i < usuariosEjemplo.length; i++) {
-		insertUsuario(usuariosEjemplo[i], ConsoleLog)
+		await insertUsuario(usuariosEjemplo[i], ConsoleLog)
 		// console.log(usuariosEjemplo[i].nombre);
 	}
 }
 
-function poblarDestino() {
+async function poblarDestino() {
 	for (let i = 0; i < destinoEjemplo.length; i++) {
-		insertDestino(destinoEjemplo[i], ConsoleLog)
+		await insertDestino(destinoEjemplo[i], ConsoleLog)
 		//console.log(destinoEjemplo[i].titulo);
 	}
 }
@@ -340,7 +340,7 @@ function ConsoleLog(mensaje, rows) {
 async function CheckIfBDNull() {
 	const sqlQuery = 'SELECT COUNT(*) AS count FROM Destino';
 
-	db.get(sqlQuery, (err, row) => {
+	db.get(sqlQuery, async (err, row) => {
 		if (err) {
 			console.error('Error al buscar destino:', err.message);
 			return;
@@ -348,8 +348,8 @@ async function CheckIfBDNull() {
         console.log(row)
 		if (row.count == 0) {
 			console.log("La base de datos esta vacia! Se rellena con datos ejemplo...")
-			poblarDestino()
-			poblarUsuarios()
+			await poblarDestino()
+			await poblarUsuarios()
             insertarSerhii()
 		}
 	});
