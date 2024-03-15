@@ -33,7 +33,31 @@ const storageProfile = multer.diskStorage({
     }
 });
 
-const uploadPhoto = multer({ storage: storageProfile });
+const storageDestination = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/imgDestination/');
+    },
+    filename: function (req, file, cb) {
+        const extention = path.extname(file.originalname);
+        const filename = uuid.v4() + extention;
+        cb(null, filename);
+    }
+});
+
+const storageActivity = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/imgActivity/');
+    },
+    filename: function (req, file, cb) {
+        const extention = path.extname(file.originalname);
+        const filename = uuid.v4() + extention;
+        cb(null, filename);
+    }
+});
+
+const uploadProfile = multer({ storage: storageProfile });
+const uploadDestination = multer({ storage: storageDestination });
+const uploadActivity = multer({ storage: storageDestination });
 const upload = multer({ storage: storage });
 
 app.use(express.json());
@@ -224,7 +248,7 @@ app.put('/usuario/changeCountry', (req, res) => {
 });
 
 
-app.put('/usuario/changeFoto/:id', uploadPhoto.single('image'), (req, res) => {
+app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => {
     const id = req.params.id
     if (!id || !req.file) {
         res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
@@ -414,5 +438,59 @@ app.delete('/destino/:id', (req, res) => {
             return;
         }
         res.send(`Destino con ID ${id} eliminado correctamente.`);
+    });
+});
+
+
+
+app.post('/destino/addimage/:id', uploadDestination.single('image'), (req, res) => {
+    const id = req.params.id
+    if (!id || !req.file) {
+        res.status(400).json({ error: 'Se requiere el ID de destino y la imagen a publicar.' });
+        return;
+    }
+
+    //obtener el path de la foto
+    const newImagePath = req.file.filename;
+
+    const insertQuery = 'INSERT INTO imgDestino (destinoId, nombre) VALUES (?, ?)';
+    db.run(insertQuery, [id, newImagePath], function (err) {
+        if (err) {
+            console.error('Error al añadir la imagen al destino:', err.message);
+            res.status(500).send('Error del servidor al añadir la imagen al destino: ' + err.message);
+            return;
+        }
+        res.send(`Imagen del destino con ID ${id} añadida correctamente.`);
+    });
+});
+
+app.get('/destino/image/:id', (req, res) => {
+    const id = req.params.id;
+
+    const getPhotoQuery = 'SELECT * FROM imgDestino WHERE destinoId = ?';
+    db.all(getPhotoQuery, [id], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener las fotos del destino:', err.message);
+            res.status(500).send('Error del servidor al obtener las fotos del destino: ' + err.message);
+            return;
+        }
+
+        if (!rows || rows.length == 0) {
+            res.status(404).send('Fotos del destino no encontradas');
+            return;
+        }
+
+        const photoPaths = rows.map(row => path.join(__dirname, 'public', 'imgDestination', row.nombre));
+
+        // Enviar los archivos uno por uno
+        photoPaths.forEach(photoPath => {
+            console.log(photoPath)
+            // res.sendFile(photoPath, (err) => {
+            //     if (err) {
+            //         console.error('Error al enviar el archivo:', err.message);
+            //     }
+            // });
+        });
+
     });
 });
