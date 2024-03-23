@@ -237,6 +237,187 @@ const destinoEjemplo = [
 	}
 ];
 
+const actividadesEjemplo = [
+    // Actividades para Roma
+    { 
+        titulo: "Coliseo",
+        descripcion: "Descubre la historia del Coliseo Romano y su importancia en la antigua Roma.",
+        numRecomendado: 0,
+        destinoId: 1 // Suponiendo que el ID del destino de Roma es 1
+    },
+    { 
+        titulo: "Vaticano",
+        descripcion: "Explora los museos del Vaticano y admira las obras maestras de artistas como Miguel Ángel y Rafael.",
+        numRecomendado: 0,
+        destinoId: 1
+    },
+    { 
+        titulo: "Foro Romano",
+        descripcion: "Recorre las ruinas del Foro Romano y conoce más sobre la vida en la antigua Roma.",
+        numRecomendado: 0,
+        destinoId: 1
+    },
+    // Actividades para Kiev
+    { 
+        titulo: "Monasterio de las Cuevas de Kiev",
+        descripcion: "Explora este complejo monástico ortodoxo, un sitio declarado Patrimonio de la Humanidad por la UNESCO.",
+        numRecomendado: 0,
+        destinoId: 2 // Suponiendo que el ID del destino de Kiev es 2
+    },
+    { 
+        titulo: "Plaza de la Independencia",
+        descripcion: "Disfruta de la arquitectura y la vida diaria en la plaza más grande de Kiev.",
+        numRecomendado: 0,
+        destinoId: 2
+    },
+    { 
+        titulo: "Museo Nacional de Historia de Ucrania",
+        descripcion: "Descubre la historia y la cultura de Ucrania a través de las colecciones del museo.",
+        numRecomendado: 0,
+        destinoId: 2
+    },
+    // Actividades para Madrid
+    { 
+        titulo: "Museo del Prado",
+        descripcion: "Contempla obras maestras de artistas como Velázquez, Goya y El Greco en uno de los museos más importantes del mundo.",
+        numRecomendado: 0,
+        destinoId: 3 // Suponiendo que el ID del destino de Madrid es 3
+    },
+    { 
+        titulo: "Parque del Retiro",
+        descripcion: "Relájate en este hermoso parque y disfruta de sus jardines, estanques y actividades al aire libre.",
+        numRecomendado: 0,
+        destinoId: 3
+    },
+    { 
+        titulo: "Palacio Real",
+        descripcion: "Descubre la residencia oficial de la monarquía española y admira su impresionante arquitectura y decoración.",
+        numRecomendado: 0,
+        destinoId: 3
+    },
+    // Actividades para Alicante
+    { 
+        titulo: "Castillo de Santa Bárbara",
+        descripcion: "Contempla las impresionantes vistas de la ciudad y el mar Mediterráneo desde este castillo medieval.",
+        numRecomendado: 0,
+        destinoId: 4 // Suponiendo que el ID del destino de Alicante es 4
+    },
+    { 
+        titulo: "Casco Antiguo",
+        descripcion: "Recorre las estrechas calles del casco antiguo y descubre la historia y la cultura de Alicante.",
+        numRecomendado: 0,
+        destinoId: 4
+    },
+    { 
+        titulo: "Playa del Postiguet",
+        descripcion: "Disfruta del sol y el mar en esta popular playa urbana situada en el corazón de Alicante.",
+        numRecomendado: 0,
+        destinoId: 4
+    },
+    // Actividades para París
+    { 
+        titulo: "Torre Eiffel",
+        descripcion: "Contempla las impresionantes vistas de París desde la icónica Torre Eiffel.",
+        numRecomendado: 0,
+        destinoId: 5 // Suponiendo que el ID del destino de París es 5
+    },
+    { 
+        titulo: "Museo del Louvre",
+        descripcion: "Explora una de las colecciones de arte más grandes del mundo en este famoso museo.",
+        numRecomendado: 0,
+        destinoId: 5
+    },
+    { 
+        titulo: "Montmartre",
+        descripcion: "Descubre el encanto bohemio de este barrio histórico y visita la Basílica del Sagrado Corazón.",
+        numRecomendado: 0,
+        destinoId: 5
+    },
+    // Actividades para Londres
+    { 
+        titulo: "Palacio de Buckingham",
+        descripcion: "Observa el famoso cambio de guardia y admira la residencia oficial de la monarquía británica.",
+        numRecomendado: 0,
+        destinoId: 6 // Suponiendo que el ID del destino de Londres es 6
+    },
+    { 
+        titulo: "Museo Británico",
+        descripcion: "Explora las colecciones del museo que abarcan miles de años de historia y cultura.",
+        numRecomendado: 0,
+        destinoId: 6
+    },
+    { 
+        titulo: "London Eye",
+        descripcion: "Disfruta de vistas panorámicas de Londres desde esta famosa noria.",
+        numRecomendado: 0,
+        destinoId: 6
+    },
+    // Actividades para Tokio
+    { 
+        titulo: "Templo Senso-ji",
+        descripcion: "Explora el templo más antiguo de Tokio y admira su impresionante arquitectura y ambiente histórico.",
+        numRecomendado: 0,
+        destinoId: 7 // Suponiendo que el ID del destino de Tokio es 7
+    },
+    { 
+        titulo: "Shibuya",
+        descripcion: "Sumérgete en la vibrante vida urbana de Tokio y experimenta la famosa intersección de Shibuya.",
+        numRecomendado: 0,
+        destinoId: 7
+    },
+    { 
+        titulo: "Palacio Imperial",
+        descripcion: "Descubre la residencia oficial del Emperador de Japón y explora sus hermosos jardines.",
+        numRecomendado: 0,
+        destinoId: 7
+    },
+    // Actividades para Estambul
+    { 
+        titulo: "Mezquita Azul",
+        descripcion: "Admira la impresionante arquitectura y los hermosos azulejos de esta famosa mezquita.",
+        numRecomendado: 0,
+        destinoId: 8 // Suponiendo que el ID del destino de Estambul es 8
+    },
+    { 
+        titulo: "Gran Bazar",
+        descripcion: "Explora uno de los mercados cubiertos más grandes del mundo y descubre una gran variedad de productos.",
+        numRecomendado: 0,
+        destinoId: 8
+    },
+    { 
+        titulo: "Palacio de Topkapi",
+        descripcion: "Descubre la historia otomana y explora los exquisitos jardines y salones del palacio.",
+        numRecomendado: 0,
+        destinoId: 8
+    },
+    // Actividades para Berlín
+    { 
+        titulo: "Muro de Berlín",
+        descripcion: "Recorre el famoso Muro de Berlín y aprende sobre su importancia histórica en la ciudad.",
+        numRecomendado: 0,
+        destinoId: 9 // Suponiendo que el ID del destino de Berlín es 9
+    },
+    { 
+        titulo: "Museo de Pérgamo",
+        descripcion: "Explora las impresionantes colecciones de arte y arqueología del museo.",
+        numRecomendado: 0,
+        destinoId: 9
+    },
+    { 
+        titulo: "Parque Tiergarten",
+        descripcion: "Relájate en el parque más grande de Berlín y disfruta de la naturaleza y la tranquilidad.",
+        numRecomendado: 0,
+        destinoId: 9
+    }
+];
+
+const nombresImgActividades = [ "Buckingham1.jpg", "Buckingham2.png", "Buckingham3.jpg", "CascoAntiguo1.jpg", "CascoAntiguo2.jpg", "CascoAntiguo3.jpg", "CastilloDeSantaBarbara1.jpg", "CastilloDeSantaBarbara2.jpg", "CastilloDeSantaBarbara3.jpg", "Coliseo1.jpg", "Coliseo2.jpg", "Coliseo3.jpeg", "ForoRomano1.jpg", "ForoRomano2.png", "ForoRomano3.jpg", "GranBazar1.jpg", "GranBazar2.jpg", "LondonEye1.JPG", "LondonEye2.png", "LondonEye3.jpg", "Louvre1.png", "Louvre2.png", "Louvre3.jpeg", "MezquitaAzul1.jpg", "MezquitaAzul2.jpeg", "MonasterioCuevasKiev1.jpg", "MonasterioCuevasKiev2.jpg", "Montmartre1.jpg", "Montmartre2.JPG", "Montmartre3.jpg", "MuroDeBerlin1.jpg", "MuroDeBerlin2.png", "MuseoBritanico1.jpg", "MuseoBritanico2.jpg", "MuseoDelPrado1.jpg", "MuseodelPrado2.png", "MuseoDelPrado3.png", "MuseoDePergamo1.jpg", "MuseoDePergamo2.jpg", "MuseoDePergamo3.jpeg", "MuseoNacionalDeHistoriaDeUcrania1.jpg", "MuseoNacionalDeHistoriaDeUcrania2.jpg", "MuseoNacionalDeHistoriaDeUcrania3.jpg", "PalacioImperial1.jpg", "PalacioImperial2.jpg", "PalacioImperial3.jpg", "PalacioReal1.jpg", "PalacioReal2.jpg", "PalacioReal3.jpg", "PalacioTopkapi1.jpg", "PalacioTopkapi2.jpg", "PalacioTopkapi3.jpg", "ParqueDelRetiro1.jpg", "ParqueDelRetiro2.png", "ParqueDelRetiro3.png", "PlayaDelPostiguet1.jpg", "PlayaDelPostiguet2.jpg", "PlazaDeLaIndependencia1.jpg", "PlazaDeLaIndependencia2.jpg", "Senso-ji1.jpg", "Senso-ji2.jpg", "Senso-ji3.jpg", "Shibuya1.jpg", "Shibuya2.png", "Shibuya3.jpg", "TorreEiffel1.jpg", "TorreEiffel2.jpg", "TorreEiffel3.png", "Vaticano1.png", "Vaticano2.jpg"];
+
+const nombresImgDestinos = ['Alicante1.jpg','Alicante2.png','Bangkok1.jpg','Bangkok2.jpg','Bangkok3.jpg','Barcelona1.jpg','Barcelona2.jpg','Barcelona3.png','Berlín1.jpg','Berlín2.png','Berlín3.png','Berlín4.jpg','Buenos Aires1.png','Buenos Aires2.jpeg','Buenos Aires3.jpg','Dubai1.jpg','Dubai2.png','Estambul1.png','Estambul2.jpeg','Kiev1.jpg','Kiev2.jpg','Kiev3.jpg','Londres1.jpg','Londres2.jpg','Londres3.png','Madrid1.png','Madrid2.png','Madrid3.jpg','Nueva York1.jpg','Nueva York2.jpg','París1.jpg','París2.png','París3.jpg','Roma1.jpg','Roma2.jpg','Roma3.jpg','Seúl1.jpg','Seúl2.jpg','Seúl3.jpg','Sidney1.png','Sidney2.jpg','Sidney3.png','Tokio1.jpg','Tokio2.jpg','Tokio3.jpg','Toronto1.png','Toronto2.jpg','Toronto3.png'];
+
+
+
+
 const usuarioSerhii = {
     nombre: 'Serhii',
     email: 'serhii@example.com',
@@ -330,7 +511,7 @@ function ConsoleLog(mensaje, rows) {
 		// console.log('Callback:', rows);
 	}
 	else if (mensaje != null) {
-		// console.log('Callback:', mensaje);
+		console.log('Callback:', mensaje);
 	}
 	else {
 		// console.log('Callback:', "NULL");
@@ -350,6 +531,7 @@ async function CheckIfBDNull() {
 			console.log("La base de datos esta vacia! Se rellena con datos ejemplo...")
 			await poblarDestino()
 			await poblarUsuarios()
+			await poblarActividad()
             insertarSerhii()
 		}
 	});
@@ -382,5 +564,157 @@ function insertDestino(destinoData, callback) {
         callback(null, this.lastID);
     });
 }
+
+function insertActividad(actividadData, destinoName, callback) {
+    // Primero, consulta el ID del destino utilizando el nombre proporcionado
+    const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
+    db.get(sqlSelectDestinoId, [destinoName], (err, row) => {
+        if (err) {
+            console.error('Error al obtener el ID del destino:', err.message);
+            callback(err, null);
+            return;
+        }
+        if (!row) {
+            // Si no se encuentra ningún destino con el nombre proporcionado
+            const error = new Error('No se encontró ningún destino con el nombre proporcionado: ' + destinoName + ";");
+            callback(error, null);
+            return;
+        }
+        const destinoId = row.id;
+        
+        // Insertar la actividad utilizando el ID del destino obtenido
+        const sqlQuery = `INSERT INTO Actividad (titulo, descripcion, numRecomendado, destinoId) VALUES (?, ?, ?, ?)`;
+        const { titulo, descripcion, numRecomendado } = actividadData;
+        db.run(sqlQuery, [titulo, descripcion, numRecomendado, destinoId], function (err) {
+            if (err) {
+                console.error('Error al insertar actividad:', err.message);
+                callback(err, null);
+                return;
+            }
+            // Obtener el ID de la actividad insertada
+            callback(null, this.lastID);
+        });
+    });
+}
+function poblarActividad(){
+	for (var i = 0; i<actividadesEjemplo.length; i++){
+		var titulo = ""
+		if(i >= 0 && i <= 2){
+			titulo = "Roma"
+		}
+		else if(i >= 3 && i <= 5){
+			titulo = "Kiev"
+		}
+		else if(i >= 6 && i <= 8){
+			titulo = "Madrid"
+		}
+		else if(i >= 9 && i <= 11){
+			titulo = "Alicante"
+		}
+		else if(i >= 12 && i <= 14){
+			titulo = "París"
+		}
+		else if(i >= 15 && i <= 17){
+			titulo = "Londres"
+		}
+		else if(i >= 18 && i <= 20){
+			titulo = "Tokio"
+		}
+		else if(i >= 21 && i <= 22){
+			titulo = "Estambul"
+		}
+		else if(i >= 23 && i <= 25){
+			titulo = "Berlín"
+		}
+		insertActividad(actividadesEjemplo[i], titulo, ConsoleLog)
+	}
+}
+
+async function RevisarNombresDestinos() {
+    var nombreDestino = '';
+    var contador = 0;
+
+    for (var i = 0; i < nombresImgDestinos.length; i++) {
+        nombreDestino = quitarExtension(nombresImgDestinos[i]);
+        console.log(nombreDestino);
+
+        try {
+            const row = await obtenerIdDestinoAsync(nombreDestino);
+            if (row) {
+                contador++;
+            }
+        } catch (err) {
+            console.error('Error al obtener el ID del destino:', err.message);
+        }
+    }
+
+    console.log("correctos: " + contador);
+}
+
+function obtenerIdDestinoAsync(nombreDestino) {
+    return new Promise((resolve, reject) => {
+        const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
+        db.get(sqlSelectDestinoId, [nombreDestino], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+}
+
+function quitarExtension(nombreArchivo) {
+    // Dividir el nombre del archivo en partes usando el punto como separador
+    const partes = nombreArchivo.split('.');
+    
+    // Eliminar la última parte que corresponde a la extensión
+    partes.pop();
+    
+    // El resultado después de eliminar la extensión es el nombre sin la extensión
+    var nombreSinExtension = partes.join('');
+    nombre = nombreSinExtension.replace(/\d/g, '');
+    return nombre;
+}
+
+function insertarImgDestino(destinoName, nombreFichero, callback){
+    const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
+    db.get(sqlSelectDestinoId, [destinoName], (err, row) => {
+        if (err) {
+            console.error('Error al obtener el ID del destino:', err.message);
+            callback(err, null);
+            return;
+        }
+        if (!row) {
+            // Si no se encuentra ningún destino con el nombre proporcionado
+            const error = new Error('No se encontró ningún destino con el nombre proporcionado: ' + destinoName + ";");
+            callback(error, null);
+            return;
+        }
+        const destinoId = row.id;
+        
+        // Insertar la actividad utilizando el ID del destino obtenido
+        const sqlQuery = `INSERT INTO imgDestino (destinoId, nombre) VALUES (?, ?)`;
+		
+        db.run(sqlQuery, [destinoId, nombreFichero], function (err) {
+            if (err) {
+                console.error('Error al insertar actividad:', err.message);
+                callback(err, null);
+                return;
+            }
+            // Obtener el ID de la actividad insertada
+            callback(null, this.lastID);
+        });
+    });
+}
+async function poblarImgDestino(){
+	var nombreDestino = ""
+    for (var i = 0; i < nombresImgDestinos.length; i++) {
+		nombreDestino = quitarExtension(nombresImgDestinos[i])
+		await insertarImgDestino(nombreDestino, nombresImgDestinos[i], ConsoleLog)
+	}
+}
+
+// poblarImgDestino()
 
 module.exports = CheckIfBDNull;

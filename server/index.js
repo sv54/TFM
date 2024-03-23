@@ -345,7 +345,7 @@ app.post('/register', (req, res) => {
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(password, salt)
             if(!req.file){
-                fotoPerfil = "ruta sin asignar"
+                fotoPerfil = "SinFoto"
             }
             else{
 
@@ -450,7 +450,7 @@ app.post('/destino/addimage/:id', uploadDestination.single('image'), (req, res) 
         return;
     }
 
-    //obtener el path de la foto
+    //obtener el path de la imagen
     const newImagePath = req.file.filename;
 
     const insertQuery = 'INSERT INTO imgDestino (destinoId, nombre) VALUES (?, ?)';
@@ -464,7 +464,7 @@ app.post('/destino/addimage/:id', uploadDestination.single('image'), (req, res) 
     });
 });
 
-app.get('/destino/image/:id', (req, res) => {
+app.get('/destino/images/:id', (req, res) => {
     const id = req.params.id;
 
     const getPhotoQuery = 'SELECT * FROM imgDestino WHERE destinoId = ?';
@@ -479,18 +479,139 @@ app.get('/destino/image/:id', (req, res) => {
             res.status(404).send('Fotos del destino no encontradas');
             return;
         }
+        const nombresArchivos = rows.map(row => row.nombre);
+        console.log(nombresArchivos)
+        res.status(201).json({
+            "nombresArchivo": nombresArchivos
+        })
+    });
+});
 
-        const photoPaths = rows.map(row => path.join(__dirname, 'public', 'imgDestination', row.nombre));
+app.get('/destino/image/:imgName', (req, res) => {
+    const fileName = req.params.imgName;
 
-        // Enviar los archivos uno por uno
-        photoPaths.forEach(photoPath => {
-            console.log(photoPath)
-            // res.sendFile(photoPath, (err) => {
-            //     if (err) {
-            //         console.error('Error al enviar el archivo:', err.message);
-            //     }
-            // });
-        });
+    const imgPath = path.join(__dirname, 'public', 'imgDestination', fileName);
+    console.log(imgPath)
+    res.sendFile(imgPath, (err) => {
+        if (err) {
+            console.error('Error al enviar el archivo:', err.message);
+            res.status(404).send("Archivo no encontrado")
+        }
+    });
+});
 
+//_Actividades
+
+app.get('/actividad', (req, res) => {
+    const id = req.params.id
+    const sqlQuery = 'SELECT * FROM Actividad';
+
+    db.all(sqlQuery, id, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener actividad:', err.message);
+            res.status(500).send('Error del servidor al obtener actividad: ' + err.message)
+            return;
+        }
+        res.json(rows)
+    });
+});
+
+app.get('/actividad/:id', (req, res) => {
+    const id = req.params.id
+    const sqlQuery = 'SELECT * FROM Actividad WHERE id = ?';
+
+    db.get(sqlQuery, id, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener actividad:', err.message);
+            res.status(500).send('Error del servidor al obtener actividad: ' + err.message)
+            return;
+        }
+        res.json(rows)
+    });
+});
+
+
+app.post('/actividad', (req, res) => {
+    const sqlQuery = `INSERT INTO Actividad (titulo, descripcion, numRecomendado, destinoId) VALUES (?, ?, ?, ?)`;
+    const { titulo, descripcion, numRecomendado, destinoId } = req.body;
+    db.run(sqlQuery, [titulo, descripcion, numRecomendado, destinoId], function (err) {
+        if (err) {
+            console.error('Error al insertar actividad:', err.message);
+            res.status(500).json({ error: 'Error del servidor al crear actividad: ' + err.message });
+            return;
+        }
+        // Obtener el ID de la actividad insertada
+        const actividadId = this.lastID;
+        res.status(201).json({ actividadId });
+    });
+});
+
+app.delete('/actividad/:id', (req, res) => {
+    const id = req.params.id
+    const sqlQuery = 'DELETE FROM Actividad WHERE id == ?';
+    db.run(sqlQuery, id, function (err) {
+        if (err) {
+            console.error('Error al eliminar actividad:', err.message);
+            res.status(500).send('Error del servidor al eliminar actividad: ' + err.message);
+            return;
+        }
+        res.send(`Actividad con ID ${id} eliminado correctamente.`);
+    });
+});
+
+
+app.post('/actividad/addimage/:id', uploadActivity.single('image'), (req, res) => {
+    const id = req.params.id
+    if (!id || !req.file) {
+        res.status(400).json({ error: 'Se requiere el ID de actividad y la imagen a publicar.' });
+        return;
+    }
+
+    //obtener el path de la imagen
+    const newImagePath = req.file.filename;
+
+    const insertQuery = 'INSERT INTO imgActividad (ActividadId, nombre) VALUES (?, ?)';
+    db.run(insertQuery, [id, newImagePath], function (err) {
+        if (err) {
+            console.error('Error al añadir la imagActividad:', err.message);
+            res.status(500).send('Error del servidor al añadir la imagen al actividad: ' + err.message);
+            return;
+        }
+        res.send(`Imagen del actividad con ID ${id} añadida correctamente.`);
+    });
+});
+
+app.get('/actividad/images/:id', (req, res) => {
+    const id = req.params.id;
+
+    const getPhotoQuery = 'SELECT * FROM imgActividad WHERE idActividad = ?';
+    db.all(getPhotoQuery, [id], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener las fotos del actividad:', err.message);
+            res.status(500).send('Error del servidor al obtener las fotos del actividad: ' + err.message);
+            return;
+        }
+
+        if (!rows || rows.length == 0) {
+            res.status(404).send('Fotos del actividad no encontradas');
+            return;
+        }
+        const nombresArchivos = rows.map(row => row.nombre);
+        console.log(nombresArchivos)
+        res.status(201).json({
+            "nombresArchivo": nombresArchivos
+        })
+    });
+});
+
+app.get('/actividad/image/:imgName', (req, res) => {
+    const fileName = req.params.imgName;
+
+    const imgPath = path.join(__dirname, 'public', 'imgActivity', fileName);
+    console.log(imgPath)
+    res.sendFile(imgPath, (err) => {
+        if (err) {
+            console.error('Error al enviar el archivo:', err.message);
+        }
     });
 });
