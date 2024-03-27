@@ -46,7 +46,8 @@ CREATE TABLE IF NOT EXISTS  Recomendacion (
   usuarioId INTEGER,
   actividadId INTEGER,
   FOREIGN KEY (usuarioId) REFERENCES Usuario(id),
-  FOREIGN KEY (actividadId) REFERENCES Actividad(id)
+  FOREIGN KEY (actividadId) REFERENCES Actividad(id),
+  UNIQUE(usuarioId, actividadId)
 );
 
 CREATE TABLE IF NOT EXISTS  Comentario (

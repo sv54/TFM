@@ -9,7 +9,7 @@ const uuid = require('uuid')
 
 const CheckIfBDNull = require('./seedsDB.js');
 
-const dbPath = 'TFMDB.db';
+const dbPath = './TFMDB.db';
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -688,3 +688,36 @@ app.delete('/comentario/:id', (req, res) => {
     });
 });
 
+app.post('/actividad/:id/recomendar', (req, res) => {
+    const actividadId = req.params.id;
+    const usuarioId = req.body.usuarioId;
+
+    if (!usuarioId) {
+        return res.status(400).json({ error: 'ID de usuario no proporcionado en el cuerpo de la solicitud.' });
+    }
+
+    // Insertar la recomendación en la base de datos
+    const sqlQuery = 'INSERT INTO Recomendacion (usuarioId, actividadId) VALUES (?, ?)';
+    db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+        if (err) {
+            console.error('Error al recomendar la actividad:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al recomendar la actividad.' });
+        }
+        // Devolver una respuesta exitosa
+        res.status(200).json({ message: 'Actividad recomendada exitosamente.' });
+    });
+});
+
+app.get('/actividad/:actividadId/recomendar', (req, res) => {
+    const actividadId = req.params.actividadId;
+    const sqlQuery = 'SELECT COUNT(*) AS totalRecomendaciones FROM Recomendacion WHERE actividadId = ?';
+    db.get(sqlQuery, [actividadId], (err, row) => {
+        if (err) {
+            console.error('Error al obtener las recomendaciones de la actividad:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener las recomendaciones de la actividad.' });
+        }
+        // Devolver la cantidad de recomendaciones encontradas
+        const totalRecomendaciones = row.totalRecomendaciones || 0;
+        res.status(200).json({ totalRecomendaciones });
+    });
+});

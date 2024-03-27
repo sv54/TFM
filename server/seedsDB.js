@@ -999,14 +999,12 @@ async function insertComentario(destinoId, comentario){
 }
 
 async function poblarComentarios() {
-    // Seleccionar todos los destinos
     const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
     db.all(sqlSeleccionarDestinos, async (err, rows) => {
         if (err) {
             console.error('Error al seleccionar los destinos:', err.message);
             return;
         }
-        // Recorrer cada destino y agregar los comentarios
         for (const row of rows) {
             const destinoId = row.id;
 			const repeticiones = 2;
@@ -1018,6 +1016,15 @@ async function poblarComentarios() {
 			}
         }
     });
+}
+
+
+function generarNumeroAleatorio(min, max) {
+    // Generar un número aleatorio entre 0 (inclusive) y 1 (exclusivo)
+    const random = Math.random();
+    // Escalar el número aleatorio al rango deseado y redondearlo
+    const numeroAleatorio = Math.floor(random * (max - min + 1)) + min;
+    return numeroAleatorio;
 }
 
 // poblarComentarios();

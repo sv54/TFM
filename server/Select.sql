@@ -7,8 +7,7 @@
 -- SELECT * From imgDestino;
 -- DELETE FROM Actividad;
 -- Delete from Comentario;
-
-Select * from Comentario;
+Select * from Recomendacion;
 
 -- SELECT id, titulo From Actividad;
 
