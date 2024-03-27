@@ -82,9 +82,9 @@ CREATE TABLE IF NOT EXISTS  imgDestino (
 
 CREATE TABLE IF NOT EXISTS  imgActividad (
   id INTEGER PRIMARY KEY,
-  destinoId INTEGER,
+  actividadId INTEGER,
   nombre TEXT UNIQUE,
-  FOREIGN KEY (destinoId) REFERENCES Actividad(id)
+  FOREIGN KEY (actividadId) REFERENCES Actividad(id)
 );
 
 CREATE TABLE IF NOT EXISTS  Actividad (

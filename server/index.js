@@ -584,7 +584,7 @@ app.post('/actividad/addimage/:id', uploadActivity.single('image'), (req, res) =
 app.get('/actividad/images/:id', (req, res) => {
     const id = req.params.id;
 
-    const getPhotoQuery = 'SELECT * FROM imgActividad WHERE idActividad = ?';
+    const getPhotoQuery = 'SELECT * FROM imgActividad WHERE ActividadId = ?';
     db.all(getPhotoQuery, [id], (err, rows) => {
         if (err) {
             console.error('Error al obtener las fotos del actividad:', err.message);
@@ -615,3 +615,76 @@ app.get('/actividad/image/:imgName', (req, res) => {
         }
     });
 });
+
+app.get('/destino/:id/comentario/:index', (req, res) => {
+    const destinoId = req.params.id;
+    const index = req.params.index;
+
+    // Calcular el rango de comentarios a recuperar
+    const offset = index * 10;
+    const endIndex = 10;
+    // console.log(endIndex)
+
+    const sql = `
+        SELECT *
+        FROM Comentario
+        WHERE destinoId = ? 
+        LIMIT ?, ?
+    `;
+
+    // Ejecutar la consulta con los parámetros
+    db.all(sql, [destinoId, offset, endIndex], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener comentarios:', err.message);
+            res.status(500).json({ error: 'Error al obtener comentarios' });
+            return;
+        }
+        
+        // Enviar los comentarios obtenidos como respuesta
+        res.json({ comentarios: rows });
+    });
+});
+
+app.post('/comentario', (req, res) => {
+    const { usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion } = req.body;
+
+    // Validar los datos recibidos
+    if (!usuarioId || !destinoId || !valoracion) {
+        return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    // Consulta SQL para insertar el nuevo comentario en la base de datos
+    const sql = `
+        INSERT INTO Comentario (usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    // Ejecutar la consulta con los parámetros
+    db.run(sql, [usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion], function(err) {
+        if (err) {
+            console.error('Error al insertar comentario:', err.message);
+            return res.status(500).json({ error: 'Error al insertar comentario' });
+        }
+
+        // Enviar la confirmación de que el comentario se ha creado correctamente
+        res.status(201).json({ mensaje: 'Comentario creado exitosamente', comentarioId: this.lastID });
+    });
+});
+
+app.delete('/comentario/:id', (req, res) => {
+    const comentarioId = req.params.id;
+
+    // Sentencia SQL para eliminar un comentario por su ID
+    const sql = `DELETE FROM Comentario WHERE id = ?`;
+
+    // Ejecutar la consulta SQL
+    db.run(sql, [comentarioId], function(err) {
+        if (err) {
+            console.error('Error al eliminar el comentario:', err.message);
+            return res.status(500).send('Error interno del servidor');
+        }
+        //console.log(`Comentario eliminado con ID ${comentarioId}`);
+        res.status(200).send('Comentario eliminado correctamente');
+    });
+});
+

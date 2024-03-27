@@ -411,7 +411,109 @@ const actividadesEjemplo = [
     }
 ];
 
-const nombresImgActividades = [ "Buckingham1.jpg", "Buckingham2.png", "Buckingham3.jpg", "CascoAntiguo1.jpg", "CascoAntiguo2.jpg", "CascoAntiguo3.jpg", "CastilloDeSantaBarbara1.jpg", "CastilloDeSantaBarbara2.jpg", "CastilloDeSantaBarbara3.jpg", "Coliseo1.jpg", "Coliseo2.jpg", "Coliseo3.jpeg", "ForoRomano1.jpg", "ForoRomano2.png", "ForoRomano3.jpg", "GranBazar1.jpg", "GranBazar2.jpg", "LondonEye1.JPG", "LondonEye2.png", "LondonEye3.jpg", "Louvre1.png", "Louvre2.png", "Louvre3.jpeg", "MezquitaAzul1.jpg", "MezquitaAzul2.jpeg", "MonasterioCuevasKiev1.jpg", "MonasterioCuevasKiev2.jpg", "Montmartre1.jpg", "Montmartre2.JPG", "Montmartre3.jpg", "MuroDeBerlin1.jpg", "MuroDeBerlin2.png", "MuseoBritanico1.jpg", "MuseoBritanico2.jpg", "MuseoDelPrado1.jpg", "MuseodelPrado2.png", "MuseoDelPrado3.png", "MuseoDePergamo1.jpg", "MuseoDePergamo2.jpg", "MuseoDePergamo3.jpeg", "MuseoNacionalDeHistoriaDeUcrania1.jpg", "MuseoNacionalDeHistoriaDeUcrania2.jpg", "MuseoNacionalDeHistoriaDeUcrania3.jpg", "PalacioImperial1.jpg", "PalacioImperial2.jpg", "PalacioImperial3.jpg", "PalacioReal1.jpg", "PalacioReal2.jpg", "PalacioReal3.jpg", "PalacioTopkapi1.jpg", "PalacioTopkapi2.jpg", "PalacioTopkapi3.jpg", "ParqueDelRetiro1.jpg", "ParqueDelRetiro2.png", "ParqueDelRetiro3.png", "PlayaDelPostiguet1.jpg", "PlayaDelPostiguet2.jpg", "PlazaDeLaIndependencia1.jpg", "PlazaDeLaIndependencia2.jpg", "Senso-ji1.jpg", "Senso-ji2.jpg", "Senso-ji3.jpg", "Shibuya1.jpg", "Shibuya2.png", "Shibuya3.jpg", "TorreEiffel1.jpg", "TorreEiffel2.jpg", "TorreEiffel3.png", "Vaticano1.png", "Vaticano2.jpg"];
+const comentariosEjemplo = [
+    {
+        "usuarioId": 1,
+        "destinoId": "",
+        "texto": "¡Qué lugar tan maravilloso! Disfruté mucho de mi visita.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 5,
+        "dineroGastado": 200,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 2,
+        "destinoId": "",
+        "texto": "¡Increíble experiencia! Recomiendo este lugar a todos.",
+        "permisoExtraInfo": false,
+        "estanciaDias": 3,
+        "dineroGastado": 150,
+        "valoracion": 4
+    },
+    {
+        "usuarioId": 3,
+        "destinoId": "",
+        "texto": "Me encantó cada momento que pasé aquí. Volveré pronto.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 7,
+        "dineroGastado": 300,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 4,
+        "destinoId": "",
+        "texto": "El lugar es hermoso, pero la comida no me gustó tanto.",
+        "permisoExtraInfo": false,
+        "estanciaDias": 4,
+        "dineroGastado": 180,
+        "valoracion": 3
+    },
+    {
+        "usuarioId": 1,
+        "destinoId": "",
+        "texto": "Experiencia única. Definitivamente regresaré en el futuro.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 6,
+        "dineroGastado": 250,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 2,
+        "destinoId": "",
+        "texto": "No puedo esperar para volver a este lugar. Me encantó todo.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 4,
+        "dineroGastado": 220,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 3,
+        "destinoId": "",
+        "texto": "Me sorprendió gratamente este destino. Lo recomiendo totalmente.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 5,
+        "dineroGastado": 190,
+        "valoracion": 4
+    },
+    {
+        "usuarioId": 4,
+        "destinoId": "",
+        "texto": "Buena experiencia en general. Me gustaría volver en el futuro.",
+        "permisoExtraInfo": false,
+        "estanciaDias": 3,
+        "dineroGastado": 160,
+        "valoracion": 4
+    },
+    {
+        "usuarioId": 1,
+        "destinoId": "",
+        "texto": "El destino superó mis expectativas. Fue un viaje increíble.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 7,
+        "dineroGastado": 280,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 2,
+        "destinoId": "",
+        "texto": "¡Volveré sin duda alguna! Este lugar tiene tanto que ofrecer.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 4,
+        "dineroGastado": 230,
+        "valoracion": 5
+    },
+    {
+        "usuarioId": 3,
+        "destinoId": "",
+        "texto": "Me enamoré de este destino desde el primer día. Fue mágico.",
+        "permisoExtraInfo": true,
+        "estanciaDias": 6,
+        "dineroGastado": 270,
+        "valoracion": 5
+    }
+];
+
+const nombresImgActividades = ['Buckingham1.jpg','Buckingham2.png','Buckingham3.jpg','CascoAntiguo1.jpg','CascoAntiguo2.jpg','CascoAntiguo3.jpg','CastilloDeSantaBarbara1.jpg','CastilloDeSantaBarbara2.jpg','CastilloDeSantaBarbara3.jpg','Coliseo1.jpg','Coliseo2.jpg','Coliseo3.jpeg','ForoRomano1.jpg','ForoRomano2.png','ForoRomano3.jpg','GranBazar1.jpg','GranBazar2.jpg','LondonEye1.JPG','LondonEye2.png','LondonEye3.jpg','Louvre1.png','Louvre2.png','Louvre3.jpeg','MezquitaAzul1.jpg','MezquitaAzul2.jpeg','MonasterioCuevasKiev1.jpg','MonasterioCuevasKiev2.jpg','Montmartre1.jpg','Montmartre2.JPG','Montmartre3.jpg','MuroDeBerlin1.jpg','MuroDeBerlin2.png','MuseoBritanico1.jpg','MuseoBritanico2.jpg','MuseoDelPrado1.jpg','MuseodelPrado2.png','MuseoDelPrado3.png','MuseoDePergamo1.jpg','MuseoDePergamo2.jpg','MuseoDePergamo3.jpeg','MuseoNacionalDeHistoriaDeUcrania1.jpg','MuseoNacionalDeHistoriaDeUcrania2.jpg','MuseoNacionalDeHistoriaDeUcrania3.jpg','PalacioImperial1.jpg','PalacioImperial2.jpg','PalacioImperial3.jpg','PalacioReal1.jpg','PalacioReal2.jpg','PalacioReal3.jpg','PalacioTopkapi1.jpg','PalacioTopkapi2.jpg','PalacioTopkapi3.jpg','ParqueDelRetiro1.jpg','ParqueDelRetiro2.png','ParqueDelRetiro3.png','PlayaDelPostiguet1.jpg','PlayaDelPostiguet2.jpg','PlazaDeLaIndependencia1.jpg','PlazaDeLaIndependencia2.jpg','Senso-ji1.jpg','Senso-ji2.jpg','Senso-ji3.jpg','Shibuya1.jpg','Shibuya2.png','Shibuya3.jpg','TorreEiffel1.jpg','TorreEiffel2.jpg','TorreEiffel3.png','Vaticano1.png','Vaticano2.jpg'];
 
 const nombresImgDestinos = ['Alicante1.jpg','Alicante2.png','Bangkok1.jpg','Bangkok2.jpg','Bangkok3.jpg','Barcelona1.jpg','Barcelona2.jpg','Barcelona3.png','Berlín1.jpg','Berlín2.png','Berlín3.png','Berlín4.jpg','Buenos Aires1.png','Buenos Aires2.jpeg','Buenos Aires3.jpg','Dubai1.jpg','Dubai2.png','Estambul1.png','Estambul2.jpeg','Kiev1.jpg','Kiev2.jpg','Kiev3.jpg','Londres1.jpg','Londres2.jpg','Londres3.png','Madrid1.png','Madrid2.png','Madrid3.jpg','Nueva York1.jpg','Nueva York2.jpg','París1.jpg','París2.png','París3.jpg','Roma1.jpg','Roma2.jpg','Roma3.jpg','Seúl1.jpg','Seúl2.jpg','Seúl3.jpg','Sidney1.png','Sidney2.jpg','Sidney3.png','Tokio1.jpg','Tokio2.jpg','Tokio3.jpg','Toronto1.png','Toronto2.jpg','Toronto3.png'];
 
@@ -532,12 +634,16 @@ async function CheckIfBDNull() {
 			await poblarDestino()
 			await poblarUsuarios()
 			await poblarActividad()
+			await poblarImgDestino()
+			await poblarImgActividad(ConsoleLog)
+			await poblarComentarios();
+
             insertarSerhii()
 		}
 	});
 }
 
-function insertUsuario(usuarioData, callback) {
+async function insertUsuario(usuarioData, callback) {
     const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const { nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil } = usuarioData;
     db.run(sqlQuery, [nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
@@ -551,7 +657,7 @@ function insertUsuario(usuarioData, callback) {
     });
 }
 
-function insertDestino(destinoData, callback) {
+async function insertDestino(destinoData, callback) {
     const sqlQuery = `INSERT INTO Destino (titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const { titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima } = destinoData;
     db.run(sqlQuery, [titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima], function (err) {
@@ -565,7 +671,7 @@ function insertDestino(destinoData, callback) {
     });
 }
 
-function insertActividad(actividadData, destinoName, callback) {
+async function insertActividad(actividadData, destinoName, callback) {
     // Primero, consulta el ID del destino utilizando el nombre proporcionado
     const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
     db.get(sqlSelectDestinoId, [destinoName], (err, row) => {
@@ -596,7 +702,7 @@ function insertActividad(actividadData, destinoName, callback) {
         });
     });
 }
-function poblarActividad(){
+async function poblarActividad(){
 	for (var i = 0; i<actividadesEjemplo.length; i++){
 		var titulo = ""
 		if(i >= 0 && i <= 2){
@@ -626,7 +732,7 @@ function poblarActividad(){
 		else if(i >= 23 && i <= 25){
 			titulo = "Berlín"
 		}
-		insertActividad(actividadesEjemplo[i], titulo, ConsoleLog)
+		await insertActividad(actividadesEjemplo[i], titulo, ConsoleLog)
 	}
 }
 
@@ -651,7 +757,7 @@ async function RevisarNombresDestinos() {
     console.log("correctos: " + contador);
 }
 
-function obtenerIdDestinoAsync(nombreDestino) {
+async function obtenerIdDestinoAsync(nombreDestino) {
     return new Promise((resolve, reject) => {
         const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
         db.get(sqlSelectDestinoId, [nombreDestino], (err, row) => {
@@ -677,7 +783,7 @@ function quitarExtension(nombreArchivo) {
     return nombre;
 }
 
-function insertarImgDestino(destinoName, nombreFichero, callback){
+async function insertarImgDestino(destinoName, nombreFichero, callback){
     const sqlSelectDestinoId = `SELECT id FROM Destino WHERE titulo = ?`;
     db.get(sqlSelectDestinoId, [destinoName], (err, row) => {
         if (err) {
@@ -715,6 +821,209 @@ async function poblarImgDestino(){
 	}
 }
 
-// poblarImgDestino()
+async function poblarImgActividad(callback){
+	const sqlAct = `SELECT id, titulo FROM Actividad`;
+    db.all(sqlAct, async (err, rows) => {
+        if (err) {
+            console.error('Error al obtener actividades', err.message);
+            callback(err, null);
+            return;
+        }
+        if (!rows) {
+            // Si no se encuentra ningún destino con el nombre proporcionado
+            const error = new Error('No se encontró ningúna activdad');
+            callback(error, null);
+            return;
+        }
+        
+        // Insertar la actividad utilizando el ID del destino obtenido
+        const sqlQuery = `INSERT INTO imgActividad (actividadId, nombre) VALUES (?, ?)`;
+		// console.log(rows);
+		var img1 = "", img2 = "", img3 = "";
+		for(const row of rows){
+			console.log(row.titulo)
+			img1 = "";
+			img2 = "";
+			img3 = "";
+			if (row.titulo == "Coliseo") {
+				img1 = "Coliseo1.jpg";
+				img2 = "Coliseo2.jpg";
+				img3 = "Coliseo3.jpeg";
+			} else if (row.titulo == "Vaticano") {
+				img1 = "Vaticano1.png";
+				img2 = "Vaticano2.jpg";
+				img3 = "";
+			} else if (row.titulo == "Museo del Prado") {
+				img1 = "MuseoDelPrado1.jpg";
+				img2 = "MuseodelPrado2.png";
+				img3 = "MuseoDelPrado3.png";
+			} else if (row.titulo == "Parque del Retiro") {
+				img1 = "ParqueDelRetiro1.jpg";
+				img2 = "ParqueDelRetiro2.png";
+				img3 = "ParqueDelRetiro3.png";
+			} else if (row.titulo == "Palacio Real") {
+				img1 = "PalacioReal1.jpg";
+				img2 = "PalacioReal2.jpg";
+				img3 = "PalacioReal3.jpg";
+			} else if (row.titulo == "Castillo de Santa Bárbara") {
+				img1 = "CastilloDeSantaBarbara1.jpg";
+				img2 = "CastilloDeSantaBarbara2.jpg";
+				img3 = "CastilloDeSantaBarbara3.jpg";
+			} else if (row.titulo == "Plaza de la Independencia") {
+				img1 = "PlazaDeLaIndependencia1.jpg";
+				img2 = "PlazaDeLaIndependencia2.jpg";
+				img3 = "";
+			} else if (row.titulo == "Torre Eiffel") {
+				img1 = "TorreEiffel1.jpg";
+				img2 = "TorreEiffel2.jpg";
+				img3 = "TorreEiffel3.png";
+			} else if (row.titulo == "Museo del Louvre") {
+				img1 = "Louvre1.png";
+				img2 = "Louvre2.png";
+				img3 = "Louvre3.jpeg";
+			} else if (row.titulo == "Montmartre") {
+				img1 = "Montmartre1.jpg";
+				img2 = "Montmartre2.JPG";
+				img3 = "Montmartre3.jpg";
+			} else if (row.titulo == "Palacio de Buckingham") {
+				img1 = "Buckingham1.jpg";
+				img2 = "Buckingham2.png";
+				img3 = "Buckingham3.jpg";
+			} else if (row.titulo == "Museo Británico") {
+				img1 = "MuseoBritanico1.jpg";
+				img2 = "MuseoBritanico2.jpg";
+				img3 = "";
+			} else if (row.titulo == "London Eye") {
+				img1 = "LondonEye1.JPG";
+				img2 = "LondonEye2.png";
+				img3 = "LondonEye3.jpg";
+			} else if (row.titulo == "Casco Antiguo") {
+				img1 = "CascoAntiguo1.jpg";
+				img2 = "CascoAntiguo2.jpg";
+				img3 = "CascoAntiguo3.jpg";
+			} else if (row.titulo == "Shibuya") {
+				img1 = "Shibuya1.jpg";
+				img2 = "Shibuya2.png";
+				img3 = "Shibuya3.jpg";
+			} else if (row.titulo == "Palacio Imperial") {
+				img1 = "PalacioImperial1.jpg";
+				img2 = "PalacioImperial2.jpg";
+				img3 = "PalacioImperial3.jpg";
+			} else if (row.titulo == "Mezquita Azul") {
+				img1 = "MezquitaAzul1.jpg";
+				img2 = "MezquitaAzul2.jpeg";
+				img3 = "";
+			} else if (row.titulo == "Gran Bazar") {
+				img1 = "GranBazar1.jpg";
+				img2 = "GranBazar2.jpg";
+				img3 = "";
+			} else if (row.titulo == "Monasterio de las Cuevas de Kiev") {
+				img1 = "MonasterioCuevasKiev1.jpg";
+				img2 = "MonasterioCuevasKiev2.jpg";
+				img3 = "";
+			} else if (row.titulo == "Foro Romano") {
+				img1 = "ForoRomano1.jpg";
+				img2 = "ForoRomano2.png";
+				img3 = "ForoRomano3.jpg";
+			} else if (row.titulo == "Museo Nacional de Historia de Ucrania") {
+				img1 = "MuseoNacionalDeHistoriaDeUcrania1.jpg";
+				img2 = "MuseoNacionalDeHistoriaDeUcrania2.jpg";
+				img3 = "MuseoNacionalDeHistoriaDeUcrania3.jpg";
+			} else if (row.titulo == "Templo Senso-ji") {
+				img1 = "Senso-ji1.jpg";
+				img2 = "Senso-ji2.jpg";
+				img3 = "Senso-ji3.jpg";
+			} else if (row.titulo == "Playa del Postiguet") {
+				img1 = "PlayaDelPostiguet1.jpg";
+				img2 = "PlayaDelPostiguet2.jpg";
+				img3 = "";
+			}else if (row.titulo == "Palacio de Topkapi") {
+				img1 = "PalacioTopkapi1.jpg";
+				img2 = "PalacioTopkapi2.jpg";
+				img3 = "PalacioTopkapi3.jpg";
+			} else if (row.titulo == "Muro de Berlín") {
+				img1 = "MuroDeBerlin1.jpg";
+				img2 = "MuroDeBerlin2.png";
+				img3 = "";
+			} else if (row.titulo == "Museo de Pérgamo") {
+				img1 = "MuseoDePergamo1.jpg";
+				img2 = "MuseoDePergamo2.jpg";
+				img3 = "MuseoDePergamo3.jpeg";
+			}
+
+			await insertarImgActividad(row.id, img1, ConsoleLog);
+			await insertarImgActividad(row.id, img2, ConsoleLog);
+			if(img3 != ""){
+				await insertarImgActividad(row.id, img3, ConsoleLog)
+			}
+		}
+	});
+}
+
+async function insertarImgActividad(actividadId, nombre, callback){
+	const sqlQuery = `INSERT INTO imgActividad (actividadId, nombre) VALUES (?, ?)`;
+	db.run(sqlQuery, [actividadId, nombre], function (err) {
+		if (err) {
+			console.error('Error al insertar imagen de actividad:', err.message, "::::" + " " + nombre + " ::: " + actividadId);
+			// callback(err, null);
+			return;
+		}
+		// Obtener el ID de la actividad insertada
+		// callback(null, this.lastID);
+	
+	});
+}
+
+async function insertComentario(destinoId, comentario){
+	const sqlInsertarComentario = `
+	INSERT INTO Comentario (usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion)
+	VALUES (?, ?, ?, ?, ?, ?, ?)
+	`;
+	const params = [
+		comentario.usuarioId,
+		destinoId,
+		comentario.texto,
+		comentario.permisoExtraInfo,
+		comentario.estanciaDias,
+		comentario.dineroGastado,
+		comentario.valoracion
+	];
+
+	db.run(sqlInsertarComentario, params, function (err) {
+		if (err) {
+			console.error('Error al insertar comentario:', err.message);
+			return;
+		}
+		console.log(`Comentario insertado con ID ${this.lastID}`);
+	});
+}
+
+async function poblarComentarios() {
+    // Seleccionar todos los destinos
+    const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
+    db.all(sqlSeleccionarDestinos, async (err, rows) => {
+        if (err) {
+            console.error('Error al seleccionar los destinos:', err.message);
+            return;
+        }
+        // Recorrer cada destino y agregar los comentarios
+        for (const row of rows) {
+            const destinoId = row.id;
+			const repeticiones = 2;
+			for(var i=0; i<2; i++){
+				for (const comentario of comentariosEjemplo) {
+					comentario.texto = comentario.texto + " Id: " + destinoId;
+					await insertComentario(destinoId, comentario);
+				}
+			}
+        }
+    });
+}
+
+// poblarComentarios();
+
+
+
+
 
 module.exports = CheckIfBDNull;
