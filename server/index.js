@@ -597,8 +597,8 @@ app.get('/actividad/images/:id', (req, res) => {
             return;
         }
         const nombresArchivos = rows.map(row => row.nombre);
-        console.log(nombresArchivos)
-        res.status(201).json({
+        //console.log(nombresArchivos)
+        res.status(200).json({
             "nombresArchivo": nombresArchivos
         })
     });
