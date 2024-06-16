@@ -57,7 +57,7 @@ const storageActivity = multer.diskStorage({
 
 const uploadProfile = multer({ storage: storageProfile });
 const uploadDestination = multer({ storage: storageDestination });
-const uploadActivity = multer({ storage: storageDestination });
+const uploadActivity = multer({ storage: storageActivity });
 const upload = multer({ storage: storage });
 
 app.use(express.json());
@@ -90,7 +90,9 @@ app.post('/upload', upload.single('image'), (req, res) => {
     
     res.status(200).send('Imagen subida correctamente');
   });
-
+function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 app.post('/restartDbData', async (req, res) => {
     try {
 
@@ -110,7 +112,7 @@ app.post('/restartDbData', async (req, res) => {
         db.close();
         db = new sqlite3.Database(dbPath);
         await CheckIfBDNull();
-
+        await sleep(3000)
 
 
         res.status(200).json("Base de datos poblada con datos ejemplo");
@@ -121,6 +123,7 @@ app.post('/restartDbData', async (req, res) => {
 });
 
 //Peticiones para Usuario
+// #region Usuario
 
 app.get('/usuario', (req, res) => {
     const sqlQuery = 'SELECT * FROM Usuario';
@@ -132,7 +135,7 @@ app.get('/usuario', (req, res) => {
             return;
         }
 
-        res.json(rows)
+        res.status(200).json({"usuarios":rows})
     });
 });
 
@@ -299,6 +302,9 @@ app.get('/usuario/foto/:id', (req, res) => {
     });
 });
 
+// #region Login
+
+
 app.post('/login', (req, res) => {
     const { email, password } = req.body
     const sqlQuery = 'SELECT * FROM Usuario WHERE email = ? LIMIT 1';
@@ -328,6 +334,8 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
+// #region Register
 
 
 app.post('/register', (req, res) => {
@@ -379,7 +387,7 @@ app.post('/signOut', (req, res) => {
     //TODO borrar el token de la base de datos?
 });
 
-
+// #region Destino
 //Peticiones para Destino
 
 app.get('/destino', (req, res) => {
@@ -480,8 +488,8 @@ app.get('/destino/images/:id', (req, res) => {
             return;
         }
         const nombresArchivos = rows.map(row => row.nombre);
-        console.log(nombresArchivos)
-        res.status(201).json({
+        // console.log(nombresArchivos)
+        res.status(200).json({
             "nombresArchivo": nombresArchivos
         })
     });
@@ -501,6 +509,8 @@ app.get('/destino/image/:imgName', (req, res) => {
 });
 
 //_Actividades
+// #region Actividad
+
 
 app.get('/actividad', (req, res) => {
     const id = req.params.id
@@ -512,7 +522,7 @@ app.get('/actividad', (req, res) => {
             res.status(500).send('Error del servidor al obtener actividad: ' + err.message)
             return;
         }
-        res.json(rows)
+        res.json({"actividades":rows})
     });
 });
 
@@ -542,7 +552,7 @@ app.post('/actividad', (req, res) => {
         }
         // Obtener el ID de la actividad insertada
         const actividadId = this.lastID;
-        res.status(201).json({ actividadId });
+        res.status(201).json({ "lastId": actividadId });
     });
 });
 
@@ -577,7 +587,7 @@ app.post('/actividad/addimage/:id', uploadActivity.single('image'), (req, res) =
             res.status(500).send('Error del servidor al añadir la imagen al actividad: ' + err.message);
             return;
         }
-        res.send(`Imagen del actividad con ID ${id} añadida correctamente.`);
+        res.status(201).json({"message":'Imagen del actividad con ID: ' + id + 'añadida correctamente.'});
     });
 });
 
@@ -616,6 +626,9 @@ app.get('/actividad/image/:imgName', (req, res) => {
     });
 });
 
+// #region Comentario
+
+
 app.get('/destino/:id/comentario/:index', (req, res) => {
     const destinoId = req.params.id;
     const index = req.params.index;
@@ -644,6 +657,30 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
         res.json({ comentarios: rows });
     });
 });
+
+app.get('/comentario/:id', async (req, res) => {
+    const comentarioId = req.params.id;
+
+    // Realizar la consulta SQL para obtener el comentario por su ID
+    const sqlQuery = 'SELECT * FROM Comentario WHERE id = ?';
+    
+    db.get(sqlQuery, [comentarioId], (err, row) => {
+        if (err) {
+            console.error('Error al obtener el comentario:', err.message);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        if (!row) {
+            res.status(404).send('Comentario no encontrado');
+            return;
+        }
+
+        // Enviar el comentario encontrado como respuesta
+        res.status(200).json(row);
+    });
+});
+
 
 app.post('/comentario', (req, res) => {
     const { usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion } = req.body;
@@ -688,6 +725,9 @@ app.delete('/comentario/:id', (req, res) => {
     });
 });
 
+// #region Recomendacion
+
+
 app.post('/actividad/:id/recomendar', (req, res) => {
     const actividadId = req.params.id;
     const usuarioId = req.body.usuarioId;
@@ -704,7 +744,7 @@ app.post('/actividad/:id/recomendar', (req, res) => {
             return res.status(500).json({ error: 'Ocurrió un error al recomendar la actividad.' });
         }
         // Devolver una respuesta exitosa
-        res.status(200).json({ message: 'Actividad recomendada exitosamente.' });
+        res.status(201).json({ message: 'Actividad recomendada exitosamente.' });
     });
 });
 
