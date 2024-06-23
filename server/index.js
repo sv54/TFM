@@ -382,10 +382,13 @@ app.post('/register', (req, res) => {
 
 });
 
+// #region SignOut TODO
 
 app.post('/signOut', (req, res) => {
     //TODO borrar el token de la base de datos?
 });
+
+
 
 // #region Destino
 //Peticiones para Destino
@@ -735,16 +738,27 @@ app.post('/actividad/:id/recomendar', (req, res) => {
     if (!usuarioId) {
         return res.status(400).json({ error: 'ID de usuario no proporcionado en el cuerpo de la solicitud.' });
     }
-
-    // Insertar la recomendación en la base de datos
-    const sqlQuery = 'INSERT INTO Recomendacion (usuarioId, actividadId) VALUES (?, ?)';
-    db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+    // Comprobar si el usuario existe en la base de datos
+    const sqlCheckUser = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUser, [usuarioId], (err, row) => {
         if (err) {
-            console.error('Error al recomendar la actividad:', err.message);
-            return res.status(500).json({ error: 'Ocurrió un error al recomendar la actividad.' });
+            console.error('Error al comprobar la existencia del usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del usuario.' });
         }
-        // Devolver una respuesta exitosa
-        res.status(201).json({ message: 'Actividad recomendada exitosamente.' });
+
+        if (!row) {
+            return res.status(404).json({ error: 'El usuario no existe.' });
+        }
+        // Insertar la recomendación en la base de datos
+        const sqlQuery = 'INSERT INTO Recomendacion (usuarioId, actividadId) VALUES (?, ?)';
+        db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+            if (err) {
+                console.error('Error al recomendar la actividad:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al recomendar la actividad.' });
+            }
+            // Devolver una respuesta exitosa
+            res.status(201).json({ message: 'Actividad recomendada exitosamente.' });
+        });
     });
 });
 
@@ -759,5 +773,245 @@ app.get('/actividad/:actividadId/recomendar', (req, res) => {
         // Devolver la cantidad de recomendaciones encontradas
         const totalRecomendaciones = row.totalRecomendaciones || 0;
         res.status(200).json({ totalRecomendaciones });
+    });
+});
+
+app.get('/actividad/recomendar', (req, res) => {
+    console.log("Llamado")
+
+    const actividadIds = req.query.ids;
+    
+    if (!actividadIds) {
+        return res.status(400).json({ error: 'IDs de actividades no proporcionados.' });
+    }
+
+    // Convertir el parámetro de consulta en una lista de IDs
+    const idsArray = actividadIds.split(',');
+
+    // Crear placeholders para la consulta
+    const placeholders = idsArray.map(() => '?').join(',');
+
+    const sqlQuery = `SELECT actividadId, COUNT(*) AS totalRecomendaciones 
+                      FROM Recomendacion 
+                      WHERE actividadId IN (${placeholders})
+                      GROUP BY actividadId`;
+
+    db.all(sqlQuery, idsArray, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener las recomendaciones de las actividades:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener las recomendaciones de las actividades.' });
+        }
+
+        // Formatear el resultado en un objeto con los ID de actividad como claves
+        const recomendaciones = {};
+        rows.forEach(row => {
+            recomendaciones[row.actividadId] = row.totalRecomendaciones;
+        });
+
+        res.status(200).json(recomendaciones);
+    });
+});
+
+app.delete('/actividad/:id/recomendar', (req, res) => {
+    const actividadId = req.params.id;
+    const usuarioId = req.body.usuarioId;
+
+    if (!usuarioId) {
+        return res.status(400).json({ error: 'ID de usuario no proporcionado en el cuerpo de la solicitud.' });
+    }
+    // Eliminar la recomendación de la base de datos
+    const sqlQuery = 'DELETE FROM Recomendacion WHERE usuarioId = ? AND actividadId = ?';
+    db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+        if (err) {
+            console.error('Error al eliminar la recomendación:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al eliminar la recomendación.' });
+        }
+        // Devolver una respuesta exitosa
+        res.status(200).json({ message: 'Recomendación eliminada exitosamente.' });
+    });
+});
+
+
+// #region Favoritos
+app.post('/favoritos', (req, res) => {
+    const { usuarioId, destinoId } = req.body;
+
+    if (!usuarioId || !destinoId) {
+        return res.status(400).json({ error: 'ID de usuario o destino no proporcionado en el cuerpo de la solicitud.' });
+    }
+
+    // Verificar si el usuario existe
+    const sqlCheckUsuario = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUsuario, [usuarioId], (err, row) => {
+        if (err) {
+            console.error('Error al verificar el usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al verificar el usuario.' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
+        }
+
+        // Verificar si el destino existe
+        const sqlCheckDestino = 'SELECT id FROM Destino WHERE id = ?';
+        db.get(sqlCheckDestino, [destinoId], (err, row) => {
+            if (err) {
+                console.error('Error al verificar el destino:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al verificar el destino.' });
+            }
+            if (!row) {
+                return res.status(404).json({ error: 'Destino no encontrado.' });
+            }
+
+            // Insertar la relación en la tabla Favoritos
+            const sqlInsertFavorito = 'INSERT INTO Favoritos (usuarioId, destinoId) VALUES (?, ?)';
+            db.run(sqlInsertFavorito, [usuarioId, destinoId], function (err) {
+                if (err) {
+                    console.error('Error al agregar el destino a los favoritos:', err.message);
+                    return res.status(500).json({ error: 'Ocurrió un error al agregar el destino a los favoritos.' });
+                }
+
+                // Devolver una respuesta exitosa
+                res.status(201).json({ message: 'Destino agregado a los favoritos exitosamente.' });
+            });
+        });
+    });
+});
+
+app.get('/favoritos/:id', (req, res) => {
+    const usuarioId = req.params.id;
+
+    // Verificar si el usuario existe
+    const sqlCheckUsuario = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUsuario, [usuarioId], (err, row) => {
+        if (err) {
+            console.error('Error al verificar el usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al verificar el usuario.' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'Usuario no encontrado.' });
+        }
+
+        // Obtener todos los destinos favoritos del usuario
+        const sqlGetFavoritos = 'SELECT destinoId FROM Favoritos WHERE usuarioId = ?';
+        db.all(sqlGetFavoritos, [usuarioId], (err, rows) => {
+            if (err) {
+                console.error('Error al obtener los destinos favoritos:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos favoritos.' });
+            }
+
+            // Devolver los destinos favoritos encontrados
+            res.status(200).json({ destinosFavoritos: rows });
+        });
+    });
+});
+
+// Ruta para eliminar un destino de los favoritos de un usuario
+app.delete('/favoritos', (req, res) => {
+    const { usuarioId, destinoId } = req.body;
+
+    if (!usuarioId || !destinoId) {
+        return res.status(400).json({ error: 'ID de usuario y destino son requeridos.' });
+    }
+
+    // Eliminar el destino de los favoritos del usuario
+    const sqlQuery = 'DELETE FROM Favoritos WHERE usuarioId = ? AND destinoId = ?';
+    db.run(sqlQuery, [usuarioId, destinoId], function (err) {
+        if (err) {
+            console.error('Error al eliminar el destino de los favoritos:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al eliminar el destino de los favoritos.' });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ error: 'No se encontró un favorito con el usuario y destino proporcionados.' });
+        }
+        // Devolver una respuesta exitosa
+        res.status(200).json({ message: 'Destino eliminado de los favoritos exitosamente.' });
+    });
+});
+
+//#region Visitados
+
+app.post('/visitados', (req, res) => {
+    const { usuarioId, destinoId, fechaMarcado } = req.body;
+
+    if (!usuarioId || !destinoId || !fechaMarcado) {
+        return res.status(400).json({ error: 'usuarioId, destinoId y fechaMarcado son requeridos.' });
+    }
+
+    // Comprobar si el usuario y el destino existen en la base de datos
+    const sqlCheckUser = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUser, [usuarioId], (err, row) => {
+        if (err) {
+            console.error('Error al comprobar la existencia del usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del usuario.' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'El usuario no existe.' });
+        }
+
+        const sqlCheckDestino = 'SELECT id FROM Destino WHERE id = ?';
+        db.get(sqlCheckDestino, [destinoId], (err, row) => {
+            if (err) {
+                console.error('Error al comprobar la existencia del destino:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del destino.' });
+            }
+            if (!row) {
+                return res.status(404).json({ error: 'El destino no existe.' });
+            }
+
+            // Insertar el lugar visitado en la base de datos
+            const sqlInsertVisitado = 'INSERT INTO Visitados (usuarioId, destinoId, fechaMarcado) VALUES (?, ?, ?)';
+            db.run(sqlInsertVisitado, [usuarioId, destinoId, fechaMarcado], function (err) {
+                if (err) {
+                    console.error('Error al guardar el lugar visitado:', err.message);
+                    return res.status(500).json({ error: 'Ocurrió un error al guardar el lugar visitado.' });
+                }
+                res.status(201).json({ message: 'Lugar visitado guardado exitosamente.' });
+            });
+        });
+    });
+});
+
+app.get('/visitados/:id', (req, res) => {
+    const usuarioId = req.params.id;
+
+    // Consulta SQL para obtener los destinos visitados por el usuario
+    const sqlQuery = 'SELECT destinoId FROM Visitados WHERE usuarioId = ?';
+
+    db.all(sqlQuery, [usuarioId], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener destinos visitados:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos visitados.' });
+        }
+
+        // Si no hay destinos visitados, devolver un arreglo vacío
+        const destinosVisitados = rows.map(row => row.destinoId);
+        res.status(200).json({ destinosVisitados });
+    });
+});
+
+app.delete('/visitados/', (req, res) => {
+    const usuarioId = req.body.usuarioId;
+    const destinoId = req.body.destinoId;
+
+    if (!destinoId) {
+        return res.status(400).json({ error: 'ID de destino no proporcionado en el cuerpo de la solicitud.' });
+    }
+
+    // Consulta SQL para eliminar el registro de Visitados por usuarioId y destinoId
+    const sqlQuery = 'DELETE FROM Visitados WHERE usuarioId = ? AND destinoId = ?';
+
+    db.run(sqlQuery, [usuarioId, destinoId], function (err) {
+        if (err) {
+            console.error('Error al eliminar el registro de visita:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al eliminar el registro de visita.' });
+        }
+
+        // Verificar si se eliminó correctamente
+        if (this.changes === 0) {
+            return res.status(404).json({ error: 'No se encontró ningún registro para eliminar.' });
+        }
+
+        // Éxito al eliminar el registro
+        res.status(200).json({ message: 'Registro de visita eliminado exitosamente.' });
     });
 });

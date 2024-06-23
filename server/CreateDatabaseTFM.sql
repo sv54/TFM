@@ -102,7 +102,8 @@ CREATE TABLE IF NOT EXISTS  Favoritos (
   usuarioId INTEGER,
   destinoId INTEGER,
   FOREIGN KEY (usuarioId) REFERENCES Usuario(id),
-  FOREIGN KEY (destinoId) REFERENCES Destino(id)
+  FOREIGN KEY (destinoId) REFERENCES Destino(id),
+  UNIQUE(usuarioId, destinoId)
 );
 
 CREATE TABLE IF NOT EXISTS  Visitados (

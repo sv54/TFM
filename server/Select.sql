@@ -15,3 +15,5 @@ SELECT * From Destino;
 
 SELECT * From Usuario;
 
+SELECT * From Visitados;
+
