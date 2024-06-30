@@ -639,6 +639,9 @@ async function CheckIfBDNull() {
 			await poblarImgDestino()
 			await poblarImgActividad(ConsoleLog)
 			await poblarComentarios();
+			await poblarVisitados();
+			await poblarHistoria();
+			await poblarFavoritos();
 
 			insertarSerhii()
 
@@ -1026,6 +1029,107 @@ function generarNumeroAleatorio(min, max) {
 }
 
 // poblarComentarios();
+
+async function poblarVisitados() {
+    const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
+    db.all(sqlSeleccionarDestinos, async (err, rows) => {
+        if (err) {
+            console.error('Error al seleccionar los destinos:', err.message);
+            return;
+        }
+        const usuarioIds = [1, 2, 3, 4];
+        for (const row of rows) {
+            const destinoId = row.id;
+            const fechaMarcado = new Date().toISOString();
+            const usuarioId = usuarioIds[Math.floor(Math.random() * usuarioIds.length)];
+            await insertVisitado(usuarioId, destinoId, fechaMarcado);
+        }
+    });
+}
+
+async function insertVisitado(usuarioId, destinoId, fechaMarcado) {
+    const sqlInsertarVisitado = `
+        INSERT INTO Visitados (usuarioId, destinoId, fechaMarcado)
+        VALUES (?, ?, ?)
+    `;
+    const params = [usuarioId, destinoId, fechaMarcado];
+
+    db.run(sqlInsertarVisitado, params, function (err) {
+        if (err) {
+            console.error('Error al insertar visitado:', err.message);
+            return;
+        }
+        // console.log(`Visitado insertado con ID ${this.lastID}`);
+    });
+}
+
+async function poblarHistoria() {
+    const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
+    db.all(sqlSeleccionarDestinos, async (err, rows) => {
+        if (err) {
+            console.error('Error al seleccionar los destinos:', err.message);
+            return;
+        }
+        const usuarioIds = [1, 2, 3, 4];
+        for (const row of rows) {
+            const destinoId = row.id;
+            const fechaVisita = new Date().toISOString();
+            const usuarioId = usuarioIds[Math.floor(Math.random() * usuarioIds.length)];
+            await insertHistorial(usuarioId, destinoId, fechaVisita);
+        }
+    });
+}
+
+async function insertHistorial(usuarioId, destinoId, fechaVisita) {
+    const sqlInsertarHistorial = `
+        INSERT INTO Historial (usuarioId, destinoId, fechaVisita)
+        VALUES (?, ?, ?)
+    `;
+    const params = [usuarioId, destinoId, fechaVisita];
+
+    db.run(sqlInsertarHistorial, params, function (err) {
+        if (err) {
+            console.error('Error al insertar historial:', err.message);
+            return;
+        }
+        // console.log(`Historial insertado con ID ${this.lastID}`);
+    });
+}
+
+async function poblarFavoritos() {
+    const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
+    db.all(sqlSeleccionarDestinos, async (err, rows) => {
+        if (err) {
+            console.error('Error al seleccionar los destinos:', err.message);
+            return;
+        }
+        const usuarioIds = [1, 2, 3, 4];
+        for (const row of rows) {
+            const destinoId = row.id;
+            const usuarioId = usuarioIds[Math.floor(Math.random() * usuarioIds.length)];
+            await insertFavorito(usuarioId, destinoId);
+        }
+    });
+}
+
+async function insertFavorito(usuarioId, destinoId) {
+    const sqlInsertarFavorito = `
+        INSERT INTO Favoritos (usuarioId, destinoId)
+        VALUES (?, ?)
+    `;
+    const params = [usuarioId, destinoId];
+
+    db.run(sqlInsertarFavorito, params, function (err) {
+        if (err) {
+            console.error('Error al insertar favorito:', err.message);
+            return;
+        }
+        // console.log(`Favorito insertado con ID ${this.lastID}`);
+    });
+}
+
+
+
 
 
 

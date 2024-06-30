@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS  Visitados (
   fechaMarcado DATE,
   FOREIGN KEY (usuarioId) REFERENCES Usuario(id),
   FOREIGN KEY (destinoId) REFERENCES Destino(id)
+  UNIQUE(usuarioId, destinoId)
 );
 
 CREATE TABLE IF NOT EXISTS  Historial (

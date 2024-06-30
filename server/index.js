@@ -891,15 +891,22 @@ app.get('/favoritos/:id', (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado.' });
         }
 
-        // Obtener todos los destinos favoritos del usuario
-        const sqlGetFavoritos = 'SELECT destinoId FROM Favoritos WHERE usuarioId = ?';
+        // Obtener todos los destinos favoritos del usuario junto con los detalles de esos destinos
+        const sqlGetFavoritos = `
+            SELECT Destino.*
+            FROM Favoritos
+            JOIN Destino ON Favoritos.destinoId = Destino.id
+            WHERE Favoritos.usuarioId = ?
+        `;
         db.all(sqlGetFavoritos, [usuarioId], (err, rows) => {
             if (err) {
                 console.error('Error al obtener los destinos favoritos:', err.message);
                 return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos favoritos.' });
             }
 
-            // Devolver los destinos favoritos encontrados
+            // Obtener los IDs de los destinos favoritos
+            
+            // Devolver los destinos favoritos junto con sus detalles completos
             res.status(200).json({ destinosFavoritos: rows });
         });
     });
@@ -975,7 +982,12 @@ app.get('/visitados/:id', (req, res) => {
     const usuarioId = req.params.id;
 
     // Consulta SQL para obtener los destinos visitados por el usuario
-    const sqlQuery = 'SELECT destinoId FROM Visitados WHERE usuarioId = ?';
+    const sqlQuery = `
+        SELECT Destino.*
+        FROM Visitados
+        JOIN Destino ON Visitados.destinoId = Destino.id
+        WHERE Visitados.usuarioId = ?
+    `;
 
     db.all(sqlQuery, [usuarioId], (err, rows) => {
         if (err) {
@@ -983,9 +995,8 @@ app.get('/visitados/:id', (req, res) => {
             return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos visitados.' });
         }
 
-        // Si no hay destinos visitados, devolver un arreglo vacío
-        const destinosVisitados = rows.map(row => row.destinoId);
-        res.status(200).json({ destinosVisitados });
+        // Destinos visitados
+        res.status(200).json({ destinosVisitados: rows });
     });
 });
 
@@ -1013,5 +1024,98 @@ app.delete('/visitados/', (req, res) => {
 
         // Éxito al eliminar el registro
         res.status(200).json({ message: 'Registro de visita eliminado exitosamente.' });
+    });
+});
+
+// #region Historial 
+
+app.get('/historial/:id', (req, res) => {
+    const usuarioId = req.params.id;
+
+    // Consulta SQL para obtener los destinos del historial del usuario
+    const sqlQuery = `
+        SELECT Destino.*, Historial.fechaVisita
+        FROM Historial
+        JOIN Destino ON Historial.destinoId = Destino.id
+        WHERE Historial.usuarioId = ?
+        ORDER BY Historial.fechaVisita DESC
+    `;
+
+    db.all(sqlQuery, [usuarioId], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener el historial:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener el historial.' });
+        }
+
+        // Devolver el historial encontrado
+        res.status(200).json({ historial: rows });
+    });
+});
+
+app.post('/historial', (req, res) => {
+    const { usuarioId, destinoId } = req.body;
+    const fechaVisita = new Date().toISOString();
+
+    if (!usuarioId || !destinoId) {
+        return res.status(400).json({ error: 'usuarioId y destinoId son requeridos.' });
+    }
+
+    // Comprobar si el usuario y el destino existen en la base de datos
+    const sqlCheckUser = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUser, [usuarioId], (err, row) => {
+        if (err) {
+            console.error('Error al comprobar la existencia del usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del usuario.' });
+        }
+        if (!row) {
+            return res.status(404).json({ error: 'El usuario no existe.' });
+        }
+
+        const sqlCheckDestino = 'SELECT id FROM Destino WHERE id = ?';
+        db.get(sqlCheckDestino, [destinoId], (err, row) => {
+            if (err) {
+                console.error('Error al comprobar la existencia del destino:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del destino.' });
+            }
+            if (!row) {
+                return res.status(404).json({ error: 'El destino no existe.' });
+            }
+
+            // Insertar el destino en el historial
+            const sqlInsertHistorial = 'INSERT INTO Historial (usuarioId, destinoId, fechaVisita) VALUES (?, ?, ?)';
+            db.run(sqlInsertHistorial, [usuarioId, destinoId, fechaVisita], function (err) {
+                if (err) {
+                    console.error('Error al guardar en el historial:', err.message);
+                    return res.status(500).json({ error: 'Ocurrió un error al guardar en el historial.' });
+                }
+                res.status(201).json({ message: 'Destino agregado al historial exitosamente.' });
+            });
+        });
+    });
+});
+
+app.delete('/historial', (req, res) => {
+    const { usuarioId, destinoId } = req.body;
+
+    if (!usuarioId || !destinoId) {
+        return res.status(400).json({ error: 'usuarioId y destinoId son requeridos.' });
+    }
+
+    // Consulta SQL para eliminar el registro del historial por usuarioId y destinoId
+    const sqlQuery = 'DELETE FROM Historial WHERE usuarioId = ? AND destinoId = ?';
+
+    db.run(sqlQuery, [usuarioId, destinoId], function (err) {
+        if (err) {
+            console.error('Error al eliminar el registro del historial:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al eliminar el registro del historial.' });
+        }
+
+        // Verificar si se eliminó correctamente
+        if (this.changes === 0) {
+            return res.status(404).json({ error: 'No se encontró ningún registro para eliminar.' });
+        }
+
+        // Éxito al eliminar el registro
+        res.status(200).json({ message: 'Registro del historial eliminado exitosamente.' });
     });
 });
