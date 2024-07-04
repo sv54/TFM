@@ -34,6 +34,7 @@ CREATE TABLE IF NOT EXISTS  Destino (
   paisId INTEGER,
   numPuntuaciones INTEGER,
   sumaPuntuaciones INTEGER,
+  numVisitas INTEGER DEFAULT 0,
   gastoTotal INTEGER,
   diasEstanciaTotal INTEGER,
   indiceSeguridad INTEGER,

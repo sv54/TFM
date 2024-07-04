@@ -17,3 +17,4 @@ SELECT * From Usuario;
 
 SELECT * From Visitados;
 
+SELECT * FROM Destino WHERE titulo LIKE 'se'||'%';

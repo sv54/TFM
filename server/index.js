@@ -61,6 +61,7 @@ const uploadActivity = multer({ storage: storageActivity });
 const upload = multer({ storage: storage });
 
 app.use(express.json());
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Crear una instancia de la base de datos
 var db = new sqlite3.Database(dbPath);
@@ -390,19 +391,70 @@ app.post('/signOut', (req, res) => {
 
 
 
+
+
+
+
 // #region Destino
 //Peticiones para Destino
 
+const { networkInterfaces } = require('os');
+
+// Función para obtener la dirección IP local de la interfaz de ethernet
+function getEthernetIpAddress() {
+    const interfaces = networkInterfaces();
+    let ethernetAddress = '127.0.0.1'; // Valor por defecto si no se encuentra una IP de ethernet
+    
+    // Priorizar la interfaz de ethernet
+    for (const ifaceName in interfaces) {
+        if (ifaceName.toLowerCase().includes('ethernet')) {
+            const iface = interfaces[ifaceName];
+            for (let i = 0; i < iface.length; i++) {
+                const { address, family, internal } = iface[i];
+                if (family === 'IPv4' && !internal) {
+                    return address; // Devuelve la primera IP no interna de ethernet encontrada
+                }
+            }
+        }
+    }
+
+    return ethernetAddress;
+}
+
+// Uso de la función para obtener la IP local de ethernet
+const ethernetIpAddress = getEthernetIpAddress();
+const baseDestinoUrl = 'http://'+ ethernetIpAddress +':3000/public/imgDestination/'
+
+
 app.get('/destino', (req, res) => {
-    const sqlQuery = 'SELECT * FROM Destino';
+    const sqlQuery = `
+        SELECT 
+            Destino.*, 
+            imgDestino.nombre AS imagen
+        FROM 
+            Destino
+        LEFT JOIN 
+            imgDestino ON Destino.id = imgDestino.destinoId
+        GROUP BY 
+            Destino.id
+    `;
 
     db.all(sqlQuery, [], (err, rows) => {
         if (err) {
-            console.error('Error al obtener destino:', err.message);
-            res.status(500).send('Error del servidor al obtener destino: ' + err.message)
+            console.error('Error al obtener destinos:', err.message);
+            res.status(500).send('Error del servidor al obtener destinos: ' + err.message);
             return;
         }
-        res.json(rows)
+
+        // Añadir la URL completa de la imagen a cada destino
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
+
+        res.json(destinosConImagen);
     });
 });
 
@@ -508,6 +560,21 @@ app.get('/destino/image/:imgName', (req, res) => {
             console.error('Error al enviar el archivo:', err.message);
             res.status(404).send("Archivo no encontrado")
         }
+    });
+});
+
+app.get('/buscarDestino', (req, res) => {
+    const titulo = req.query.titulo;
+
+    // Realizar la búsqueda en la base de datos
+    const sqlQuery = "SELECT * FROM Destino WHERE titulo LIKE '%' || ? || '%'";
+    db.all(sqlQuery, [titulo], (err, rows) => {
+        if (err) {
+            console.error('Error al buscar destinos:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al buscar destinos.' });
+        }
+        // Devolver los destinos encontrados en formato JSON
+        res.status(200).json(rows);
     });
 });
 
@@ -972,7 +1039,15 @@ app.post('/visitados', (req, res) => {
                     console.error('Error al guardar el lugar visitado:', err.message);
                     return res.status(500).json({ error: 'Ocurrió un error al guardar el lugar visitado.' });
                 }
-                res.status(201).json({ message: 'Lugar visitado guardado exitosamente.' });
+                // Incrementar el contador de visitas del destino
+                const sqlUpdateDestino = 'UPDATE Destino SET numVisitas = numVisitas + 1 WHERE id = ?';
+                db.run(sqlUpdateDestino, [destinoId], function (err) {
+                    if (err) {
+                        console.error('Error al actualizar el número de visitas del destino:', err.message);
+                        return res.status(500).json({ error: 'Ocurrió un error al actualizar el número de visitas del destino.' });
+                    }
+                    res.status(201).json({ message: 'Lugar visitado guardado exitosamente.' });
+                });
             });
         });
     });
@@ -1022,8 +1097,16 @@ app.delete('/visitados/', (req, res) => {
             return res.status(404).json({ error: 'No se encontró ningún registro para eliminar.' });
         }
 
-        // Éxito al eliminar el registro
-        res.status(200).json({ message: 'Registro de visita eliminado exitosamente.' });
+        // Éxito al eliminar el registro de visitados
+        // Ahora actualizar el contador de visitas en Destino
+        const sqlUpdateDestino = 'UPDATE Destino SET numVisitas = numVisitas - 1 WHERE id = ?';
+        db.run(sqlUpdateDestino, [destinoId], function (err) {
+            if (err) {
+                console.error('Error al actualizar el número de visitas del destino:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al actualizar el número de visitas del destino.' });
+            }
+            res.status(200).json({ message: 'Registro de visita eliminado exitosamente.' });
+        });
     });
 });
 
