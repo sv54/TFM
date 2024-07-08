@@ -86,13 +86,13 @@ async function getPass(contrasenya, salt) {
 
 app.post('/upload', upload.single('image'), (req, res) => {
     if (!req.file) {
-      return res.status(400).send('No se ha subido ningún archivo');
+        return res.status(400).send('No se ha subido ningún archivo');
     }
-    
+
     res.status(200).send('Imagen subida correctamente');
-  });
+});
 function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 app.post('/restartDbData', async (req, res) => {
     try {
@@ -136,7 +136,7 @@ app.get('/usuario', (req, res) => {
             return;
         }
 
-        res.status(200).json({"usuarios":rows})
+        res.status(200).json({ "usuarios": rows })
     });
 });
 
@@ -216,7 +216,7 @@ app.put('/usuario/changePassword', (req, res) => {
 
         if (currentPassword !== hashedPassword) {
             // Actualizar la contraseña del usuario
-            
+
             const updateQuery = 'UPDATE Usuario SET password = ? WHERE id = ?';
             db.run(updateQuery, [hashedPassword, userId], function (err) {
                 if (err) {
@@ -320,7 +320,7 @@ app.post('/login', (req, res) => {
             res.status(404).send('Usuario o contraseña son incorrectos.')
         }
         else {
-            
+
             const hashedPassword = await bcrypt.hash(password, rows.salt)
 
             if (hashedPassword == rows.password) {
@@ -353,10 +353,10 @@ app.post('/register', (req, res) => {
 
             const salt = await bcrypt.genSalt(10)
             const hashedPassword = await bcrypt.hash(password, salt)
-            if(!req.file){
+            if (!req.file) {
                 fotoPerfil = "SinFoto"
             }
-            else{
+            else {
 
             }
             const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -370,7 +370,7 @@ app.post('/register', (req, res) => {
 
                 // Obtener el ID del usuario insertado
                 lastId = this.lastID
-                res.status(201).json({"lastId": this.lastID})
+                res.status(201).json({ "lastId": this.lastID })
             });
 
 
@@ -404,7 +404,7 @@ const { networkInterfaces } = require('os');
 function getEthernetIpAddress() {
     const interfaces = networkInterfaces();
     let ethernetAddress = '127.0.0.1'; // Valor por defecto si no se encuentra una IP de ethernet
-    
+
     // Priorizar la interfaz de ethernet
     for (const ifaceName in interfaces) {
         if (ifaceName.toLowerCase().includes('ethernet')) {
@@ -423,20 +423,23 @@ function getEthernetIpAddress() {
 
 // Uso de la función para obtener la IP local de ethernet
 const ethernetIpAddress = getEthernetIpAddress();
-const baseDestinoUrl = 'http://'+ ethernetIpAddress +':3000/public/imgDestination/'
+const baseDestinoUrl = 'http://' + ethernetIpAddress + ':3000/public/imgDestination/'
 
 
 app.get('/destino', (req, res) => {
     const sqlQuery = `
         SELECT 
             Destino.*, 
-            imgDestino.nombre AS imagen
+            imgDestino.nombre AS imagen,
+            Pais.nombre AS nombrePais
         FROM 
             Destino
         LEFT JOIN 
             imgDestino ON Destino.id = imgDestino.destinoId
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
         GROUP BY 
-            Destino.id
+            Destino.id;
     `;
 
     db.all(sqlQuery, [], (err, rows) => {
@@ -567,12 +570,80 @@ app.get('/buscarDestino', (req, res) => {
     const titulo = req.query.titulo;
 
     // Realizar la búsqueda en la base de datos
-    const sqlQuery = "SELECT * FROM Destino WHERE titulo LIKE '%' || ? || '%'";
+    const sqlQuery = `SELECT Destino.*, 
+       imgDestino.nombre AS imagen,
+       Pais.nombre AS nombrePais
+        FROM Destino
+        LEFT JOIN imgDestino ON Destino.id = imgDestino.destinoId
+        LEFT JOIN Pais ON Destino.paisId = Pais.id
+        WHERE titulo LIKE '%' || ? || '%'
+        GROUP BY Destino.id;`;
+
     db.all(sqlQuery, [titulo], (err, rows) => {
         if (err) {
             console.error('Error al buscar destinos:', err.message);
             return res.status(500).json({ error: 'Ocurrió un error al buscar destinos.' });
         }
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
+        // Devolver los destinos encontrados en formato JSON
+        res.status(200).json(rows);
+    });
+});
+
+app.get('/destinoOrdenado', (req, res) => {
+    const tipo = req.query.tipo;
+    let orderByClause;
+    switch (tipo) {
+        case 'nombreAsc':
+            orderByClause = 'ORDER BY Destino.titulo ASC';
+            break;
+        case 'nombreDesc':
+            orderByClause = 'ORDER BY Destino.titulo DESC';
+            break;
+        case 'visitasAsc':
+            orderByClause = 'ORDER BY Destino.numVisitas ASC';
+            break;
+        case 'visitasDesc':
+            orderByClause = 'ORDER BY Destino.numVisitas DESC';
+            break;
+        case 'puntuacionAsc':
+            orderByClause = 'ORDER BY (Destino.sumaPuntuaciones * 1.0 / Destino.numPuntuaciones) ASC';
+            break;
+        case 'puntuacionDesc':
+            orderByClause = 'ORDER BY (Destino.sumaPuntuaciones * 1.0 / Destino.numPuntuaciones) DESC';
+            break;
+        default:
+            return res.status(400).json({ error: 'Tipo de ordenación no válido' });
+    }
+
+
+    // Realizar la búsqueda en la base de datos
+    const sqlQuery = `SELECT Destino.*, 
+        imgDestino.nombre AS imagen,
+        Pais.nombre AS nombrePais,
+        CAST(sumaPuntuaciones AS FLOAT) / numPuntuaciones AS puntuacion
+        FROM Destino
+        LEFT JOIN imgDestino ON Destino.id = imgDestino.destinoId
+        LEFT JOIN Pais ON Destino.paisId = Pais.id
+        GROUP BY Destino.id
+        ${orderByClause}`;
+
+    db.all(sqlQuery, [], (err, rows) => {
+        if (err) {
+            console.error('Error al buscar destinos:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al buscar destinos.' });
+        }
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
         // Devolver los destinos encontrados en formato JSON
         res.status(200).json(rows);
     });
@@ -592,7 +663,7 @@ app.get('/actividad', (req, res) => {
             res.status(500).send('Error del servidor al obtener actividad: ' + err.message)
             return;
         }
-        res.json({"actividades":rows})
+        res.json({ "actividades": rows })
     });
 });
 
@@ -657,7 +728,7 @@ app.post('/actividad/addimage/:id', uploadActivity.single('image'), (req, res) =
             res.status(500).send('Error del servidor al añadir la imagen al actividad: ' + err.message);
             return;
         }
-        res.status(201).json({"message":'Imagen del actividad con ID: ' + id + 'añadida correctamente.'});
+        res.status(201).json({ "message": 'Imagen del actividad con ID: ' + id + 'añadida correctamente.' });
     });
 });
 
@@ -722,7 +793,7 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
             res.status(500).json({ error: 'Error al obtener comentarios' });
             return;
         }
-        
+
         // Enviar los comentarios obtenidos como respuesta
         res.json({ comentarios: rows });
     });
@@ -733,7 +804,7 @@ app.get('/comentario/:id', async (req, res) => {
 
     // Realizar la consulta SQL para obtener el comentario por su ID
     const sqlQuery = 'SELECT * FROM Comentario WHERE id = ?';
-    
+
     db.get(sqlQuery, [comentarioId], (err, row) => {
         if (err) {
             console.error('Error al obtener el comentario:', err.message);
@@ -767,7 +838,7 @@ app.post('/comentario', (req, res) => {
     `;
 
     // Ejecutar la consulta con los parámetros
-    db.run(sql, [usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion], function(err) {
+    db.run(sql, [usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion], function (err) {
         if (err) {
             console.error('Error al insertar comentario:', err.message);
             return res.status(500).json({ error: 'Error al insertar comentario' });
@@ -785,7 +856,7 @@ app.delete('/comentario/:id', (req, res) => {
     const sql = `DELETE FROM Comentario WHERE id = ?`;
 
     // Ejecutar la consulta SQL
-    db.run(sql, [comentarioId], function(err) {
+    db.run(sql, [comentarioId], function (err) {
         if (err) {
             console.error('Error al eliminar el comentario:', err.message);
             return res.status(500).send('Error interno del servidor');
@@ -847,7 +918,7 @@ app.get('/actividad/recomendar', (req, res) => {
     console.log("Llamado")
 
     const actividadIds = req.query.ids;
-    
+
     if (!actividadIds) {
         return res.status(400).json({ error: 'IDs de actividades no proporcionados.' });
     }
@@ -972,7 +1043,7 @@ app.get('/favoritos/:id', (req, res) => {
             }
 
             // Obtener los IDs de los destinos favoritos
-            
+
             // Devolver los destinos favoritos junto con sus detalles completos
             res.status(200).json({ destinosFavoritos: rows });
         });

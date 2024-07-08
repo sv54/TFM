@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TFM</string>
+    <string name="menu_home">Explorar</string>
+    <string name="menu_gallery">Filtrar</string>
+    <string name="menu_slideshow">Historial</string>
+    <string name="menu_about">Ayuda y opiniíon</string>
+    <string name="menu_privacy">Politica de privacidad</string>
+    <string name="menu_settings">Configuracion</string>
+    <string name="menu_terms">Terminos de uso</string>
+</resources>

@@ -666,7 +666,9 @@ async function insertUsuario(usuarioData, callback) {
 
 async function insertDestino(destinoData, callback) {
 	const sqlQuery = `INSERT INTO Destino (titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima, numVisitas) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, `+ generarNumeroAleatorio(1,1150) +`)`;
-	const { titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima } = destinoData;
+	const { titulo, descripcion, paisId, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima } = destinoData;
+	const numPuntuaciones = generarNumeroAleatorio(1, 100);
+	const sumaPuntuaciones = generarNumeroAleatorio(numPuntuaciones, numPuntuaciones * 5);
 	db.run(sqlQuery, [titulo, descripcion, paisId, numPuntuaciones, sumaPuntuaciones, gastoTotal, diasEstanciaTotal, indiceSeguridad, moneda, clima], function (err) {
 		if (err) {
 			console.error('Error al insertar destino:', err.message);
@@ -801,7 +803,7 @@ async function insertarImgDestino(destinoName, nombreFichero, callback) {
 			return;
 		}
 		const destinoId = row.id;
-
+		nombreFichero = nombreFichero.replace(/\s/g, "");
 		// Insertar la actividad utilizando el ID del destino obtenido
 		const sqlQuery = `INSERT INTO imgDestino (destinoId, nombre) VALUES (?, ?)`;
 

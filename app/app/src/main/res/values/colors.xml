@@ -7,4 +7,21 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="turquoise_500">#00BCD4</color>
+    <color name="turquoise_700">#0097A7</color>
+    <color name="backgroundColor">#bddffc</color>
+    <color name="backgroundColorNight">#212121</color>
+    <color name="cardColorNight">#3e4e5c</color>
+    <color name="green_500">#43A047</color>
+    <color name="green_700">#2E7D32</color>
+    <color name="secondary">#43A047</color>
+    <color name="secondaryVariant">#2E7D32</color>
+    <color name="orange_500">#FB8C00</color>
+    <color name="orange_700">#EF6C00</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="colorPressed">#ffed85</color>
+    <color name="colorNotPressed">#ffd900</color>
+    <color name="gray_900">#212121</color>
 </resources>

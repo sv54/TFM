@@ -1,16 +1,31 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Theme.TFM" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorPrimaryVariant">@color/blue_700</item>
+        <item name="colorOnPrimary">@color/black</item> <!-- Texto negro sobre color primario claro -->
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/green_500</item>
+        <item name="colorSecondaryVariant">@color/green_700</item>
+        <item name="colorOnSecondary">@color/black</item> <!-- Texto negro sobre color secundario claro -->
+        <!-- Accent color. -->
+        <item name="colorAccent">@color/orange_500</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="backgroundColor">@color/backgroundColorNight</item>
+        <item name="cardBackgroundColor">@color/cardColorNight</item>
+        <!-- Text colors. -->
+        <item name="android:textColorPrimary">@color/white</item> <!-- Texto claro en fondo oscuro -->
+        <item name="android:textColorSecondary">@color/gray_100</item> <!-- Texto oscuro en fondo claro -->
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="Theme.TFM.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.TFM.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.TFM.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>
