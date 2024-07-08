@@ -8,9 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfm.ItemListaDestino
 import com.example.tfm.R
 import com.example.tfm.SearchRecyclerViewAdapter
-import com.example.tfm.ui.home.ItemListaDestino
 
 /**
  * A simple [Fragment] subclass.

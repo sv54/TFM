@@ -605,10 +605,10 @@ app.get('/destinoOrdenado', (req, res) => {
         case 'nombreDesc':
             orderByClause = 'ORDER BY Destino.titulo DESC';
             break;
-        case 'visitasAsc':
+        case 'numVisitasAsc':
             orderByClause = 'ORDER BY Destino.numVisitas ASC';
             break;
-        case 'visitasDesc':
+        case 'numVisitasDesc':
             orderByClause = 'ORDER BY Destino.numVisitas DESC';
             break;
         case 'puntuacionAsc':

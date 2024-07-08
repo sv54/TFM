@@ -8,6 +8,10 @@ interface ApiService {
     @GET("buscarDestino/")
     fun buscarDestino(@Query("titulo") titulo: String): Call<JsonArray>
 
+    @GET("destinoOrdenado/")
+    fun destinoOrdenado(@Query("tipo") titulo: String): Call<JsonArray>
+
     @GET("destino/")
     fun destinosAll(): Call<JsonArray>
+
 }

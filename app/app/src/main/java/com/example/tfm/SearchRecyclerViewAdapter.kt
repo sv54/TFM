@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.tfm.ui.home.ItemListaDestino
+
 
 class SearchRecyclerViewAdapter(private var itemList: MutableList<ItemListaDestino> = mutableListOf()) : RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder>() {
 
@@ -33,6 +33,17 @@ class SearchRecyclerViewAdapter(private var itemList: MutableList<ItemListaDesti
         Glide.with(holder.itemView.context)
             .load(itemList[position].imagen)
             .into(holder.image)
+
+        if (position === itemList.size - 1) {
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.bottomMargin = 300 // last item bottom margin
+            holder.itemView.layoutParams = params
+        }
+        else{
+            val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
+            params.bottomMargin = 4
+            holder.itemView.layoutParams = params
+        }
     }
 
     override fun getItemCount(): Int = itemList.size
