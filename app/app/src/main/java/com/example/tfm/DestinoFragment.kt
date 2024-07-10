@@ -53,11 +53,11 @@ class DestinoFragment : Fragment(), ApiListener {
         recyclerView = rootView.findViewById(R.id.recycler)
         carouselAdapter = CarouselAdapter(requireContext(), mutableListOf())
         recyclerView.adapter = carouselAdapter
-        
+
         return rootView
     }
 
-    fun getDestinoData(){
+    private fun getDestinoData(){
         Log.d("tagg", "Pedimos datos del destino con id $destinoId")
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
         val call = apiService.getDestinoId(destinoId!!)

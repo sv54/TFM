@@ -20,11 +20,6 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="Theme.TFM.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
-
     <style name="Theme.TFM.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TFM.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />

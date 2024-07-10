@@ -1,68 +1,64 @@
 package com.example.tfm
 
 import ApiService
-import androidx.appcompat.app.AppCompatActivity
+import RetrofitClient
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
-import androidx.appcompat.widget.Toolbar
-import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.example.tfm.databinding.ActivityMain2Binding
 import com.example.tfm.databinding.ActivityMainBinding
 import com.example.tfm.ui.BottomSortOptions
 import com.example.tfm.ui.home.HomeFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
+import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.google.gson.JsonArray
 
 class MainActivity : AppCompatActivity(), FragmentChangeListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var toggle: ActionBarDrawerToggle
+    private var searchMenuItem: MenuItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(findViewById(R.id.my_toolbar))
-        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+
+        //supportFragmentManager.beginTransaction().replace(R.id.main_content, HomeFragment()).commit()
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
 
-        // Configurar el listener para abrir/cerrar el drawer
-        val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, findViewById(R.id.my_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawerLayout.addDrawerListener(toggle)
+        toggle = ActionBarDrawerToggle(
+            this, drawerLayout
+            //, findViewById(R.id.my_toolbar)
+            ,R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        //drawerLayout.addDrawerListener(toggle)
 
-        supportFragmentManager.beginTransaction().replace(R.id.main_content, HomeFragment()).commit()
-
-        // Configurar el listener para los items del menú
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-//                R.id.nav_item1 -> {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.main_content, Fragment1())
-//                        .commit()
-//                }
-//                R.id.nav_item2 -> {
-//                    supportFragmentManager.beginTransaction()
-//                        .replace(R.id.main_content, Fragment2())
-//                        .commit()
-//                }
-                // Agregar más casos según sea necesario para otros elementos del menú
+                // Handle menu item selections here
             }
-            // Cerrar el drawer después de cambiar de fragmento
             drawerLayout.closeDrawers()
             true
         }
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
@@ -70,46 +66,55 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         }
 
 
+        // Add an OnBackStackChangedListener to detect fragment changes
+        supportFragmentManager.addOnBackStackChangedListener {
+            val fragment = supportFragmentManager.findFragmentById(R.id.main_content)
+            if (fragment is DestinoFragment) {
+                fab.hide()
+                searchMenuItem?.isVisible = false
+            } else {
+                searchMenuItem?.isVisible = true
+                fab.show()
+            }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val fragment = supportFragmentManager.findFragmentById(R.id.main_content)
+        if(toggle.onOptionsItemSelected(item)){
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
+        searchMenuItem = menu.findItem(R.id.action_search)
+        val searchView = searchMenuItem?.actionView as SearchView
 
         // Configurar el SearchView
         searchView.queryHint = "Buscar..."
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) {
-                    Log.i("tagg", query)
-                }
-                // Aquí puedes manejar la acción de búsqueda
-                if(query != null && !query.isEmpty()){
-                    performSearch(query)
+                query?.let {
+                    Log.i("tagg", it)
+                    performSearch(it)
                 }
                 return true
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Aquí puedes manejar cambios en el texto de búsqueda
                 return true
             }
         })
 
-        // Configurar el listener para el ícono de cerrar (x)
         searchView.setOnCloseListener {
-            // Aquí puedes manejar el cierre del SearchView
             false
         }
 
         return true
     }
-
-
-
-
 
     private fun performSearch(query: String) {
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
@@ -119,28 +124,27 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             override fun onResponse(call: Call<JsonArray>, response: Response<JsonArray>) {
                 if (response.isSuccessful) {
                     val jsonArray = response.body()
-
                     val results = mutableListOf<ItemListaDestino>()
 
                     jsonArray?.forEach { element ->
-                        val itemDestino = ItemListaDestino()
-                        itemDestino.id = element.asJsonObject.get("id").asInt
-                        itemDestino.titulo = element.asJsonObject.get("titulo").asString
-                        if(element.asJsonObject.get("numPuntuaciones").asInt <= 0){
-                            itemDestino.puntuaciones = 0.0f
+                        val itemDestino = ItemListaDestino().apply {
+                            id = element.asJsonObject.get("id").asInt
+                            titulo = element.asJsonObject.get("titulo").asString
+                            puntuaciones = if (element.asJsonObject.get("numPuntuaciones").asInt <= 0) {
+                                0.0f
+                            } else {
+                                (element.asJsonObject.get("sumaPuntuaciones").asFloat / element.asJsonObject.get("numPuntuaciones").asFloat).toFloat().also {
+                                    String.format("%.2f", it).replace(',', '.').toFloat()
+                                }
+                            }
+                            visitas = element.asJsonObject.get("numVisitas").asInt
+                            pais = element.asJsonObject.get("nombrePais").asString
+                            imagen = element.asJsonObject.get("imagen").asString
                         }
-                        else{
-                            itemDestino.puntuaciones = (element.asJsonObject.get("sumaPuntuaciones").asFloat/element.asJsonObject.get("numPuntuaciones").asFloat).toFloat()
-                            itemDestino.puntuaciones = String.format("%.2f", itemDestino.puntuaciones).replace(',', '.').toFloat()
-                        }
-                        itemDestino.visitas = element.asJsonObject.get("numVisitas").asInt
-                        itemDestino.pais = element.asJsonObject.get("nombrePais").asString
-                        itemDestino.imagen = element.asJsonObject.get("imagen").asString
                         results.add(itemDestino)
                     }
                     Log.i("tagg", "results on search " + results.size)
                     HomeFragment.updateList(results)
-                    //searchResultsFragment.updateSearchResults(results)
                 } else {
                     Log.e("tagg", "Error en la respuesta: ${response.errorBody()?.string()}")
                 }
@@ -153,7 +157,6 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
     }
 
     override fun onFragmentChange(id: Int) {
-        // Aquí puedes pasar datos adicionales al fragmento destino si es necesario
         val fragment = DestinoFragment.newInstance(id)
 
         supportFragmentManager.beginTransaction()
@@ -161,4 +164,22 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             .addToBackStack(null)
             .commit()
     }
+
+    private fun showBackArrow() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back) // Asegúrate de tener un icono de flecha en tus drawables
+        toggle.isDrawerIndicatorEnabled = false
+        toggle.syncState()
+        toggle.toolbarNavigationClickListener = View.OnClickListener {
+            onBackPressed()
+        }
+    }
+
+    private fun showHamburgerIcon() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        toggle.isDrawerIndicatorEnabled = true
+        toggle.toolbarNavigationClickListener = null
+        toggle.syncState()
+    }
+
 }

@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfm.FragmentChangeListener
 import com.example.tfm.HomeRecyclerViewAdapter
 import com.example.tfm.ItemListaDestino
+import com.example.tfm.MainActivity
 import com.example.tfm.OnItemClickListener
 import com.example.tfm.R
 import com.example.tfm.databinding.FragmentHomeBinding
@@ -29,8 +30,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
 
     private var _binding: FragmentHomeBinding? = null
+    private var lastDy = 0
     private val binding get() = _binding!!
-
+    private lateinit var mainActivity: MainActivity
     private lateinit var recyclerView: RecyclerView
     private lateinit var fragmentChangeListener: FragmentChangeListener
 
@@ -73,6 +75,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
+
+
 
         return root
     }
