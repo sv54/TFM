@@ -463,16 +463,61 @@ app.get('/destino', (req, res) => {
 
 
 app.get('/destino/:id', (req, res) => {
-    const id = req.params.id
-    const sqlQuery = 'SELECT * FROM Destino WHERE id = ?';
+    const id = req.params.id;
+    const sqlQuery = `
+        SELECT 
+            Destino.*, 
+            GROUP_CONCAT(imgDestino.nombre) AS imagenes,
+            Pais.nombre AS nombrePais
+        FROM 
+            Destino
+        LEFT JOIN 
+            imgDestino ON Destino.id = imgDestino.destinoId
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
+        WHERE 
+            Destino.id = ?
+        GROUP BY 
+            Destino.id;
+    `;
 
-    db.get(sqlQuery, id, (err, rows) => {
+    db.get(sqlQuery, [id], (err, row) => {
         if (err) {
             console.error('Error al obtener destino:', err.message);
-            res.status(500).send('Error del servidor al obtener destino: ' + err.message)
+            res.status(500).send('Error del servidor al obtener destino: ' + err.message);
             return;
         }
-        res.json(rows)
+
+        if (!row) {
+            res.status(404).json({ error: 'Destino no encontrado' });
+            return;
+        }
+
+        // Separar las imágenes en un array si existen
+        let imagenes = [];
+        if (row.imagenes) {
+            imagenes = row.imagenes.split(',').map(nombre => baseDestinoUrl + nombre.trim());
+        }
+
+        // Construir el objeto de destino con las imágenes
+        const destinoConImagenes = {
+            id: row.id,
+            titulo: row.titulo,
+            descripcion: row.descripcion,
+            paisId: row.paisId,
+            numPuntuaciones: row.numPuntuaciones,
+            sumaPuntuaciones: row.sumaPuntuaciones,
+            gastoTotal: row.gastoTotal,
+            diasEstanciaTotal: row.diasEstanciaTotal,
+            indiceSeguridad: row.indiceSeguridad,
+            moneda: row.moneda,
+            clima: row.clima,
+            numVisitas: row.numVisitas,
+            nombrePais: row.nombrePais,
+            imagenes: imagenes
+        };
+
+        res.json(destinoConImagenes);
     });
 });
 

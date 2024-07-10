@@ -5,21 +5,21 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
     android:background="@drawable/round_background"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:clickable="true">
 
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/previewImage"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:background="@drawable/rounded_image_background"
         android:scaleType="centerCrop"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="w,1:1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearanceOverlay="@style/RoundedCorners"
-        app:srcCompat="@drawable/ic_menu_gallery" />
+        app:srcCompat="@drawable/ic_explore" />
 
     <TextView
         android:id="@+id/item_titulo"

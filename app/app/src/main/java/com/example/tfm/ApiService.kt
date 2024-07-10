@@ -2,6 +2,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -14,4 +15,6 @@ interface ApiService {
     @GET("destino/")
     fun destinosAll(): Call<JsonArray>
 
+    @GET("destino/{id}")
+    fun getDestinoId(@Path("id") id: Int): Call<JsonObject>
 }

@@ -66,7 +66,7 @@ class BottomSortOptions : BottomSheetDialogFragment() {
                         radioButton.isEnabled = true
                     }
                 }
-                    // Aquí puedes realizar acciones basadas en la selección del usuario
+                // Aquí puedes realizar acciones basadas en la selección del usuario
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {

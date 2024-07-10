@@ -2,17 +2,21 @@ package com.example.tfm.ui.home
 
 import ApiService
 import RetrofitClient
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfm.FragmentChangeListener
 import com.example.tfm.HomeRecyclerViewAdapter
 import com.example.tfm.ItemListaDestino
+import com.example.tfm.OnItemClickListener
 import com.example.tfm.R
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.example.tfm.ui.BottomSortOptions
@@ -21,21 +25,21 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), OnItemClickListener {
 
-    private lateinit var destinosViewModel: HomeViewModel
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var recyclerView: RecyclerView
+    private lateinit var fragmentChangeListener: FragmentChangeListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         recyclerView = binding.recyclerView
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        homeRecyclerViewAdapter = HomeRecyclerViewAdapter(destinos)
+        homeRecyclerViewAdapter = HomeRecyclerViewAdapter(destinos, this)
         recyclerView.adapter = homeRecyclerViewAdapter
 
         cargarDestinos()
@@ -51,17 +55,24 @@ class HomeFragment : Fragment() {
 
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is FragmentChangeListener) {
+            fragmentChangeListener = context
+        } else {
+            throw RuntimeException("$context must implement FragmentChangeListener")
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        destinosViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         return root
     }
@@ -106,7 +117,7 @@ class HomeFragment : Fragment() {
 
             override fun onFailure(call: Call<JsonArray>, t: Throwable) {
                 // Manejar fallo en la solicitud
-                Log.e("HomeFragment", "Error en la solicitud: ${t.message}")
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
             }
         })
     }
@@ -128,6 +139,10 @@ class HomeFragment : Fragment() {
             homeRecyclerViewAdapter.updateItems(newResults)
 
         }
+    }
+
+    override fun onItemClick(item: ItemListaDestino) {
+        fragmentChangeListener.onFragmentChange(item.id)
     }
 
 }

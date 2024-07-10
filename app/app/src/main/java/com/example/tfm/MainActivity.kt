@@ -1,66 +1,115 @@
+package com.example.tfm
+
+import ApiService
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.Menu
-import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import com.example.tfm.ItemListaDestino
+import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.widget.SearchView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.example.tfm.databinding.ActivityMainBinding
 import com.example.tfm.ui.BottomSortOptions
-import com.example.tfm.ui.SearchResultsFragment
 import com.example.tfm.ui.home.HomeFragment
-import com.google.gson.JsonArray
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.example.tfm.R
+import com.google.gson.JsonArray
 
-class MainActivity : AppCompatActivity(), BottomSortOptions.BottomSheetListener {
-
+class MainActivity : AppCompatActivity(), FragmentChangeListener {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var homeFragment: HomeFragment
-    private lateinit var searchResultsFragment: SearchResultsFragment
-
+    private lateinit var drawerLayout: DrawerLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.appBarMain.toolbar)
+        setSupportActionBar(findViewById(R.id.my_toolbar))
+        getSupportActionBar()?.setDisplayShowTitleEnabled(false);
 
-        homeFragment = HomeFragment()
-        searchResultsFragment = SearchResultsFragment()
+        drawerLayout = findViewById(R.id.drawer_layout)
+        val navView: NavigationView = findViewById(R.id.nav_view)
 
-        supportFragmentManager.commit {
-            add(R.id.nav_host_fragment_content_main, homeFragment, "HomeFragment")
-            hide(searchResultsFragment)
+        // Configurar el listener para abrir/cerrar el drawer
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, findViewById(R.id.my_toolbar), R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        supportFragmentManager.beginTransaction().replace(R.id.main_content, HomeFragment()).commit()
+
+        // Configurar el listener para los items del menú
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+//                R.id.nav_item1 -> {
+//                    supportFragmentManager.beginTransaction()
+//                        .replace(R.id.main_content, Fragment1())
+//                        .commit()
+//                }
+//                R.id.nav_item2 -> {
+//                    supportFragmentManager.beginTransaction()
+//                        .replace(R.id.main_content, Fragment2())
+//                        .commit()
+//                }
+                // Agregar más casos según sea necesario para otros elementos del menú
+            }
+            // Cerrar el drawer después de cambiar de fragmento
+            drawerLayout.closeDrawers()
+            true
         }
-
-        binding.appBarMain.fab.setOnClickListener {
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
-            bottomSheetFragment.setListener(this)
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+
+        // Configurar el SearchView
+        searchView.queryHint = "Buscar..."
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    Log.i("tagg", query)
+                }
+                // Aquí puedes manejar la acción de búsqueda
+                if(query != null && !query.isEmpty()){
+                    performSearch(query)
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                // Aquí puedes manejar cambios en el texto de búsqueda
+                return true
+            }
+        })
+
+        // Configurar el listener para el ícono de cerrar (x)
+        searchView.setOnCloseListener {
+            // Aquí puedes manejar el cierre del SearchView
+            false
+        }
+
         return true
     }
 
-    override fun onSortOptionSelected(newResults: MutableList<ItemListaDestino>) {
-        HomeFragment.updateList(newResults)
-    }
 
-    fun showSearchResults(query: String) {
-        performSearch(query)
-        supportFragmentManager.commit {
-            hide(homeFragment)
-            show(searchResultsFragment)
-            addToBackStack(null)
-        }
-    }
+
+
 
     private fun performSearch(query: String) {
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
@@ -89,8 +138,9 @@ class MainActivity : AppCompatActivity(), BottomSortOptions.BottomSheetListener 
                         itemDestino.imagen = element.asJsonObject.get("imagen").asString
                         results.add(itemDestino)
                     }
-
-                    searchResultsFragment.updateSearchResults(results)
+                    Log.i("tagg", "results on search " + results.size)
+                    HomeFragment.updateList(results)
+                    //searchResultsFragment.updateSearchResults(results)
                 } else {
                     Log.e("tagg", "Error en la respuesta: ${response.errorBody()?.string()}")
                 }
@@ -102,11 +152,13 @@ class MainActivity : AppCompatActivity(), BottomSortOptions.BottomSheetListener 
         })
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 0) {
-            supportFragmentManager.popBackStack()
-        } else {
-            super.onBackPressed()
-        }
+    override fun onFragmentChange(id: Int) {
+        // Aquí puedes pasar datos adicionales al fragmento destino si es necesario
+        val fragment = DestinoFragment.newInstance(id)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_content, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 }

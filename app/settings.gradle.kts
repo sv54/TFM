@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TFM"
+rootProject.name = "tfm"
 include(":app")
+ 
