@@ -1,4 +1,4 @@
-package com.example.tfm
+package com.example.tfm.models
 
 data class ItemListaDestino(
     var id: Int = -1,

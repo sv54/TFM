@@ -1,4 +1,4 @@
-package com.example.tfm
+package com.example.tfm.activities
 
 import ApiService
 import RetrofitClient
@@ -13,10 +13,13 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
-import com.example.tfm.databinding.ActivityMain2Binding
+import com.example.tfm.FragmentChangeListener
+import com.example.tfm.R
 import com.example.tfm.databinding.ActivityMainBinding
-import com.example.tfm.ui.BottomSortOptions
-import com.example.tfm.ui.home.HomeFragment
+import com.example.tfm.fragments.BottomSortOptions
+import com.example.tfm.fragments.DestinoFragment
+import com.example.tfm.fragments.HomeFragment
+import com.example.tfm.models.ItemListaDestino
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.JsonArray
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         toggle = ActionBarDrawerToggle(
             this, drawerLayout
             //, findViewById(R.id.my_toolbar)
-            ,R.string.navigation_drawer_open, R.string.navigation_drawer_close
+            , R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         toggle.setHomeAsUpIndicator(R.drawable.ic_arrow_back);
         toggle.syncState()

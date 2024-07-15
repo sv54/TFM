@@ -4,22 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6FBC0"
-    tools:context=".fragments.SearchResultsFragment">
+    tools:context=".activities.LoginRegisterActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchRecyclerViewResults"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:padding="0dp"
-        android:paddingStart="4dp"
-        android:paddingTop="4dp"
-        android:paddingEnd="4dp"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/main_content"
+        android:name="com.example.tfm.fragments.HomeFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="parent">
 
+    </androidx.fragment.app.FragmentContainerView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.example.tfm
+package com.example.tfm.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +8,8 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.tfm.models.ItemActividad
+import com.example.tfm.R
 import com.google.android.material.imageview.ShapeableImageView
 
 class DestinoActividadAdapter(

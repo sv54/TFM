@@ -1,12 +1,12 @@
-package com.example.tfm
+package com.example.tfm.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import com.example.tfm.models.ItemComment
+import com.example.tfm.R
 
 class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableListOf()) : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
 

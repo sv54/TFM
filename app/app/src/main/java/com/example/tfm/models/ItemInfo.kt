@@ -1,4 +1,4 @@
-package com.example.tfm
+package com.example.tfm.models
 
 data class ItemInfo(
     var icon: Int = -1,

@@ -1,4 +1,4 @@
-package com.example.tfm.ui.home
+package com.example.tfm.fragments
 
 import ApiService
 import RetrofitClient
@@ -12,12 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfm.FragmentChangeListener
-import com.example.tfm.HomeRecyclerViewAdapter
-import com.example.tfm.ItemListaDestino
-import com.example.tfm.MainActivity
+import com.example.tfm.adapters.HomeRecyclerViewAdapter
+import com.example.tfm.models.ItemListaDestino
+import com.example.tfm.activities.MainActivity
 import com.example.tfm.OnItemClickListener
 import com.example.tfm.databinding.FragmentHomeBinding
-import com.example.tfm.ui.BottomSortOptions
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Callback

@@ -1,9 +1,8 @@
-package com.example.tfm
+package com.example.tfm.fragments
 
 import ApiService
-import CarouselAdapter
+import com.example.tfm.adapters.CarouselAdapter
 import RetrofitClient
-import android.R.attr.button
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
@@ -11,14 +10,20 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfm.ApiListener
+import com.example.tfm.activities.CommentActivity
+import com.example.tfm.models.ItemActividad
+import com.example.tfm.models.ItemDestino
+import com.example.tfm.models.ItemInfo
+import com.example.tfm.R
+import com.example.tfm.adapters.DestinoActividadAdapter
+import com.example.tfm.adapters.DestinoInfoAdapter
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.google.android.material.button.MaterialButton
 import com.google.gson.JsonObject
@@ -105,23 +110,27 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         buttonFavorito.setOnClickListener {
             if(favoritoMarked){
                 favoritoMarked = false
-                buttonFavorito.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_heart, null)
+                buttonFavorito.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_heart, null)
 
             }
             else{
                 favoritoMarked = true
-                buttonFavorito.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_heart_fill, null)
+                buttonFavorito.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_heart_fill, null)
             }
         }
 
         buttonVisitado.setOnClickListener {
             if(visitadoMarked){
                 visitadoMarked = false
-                buttonVisitado.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_not_checked, null)
+                buttonVisitado.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_not_checked, null)
             }
             else{
                 visitadoMarked = true
-                buttonVisitado.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_checked, null)
+                buttonVisitado.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_checked, null)
             }
         }
 
@@ -132,13 +141,15 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 expand(contentLayout)
                 contentLayout.visibility = View.VISIBLE
                 toggleButton.text = "Ocultar descripcion"
-                toggleButton.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_dropup, null)
+                toggleButton.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_arrow_dropup, null)
 
             } else {
                 collapse(contentLayout)
                 contentLayout.visibility = View.GONE
                 toggleButton.text = "Mostrar descripcion"
-                toggleButton.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_arrow_dropdown, null)
+                toggleButton.icon = ResourcesCompat.getDrawable(resources,
+                    R.drawable.ic_arrow_dropdown, null)
 
             }
         }

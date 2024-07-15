@@ -1,4 +1,4 @@
-package com.example.tfm
+package com.example.tfm.fragments
 
 import ApiService
 import RetrofitClient
@@ -10,6 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tfm.ApiListener
+import com.example.tfm.models.ItemComment
+import com.example.tfm.R
+import com.example.tfm.adapters.CommentsAdapter
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Callback

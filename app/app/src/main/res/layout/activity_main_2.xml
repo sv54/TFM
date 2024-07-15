@@ -27,7 +27,7 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/main_content"
-            android:name="com.example.tfm.ui.home.HomeFragment"
+            android:name="com.example.tfm.fragments.HomeFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"

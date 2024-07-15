@@ -1,13 +1,11 @@
-package com.example.tfm
+package com.example.tfm.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.navigation.NavigationView
+import com.example.tfm.R
+import com.example.tfm.fragments.CommentFragment
 
 class CommentActivity : AppCompatActivity() {
 

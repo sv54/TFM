@@ -1,18 +1,15 @@
-package com.example.tfm.ui
+package com.example.tfm.fragments
 
 import ApiService
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import com.example.tfm.ItemListaDestino
+import com.example.tfm.models.ItemListaDestino
 import com.example.tfm.R
-import com.example.tfm.ui.home.HomeFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.gson.JsonArray
 import retrofit2.Call

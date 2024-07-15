@@ -1,4 +1,4 @@
-package com.example.tfm.ui
+package com.example.tfm.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +8,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.tfm.ItemListaDestino
+import com.example.tfm.models.ItemListaDestino
 import com.example.tfm.R
-import com.example.tfm.SearchRecyclerViewAdapter
+import com.example.tfm.adapters.SearchRecyclerViewAdapter
 
 /**
  * A simple [Fragment] subclass.
