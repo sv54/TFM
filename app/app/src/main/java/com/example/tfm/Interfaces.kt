@@ -5,7 +5,7 @@ interface OnItemClickListener {
 }
 
 interface FragmentChangeListener {
-    fun onFragmentChange(id: Int)
+    fun onFragmentChange(id: Int, titulo: String)
 }
 
 interface ApiListener{

@@ -3,42 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".CommentActivity">
 
-    <androidx.drawerlayout.widget.DrawerLayout
-        android:id="@+id/drawer_layout"
 
+        <!-- Contenido principal -->
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/coordinatorLayout">
 
-        <!-- Contenido principal -->
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/main_content"
-            android:name="com.example.tfm.ui.home.HomeFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/my_toolbar">
-
-        </androidx.fragment.app.FragmentContainerView>
+    </androidx.fragment.app.FragmentContainerView>
 
 
-        <!-- Aquí se cargará el fragmento -->
-
-
-        <com.google.android.material.navigation.NavigationView
-            android:id="@+id/nav_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-            app:menu="@menu/nav_menu" /> <!-- Define tu menú lateral aquí -->
-    </androidx.drawerlayout.widget.DrawerLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/coordinatorLayout"
@@ -64,7 +46,6 @@
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
@@ -74,8 +55,7 @@
         android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_explore_sort"
-        android:contentDescription="@string/show_sort_options" />
-
+        app:srcCompat="@drawable/ic_add_comment"
+        android:contentDescription="Add Comment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

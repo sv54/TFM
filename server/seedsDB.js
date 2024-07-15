@@ -33,11 +33,11 @@ var usuariosEjemplo = [
 const destinoEjemplo = [
 	{
 		titulo: "Madrid",
-		descripcion: "Capital de España, conocida por su arte y cultura.",
+		descripcion: "Madrid, la capital española, es un crisol de historia, arte y energía cosmopolita. Sus amplias avenidas están bordeadas de elegantes edificios históricos y modernas estructuras, creando un paisaje urbano que mezcla lo antiguo con lo contemporáneo. La Puerta del Sol, centro neurálgico de la ciudad, late con la vida de los madrileños y turistas por igual, mientras que el imponente Palacio Real y los museos de renombre mundial como el Prado y el Reina Sofía atraen a amantes del arte de todo el mundo. Madrid es también conocida por su vida nocturna vibrante, con tabernas tradicionales, terrazas animadas y clubes nocturnos que dan vida a la ciudad hasta altas horas de la madrugada.",
 		paisId: 211,
 		numPuntuaciones: 500,
 		sumaPuntuaciones: 2250,
-		gastoTotal: 1000,
+		gastoTotal: 10000,
 		diasEstanciaTotal: 5,
 		indiceSeguridad: 8,
 		moneda: "Euro",
@@ -105,7 +105,7 @@ const destinoEjemplo = [
 	},
 	{
 		titulo: "Kiev",
-		descripcion: "Capital de Ucrania, con una mezcla de arquitectura histórica y moderna.",
+		descripcion: "Kiev, la capital vibrante de Ucrania, se alza majestuosamente a lo largo de las curvas serenas del río Dniéper. Con una historia que se remonta a siglos atrás, sus calles empedradas y su arquitectura ecléctica cuentan historias de realeza y revoluciones. Desde la grandiosidad dorada de la Catedral de Santa Sofía hasta el imponente Monasterio de las Cuevas de Kiev, la ciudad respira una mezcla encantadora de tradición y modernidad. Sus bulliciosos mercados y cafeterías acogedoras ofrecen un refugio para los amantes de la cultura y la gastronomía, mientras que los parques expansivos invitan a los ciudadanos y visitantes a disfrutar de la naturaleza en el corazón de la metrópolis.",
 		paisId: 235,
 		numPuntuaciones: 400,
 		sumaPuntuaciones: 1750,
@@ -675,6 +675,7 @@ async function insertDestino(destinoData, callback) {
 			callback(err, null);
 			return;
 		}
+		//console.log(descripcion)
 		// Obtener el ID del destino insertado
 		callback(null, this.lastID);
 	});

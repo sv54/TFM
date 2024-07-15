@@ -18,6 +18,8 @@
         <item name="android:textColorPrimary">@color/white</item> <!-- Texto claro en fondo oscuro -->
         <item name="android:textColorSecondary">@color/gray_100</item> <!-- Texto oscuro en fondo claro -->
         <!-- Customize your theme here. -->
+        <item name="iconTint">@color/white</item>
+
     </style>
 
     <style name="Theme.TFM.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

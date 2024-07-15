@@ -8,9 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tfm.FragmentChangeListener
@@ -18,7 +16,6 @@ import com.example.tfm.HomeRecyclerViewAdapter
 import com.example.tfm.ItemListaDestino
 import com.example.tfm.MainActivity
 import com.example.tfm.OnItemClickListener
-import com.example.tfm.R
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.example.tfm.ui.BottomSortOptions
 import com.google.gson.JsonArray
@@ -44,7 +41,9 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeRecyclerViewAdapter = HomeRecyclerViewAdapter(destinos, this)
         recyclerView.adapter = homeRecyclerViewAdapter
 
-        cargarDestinos()
+        if(destinos.isEmpty()){
+            cargarDestinos()
+        }
 
         val fragmentManager = requireActivity().supportFragmentManager
         val fragmentList = fragmentManager.fragments
@@ -146,7 +145,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(item: ItemListaDestino) {
-        fragmentChangeListener.onFragmentChange(item.id)
+        fragmentChangeListener.onFragmentChange(item.id, item.titulo)
     }
 
 }

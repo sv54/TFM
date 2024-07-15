@@ -11,7 +11,8 @@ data class ItemDestino (
     var clima: String = "none",
     var visitas: Int = -1,
     var pais: String = "none",
-    var imagenes: MutableList<String> = mutableListOf()
+    var imagenes: MutableList<String> = mutableListOf(),
+    var actividades: MutableList<ItemActividad> = mutableListOf()
 )
 
 

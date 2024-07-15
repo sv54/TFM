@@ -2,11 +2,13 @@ package com.example.tfm
 
 import ApiService
 import RetrofitClient
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -62,6 +64,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
+            hideKeyboard()
             bottomSheetFragment.show(supportFragmentManager, bottomSheetFragment.tag)
         }
 
@@ -72,9 +75,12 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             if (fragment is DestinoFragment) {
                 fab.hide()
                 searchMenuItem?.isVisible = false
+                supportActionBar?.setDisplayShowTitleEnabled(true)
             } else {
                 searchMenuItem?.isVisible = true
                 fab.show()
+                supportActionBar?.setDisplayShowTitleEnabled(false)
+                supportActionBar?.setTitle("")
             }
         }
     }
@@ -82,6 +88,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val fragment = supportFragmentManager.findFragmentById(R.id.main_content)
         if(toggle.onOptionsItemSelected(item)){
+            hideKeyboard()
             return true
         }
 
@@ -156,9 +163,10 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         })
     }
 
-    override fun onFragmentChange(id: Int) {
+    override fun onFragmentChange(id: Int, destinoTitulo: String) {
         val fragment = DestinoFragment.newInstance(id)
-
+        supportActionBar?.title = destinoTitulo
+        hideKeyboard()
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_content, fragment)
             .addToBackStack(null)
@@ -180,6 +188,17 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         toggle.isDrawerIndicatorEnabled = true
         toggle.toolbarNavigationClickListener = null
         toggle.syncState()
+    }
+
+    fun hideKeyboard() {
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        var view = currentFocus // Obtiene la vista actual que tiene el foco
+
+        if (view == null) {
+            view = View(this) // Crea una nueva vista si no hay una vista con foco
+        }
+
+        imm.hideSoftInputFromWindow(view.windowToken, 0) // Oculta el teclado
     }
 
 }

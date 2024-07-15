@@ -17,4 +17,7 @@ interface ApiService {
 
     @GET("destino/{id}")
     fun getDestinoId(@Path("id") id: Int): Call<JsonObject>
+
+    @GET("destino/{id}/comentario/{index}")
+    fun getDestinoComentarios(@Path("id") id: Int, @Path("index") index: Int): Call<JsonArray>
 }

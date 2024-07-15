@@ -3,18 +3,14 @@
 
 
 -- DELETE From imgActividad;
-SELECT * From imgActividad;
 -- SELECT * From imgDestino;
 -- DELETE FROM Actividad;
 -- Delete from Comentario;
 -- Select * from Recomendacion;
 
-SELECT id, titulo From Actividad;
-
 SELECT * From Destino;
+SELECT * From Actividad;
 
 SELECT * From Usuario;
 
-SELECT * From Visitados;
-
-SELECT * FROM Destino WHERE titulo LIKE 'se'||'%';
+SELECT COUNT(id) From Comentario where destinoId = 1;

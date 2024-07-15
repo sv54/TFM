@@ -424,6 +424,7 @@ function getEthernetIpAddress() {
 // Uso de la función para obtener la IP local de ethernet
 const ethernetIpAddress = getEthernetIpAddress();
 const baseDestinoUrl = 'http://' + ethernetIpAddress + ':3000/public/imgDestination/'
+const baseActividadUrl = 'http://' + ethernetIpAddress + ':3000/public/imgActivity/'
 
 
 app.get('/destino', (req, res) => {
@@ -467,57 +468,75 @@ app.get('/destino/:id', (req, res) => {
     const sqlQuery = `
         SELECT 
             Destino.*, 
-            GROUP_CONCAT(imgDestino.nombre) AS imagenes,
-            Pais.nombre AS nombrePais
+            GROUP_CONCAT(DISTINCT imgDestino.nombre) AS imagenesDestino,
+            Pais.nombre AS nombrePais,
+            Actividad.id AS actividadId,
+            Actividad.titulo AS actividadTitulo,
+            Actividad.descripcion AS actividadDescripcion,
+            Actividad.numRecomendado AS actividadNumRecomendado,
+            GROUP_CONCAT(DISTINCT imgActividad.nombre) AS imagenesActividad
         FROM 
             Destino
         LEFT JOIN 
             imgDestino ON Destino.id = imgDestino.destinoId
         LEFT JOIN 
             Pais ON Destino.paisId = Pais.id
+        LEFT JOIN 
+            Actividad ON Destino.id = Actividad.destinoId
+        LEFT JOIN 
+            imgActividad ON Actividad.id = imgActividad.actividadId
         WHERE 
             Destino.id = ?
         GROUP BY 
-            Destino.id;
+            Destino.id, Actividad.id;
     `;
 
-    db.get(sqlQuery, [id], (err, row) => {
+    db.all(sqlQuery, [id], (err, rows) => {
         if (err) {
             console.error('Error al obtener destino:', err.message);
             res.status(500).send('Error del servidor al obtener destino: ' + err.message);
             return;
         }
 
-        if (!row) {
+        if (!rows.length) {
             res.status(404).json({ error: 'Destino no encontrado' });
             return;
         }
 
-        // Separar las imágenes en un array si existen
-        let imagenes = [];
-        if (row.imagenes) {
-            imagenes = row.imagenes.split(',').map(nombre => baseDestinoUrl + nombre.trim());
-        }
-
-        // Construir el objeto de destino con las imágenes
-        const destinoConImagenes = {
-            id: row.id,
-            titulo: row.titulo,
-            descripcion: row.descripcion,
-            paisId: row.paisId,
-            numPuntuaciones: row.numPuntuaciones,
-            sumaPuntuaciones: row.sumaPuntuaciones,
-            gastoTotal: row.gastoTotal,
-            diasEstanciaTotal: row.diasEstanciaTotal,
-            indiceSeguridad: row.indiceSeguridad,
-            moneda: row.moneda,
-            clima: row.clima,
-            numVisitas: row.numVisitas,
-            nombrePais: row.nombrePais,
-            imagenes: imagenes
+        // Procesar resultados
+        const destino = {
+            id: rows[0].id,
+            titulo: rows[0].titulo,
+            descripcion: rows[0].descripcion,
+            paisId: rows[0].paisId,
+            numPuntuaciones: rows[0].numPuntuaciones,
+            sumaPuntuaciones: rows[0].sumaPuntuaciones,
+            gastoTotal: rows[0].gastoTotal,
+            diasEstanciaTotal: rows[0].diasEstanciaTotal,
+            indiceSeguridad: rows[0].indiceSeguridad,
+            moneda: rows[0].moneda,
+            clima: rows[0].clima,
+            numVisitas: rows[0].numVisitas,
+            nombrePais: rows[0].nombrePais,
+            imagenes: rows[0].imagenesDestino ? rows[0].imagenesDestino.split(',').map(nombre => baseDestinoUrl + nombre.trim()) : [],
+            actividades: []
         };
 
-        res.json(destinoConImagenes);
+        // Agregar actividades y sus imágenes
+        rows.forEach(row => {
+            if (row.actividadId) {
+                const actividad = {
+                    id: row.actividadId,
+                    titulo: row.actividadTitulo,
+                    descripcion: row.actividadDescripcion,
+                    numRecomendado: row.actividadNumRecomendado,
+                    imagenes: row.imagenesActividad ? row.imagenesActividad.split(',').map(nombre => baseActividadUrl + nombre.trim()) : []
+                };
+                destino.actividades.push(actividad);
+            }
+        });
+
+        res.json(destino);
     });
 });
 
@@ -825,8 +844,10 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
     // console.log(endIndex)
 
     const sql = `
-        SELECT *
-        FROM Comentario
+        SELECT c.*, Usuario.nombre AS nombreUsuario
+        FROM Comentario c
+        LEFT JOIN
+            usuario ON c.usuarioId = Usuario.id
         WHERE destinoId = ? 
         LIMIT ?, ?
     `;
@@ -838,9 +859,10 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
             res.status(500).json({ error: 'Error al obtener comentarios' });
             return;
         }
+        console.log(rows.length)
 
         // Enviar los comentarios obtenidos como respuesta
-        res.json({ comentarios: rows });
+        res.json(rows);
     });
 });
 
