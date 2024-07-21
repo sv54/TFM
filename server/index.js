@@ -6,6 +6,13 @@ const fs = require('fs');
 const multer = require('multer');
 const path = require('path');
 const uuid = require('uuid')
+const https = require('https');
+const { networkInterfaces } = require('os');
+
+
+const privateKey = fs.readFileSync('credentials/key.pem', 'utf8');
+const certificate = fs.readFileSync('credentials/cert.pem', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
 const CheckIfBDNull = require('./seedsDB.js');
 
@@ -59,6 +66,7 @@ const uploadProfile = multer({ storage: storageProfile });
 const uploadDestination = multer({ storage: storageDestination });
 const uploadActivity = multer({ storage: storageActivity });
 const upload = multer({ storage: storage });
+const uploadNone = multer()
 
 app.use(express.json());
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -66,8 +74,12 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 // Crear una instancia de la base de datos
 var db = new sqlite3.Database(dbPath);
 
-var lastId
+const httpsServer = https.createServer(credentials, app);
 
+const ethernetIpAddress = getEthernetIpAddress();
+const baseDestinoUrl = 'http://' + ethernetIpAddress + ':3000/public/imgDestination/'
+const baseActividadUrl = 'http://' + ethernetIpAddress + ':3000/public/imgActivity/'
+const baseProfileUrl = 'http://' + ethernetIpAddress + ':3000/public/imgProfile/'
 
 app.listen(3000, () => {
     console.log('Servidor iniciado en el puerto 3000');
@@ -142,21 +154,37 @@ app.get('/usuario', (req, res) => {
 
 
 app.get('/usuario/:id', (req, res) => {
-    const id = req.params.id
-    const sqlQuery = 'SELECT * FROM Usuario WHERE id = ?';
+    const id = req.params.id;
+    const sqlQuery = `
+        SELECT
+            (SELECT json_group_array(json_object('id', f.id, 'destinoId', f.destinoId))
+             FROM Favoritos f WHERE f.usuarioId = u.id) AS favoritos,
+            (SELECT json_group_array(json_object('id', v.id, 'destinoId', v.destinoId, 'fechaVisita', v.fechaVisita))
+             FROM Visitados v WHERE v.usuarioId = u.id) AS visitados,
+            (SELECT json_group_array(json_object('id', h.id, 'destinoId', h.destinoId, 'fechaEntrado', h.fechaEntrado))
+             FROM Historial h WHERE h.usuarioId = u.id) AS historial
+        FROM Usuario u
+        WHERE u.id = ?;
+    `;
 
-    db.get(sqlQuery, id, (err, rows) => {
+    db.get(sqlQuery, id, (err, row) => {
         if (err) {
             console.error('Error al obtener usuario:', err.message);
-            res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
+            res.status(500).send('Error del servidor al obtener usuario: ' + err.message);
             return;
         }
-        if (!rows) {
+        if (!row) {
             console.log('No se encontró ningún usuario con el ID proporcionado:', id);
             res.status(404).send('No se encontró ningún usuario con el ID proporcionado');
             return;
         }
-        res.json(rows)
+
+        // Parsear las cadenas JSON en objetos
+        row.favoritos = JSON.parse(row.favoritos);
+        row.visitados = JSON.parse(row.visitados);
+        row.historial = JSON.parse(row.historial);
+
+        res.json(row);
     });
 });
 
@@ -305,81 +333,124 @@ app.get('/usuario/foto/:id', (req, res) => {
 
 // #region Login
 
-
 app.post('/login', (req, res) => {
-    const { email, password } = req.body
-    const sqlQuery = 'SELECT * FROM Usuario WHERE email = ? LIMIT 1';
+    const { email, password } = req.body;
 
-    db.get(sqlQuery, email, async (err, rows) => {
+    // Consultar el usuario por email
+    const sqlQuery = `
+        SELECT u.*, 
+            (SELECT json_group_array(json_object('usuarioId', f.usuarioId, 'destinoId', f.destinoId))
+             FROM Favoritos f WHERE f.usuarioId = u.id) AS favoritos,
+            (SELECT json_group_array(json_object('usuarioId', v.usuarioId, 'destinoId', v.destinoId, 'fechaVisita', v.fechaVisita))
+             FROM Visitados v WHERE v.usuarioId = u.id) AS visitados,
+            (SELECT json_group_array(json_object('usuarioId', h.usuarioId, 'destinoId', h.destinoId, 'fechaEntrado', h.fechaEntrado))
+             FROM Historial h WHERE h.usuarioId = u.id) AS historial
+        FROM Usuario u
+        WHERE email = ?;
+    `;
+
+    db.get(sqlQuery, email, async (err, row) => {
         if (err) {
             console.error('Error al obtener usuario:', err.message);
-            res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
+            res.status(500).send('Error del servidor al obtener usuario: ' + err.message);
             return;
         }
-        else if (rows == undefined || rows == null || rows.length === 0) {
-            res.status(404).send('Usuario o contraseña son incorrectos.')
+        if (!row) {
+            res.status(404).send('Usuario o contraseña son incorrectos.');
+            return;
         }
-        else {
 
-            const hashedPassword = await bcrypt.hash(password, rows.salt)
-
-            if (hashedPassword == rows.password) {
-                console.log(rows)
-                res.json(rows)
-                // TODO crear el token de sesion en la base de datos
-
+        // Comparar la contraseña
+        bcrypt.compare(password, row.password, (err, result) => {
+            if (err) {
+                console.error('Error al comparar contraseñas:', err);
+                res.status(500).send('Error al comparar contraseñas');
+                return;
             }
-            else {
-                res.status(404).send('Usuario o contraseña son incorrectos.')
+
+            if (result) {
+                // Convertir los campos JSON a objetos
+                row.favoritos = JSON.parse(row.favoritos);
+                console.log(row.favoritos)
+                row.visitados = JSON.parse(row.visitados);
+                console.log(row.visitados)
+                row.historial = JSON.parse(row.historial);
+                console.log(row.historial)
+
+
+                // Devolver la respuesta con los datos del usuario y los datos adicionales
+                const { id, nombre, email, metaViajes, tokenSesion, expSesion, fotoPerfil } = row;
+                res.json({
+                    id,
+                    nombre,
+                    email,
+                    metaViajes,
+                    tokenSesion,
+                    expSesion,
+                    fotoPerfil: baseProfileUrl + fotoPerfil,
+                    favoritos: row.favoritos,
+                    visitados: row.visitados,
+                    historial: row.historial
+                });
+            } else {
+                res.status(404).send('Usuario o contraseña son incorrectos.');
             }
-        }
+        });
     });
 });
 
 // #region Register
 
 
-app.post('/register', (req, res) => {
-    const { nombre, email, password, paisOrigen, metaViajes } = req.body
+app.post('/register', uploadProfile.single('photo'), (req, res) => {
+    const { nombre, email, password, paisOrigen, salt } = req.body
+    const metaViajes = 0
     const sqlQuery = 'SELECT * FROM Usuario WHERE email = ? LIMIT 1';
 
-    db.get(sqlQuery, email, async (err, rows) => {
-        if (err) {
-            console.error('Error al obtener usuario:', err.message);
-            res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
-            return;
-        }
-        else if (rows == undefined || rows == null || rows.length === 0) {
+    if(email == undefined || email == "" || email == null){
+        res.status(401).send('Datos no recibidos correctamente');
+    }
+    else{
+        db.get(sqlQuery, email, async (err, rows) => {
+            if (err) {
+                console.error('Error al obtener usuario:', err.message);
+                res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
+                return;
+            }
+            else if (rows == undefined || rows == null || rows.length === 0) {
 
-            const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash(password, salt)
-            if (!req.file) {
-                fotoPerfil = "SinFoto"
+                const salt = await bcrypt.genSalt(10)
+                const hashedPassword = await bcrypt.hash(password, salt)
+                //const hashedPassword = password
+                if (!req.file) {
+                    fotoPerfil = "SinFoto"
+                }
+                else {
+                    fotoPerfil = req.file.filename
+                }
+                const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                db.run(sqlQuery, [nombre, email, hashedPassword, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
+                    if (err) {
+                        console.error('Error al insertar usuario:', err.message);
+                        res.sendStatus(500).send('Error del servidor al crear usuario: ' + err.message)
+                        return;
+                    }
+                    //TODO crear el token de sesion en la base de datos
+                    const tokenSesion = null
+                    const expSesion = null
+                    // Obtener el ID del usuario insertado
+                    lastId = this.lastID
+                    //res.status(201).json({ "lastId": this.lastID })
+                    res.status(201).json({id: this.lastID, nombre, email, metaViajes, tokenSesion, expSesion, fotoPerfil: baseProfileUrl + fotoPerfil})
+                });
+
+
             }
             else {
-
+                res.status(409).send('El email ya esta registrado')
             }
-            const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-            db.run(sqlQuery, [nombre, email, hashedPassword, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
-                if (err) {
-                    console.error('Error al insertar usuario:', err.message);
-                    res.sendStatus(500).send('Error del servidor al crear usuario: ' + err.message)
-                    return;
-                }
-                //TODO crear el token de sesion en la base de datos
-
-                // Obtener el ID del usuario insertado
-                lastId = this.lastID
-                res.status(201).json({ "lastId": this.lastID })
-            });
-
-
-        }
-        else {
-            res.status(409).send('El email ya esta registrado')
-        }
-    });
-
+        });
+    }
 
 });
 
@@ -398,7 +469,6 @@ app.post('/signOut', (req, res) => {
 // #region Destino
 //Peticiones para Destino
 
-const { networkInterfaces } = require('os');
 
 // Función para obtener la dirección IP local de la interfaz de ethernet
 function getEthernetIpAddress() {
@@ -422,9 +492,7 @@ function getEthernetIpAddress() {
 }
 
 // Uso de la función para obtener la IP local de ethernet
-const ethernetIpAddress = getEthernetIpAddress();
-const baseDestinoUrl = 'http://' + ethernetIpAddress + ':3000/public/imgDestination/'
-const baseActividadUrl = 'http://' + ethernetIpAddress + ':3000/public/imgActivity/'
+
 
 
 app.get('/destino', (req, res) => {
@@ -859,7 +927,7 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
             res.status(500).json({ error: 'Error al obtener comentarios' });
             return;
         }
-        console.log(rows.length)
+        //console.log(rows.length)
 
         // Enviar los comentarios obtenidos como respuesta
         res.json(rows);
@@ -1044,6 +1112,7 @@ app.post('/favoritos', (req, res) => {
     if (!usuarioId || !destinoId) {
         return res.status(400).json({ error: 'ID de usuario o destino no proporcionado en el cuerpo de la solicitud.' });
     }
+    console.log(usuarioId, destinoId, "Adding")
 
     // Verificar si el usuario existe
     const sqlCheckUsuario = 'SELECT id FROM Usuario WHERE id = ?';
@@ -1055,6 +1124,7 @@ app.post('/favoritos', (req, res) => {
         if (!row) {
             return res.status(404).json({ error: 'Usuario no encontrado.' });
         }
+        
 
         // Verificar si el destino existe
         const sqlCheckDestino = 'SELECT id FROM Destino WHERE id = ?';
@@ -1143,10 +1213,10 @@ app.delete('/favoritos', (req, res) => {
 //#region Visitados
 
 app.post('/visitados', (req, res) => {
-    const { usuarioId, destinoId, fechaMarcado } = req.body;
+    const { usuarioId, destinoId, fechaVisita } = req.body;
 
-    if (!usuarioId || !destinoId || !fechaMarcado) {
-        return res.status(400).json({ error: 'usuarioId, destinoId y fechaMarcado son requeridos.' });
+    if (!usuarioId || !destinoId || !fechaVisita) {
+        return res.status(400).json({ error: 'usuarioId, destinoId y fechaVisita son requeridos.' });
     }
 
     // Comprobar si el usuario y el destino existen en la base de datos
@@ -1171,8 +1241,8 @@ app.post('/visitados', (req, res) => {
             }
 
             // Insertar el lugar visitado en la base de datos
-            const sqlInsertVisitado = 'INSERT INTO Visitados (usuarioId, destinoId, fechaMarcado) VALUES (?, ?, ?)';
-            db.run(sqlInsertVisitado, [usuarioId, destinoId, fechaMarcado], function (err) {
+            const sqlInsertVisitado = 'INSERT INTO Visitados (usuarioId, destinoId, fechaVisita) VALUES (?, ?, ?)';
+            db.run(sqlInsertVisitado, [usuarioId, destinoId, fechaVisita], function (err) {
                 if (err) {
                     console.error('Error al guardar el lugar visitado:', err.message);
                     return res.status(500).json({ error: 'Ocurrió un error al guardar el lugar visitado.' });
@@ -1239,6 +1309,7 @@ app.delete('/visitados/', (req, res) => {
         // Ahora actualizar el contador de visitas en Destino
         const sqlUpdateDestino = 'UPDATE Destino SET numVisitas = numVisitas - 1 WHERE id = ?';
         db.run(sqlUpdateDestino, [destinoId], function (err) {
+            console.log("deleting from visitado destino: " + destinoId + ", userId: " + usuarioId)
             if (err) {
                 console.error('Error al actualizar el número de visitas del destino:', err.message);
                 return res.status(500).json({ error: 'Ocurrió un error al actualizar el número de visitas del destino.' });
@@ -1255,11 +1326,11 @@ app.get('/historial/:id', (req, res) => {
 
     // Consulta SQL para obtener los destinos del historial del usuario
     const sqlQuery = `
-        SELECT Destino.*, Historial.fechaVisita
+        SELECT Destino.*, Historial.fechaEntrado
         FROM Historial
         JOIN Destino ON Historial.destinoId = Destino.id
         WHERE Historial.usuarioId = ?
-        ORDER BY Historial.fechaVisita DESC
+        ORDER BY Historial.fechaEntrado DESC
     `;
 
     db.all(sqlQuery, [usuarioId], (err, rows) => {
@@ -1275,7 +1346,7 @@ app.get('/historial/:id', (req, res) => {
 
 app.post('/historial', (req, res) => {
     const { usuarioId, destinoId } = req.body;
-    const fechaVisita = new Date().toISOString();
+    const fechaEntrado = Math.floor(Date.now() / 1000);
 
     if (!usuarioId || !destinoId) {
         return res.status(400).json({ error: 'usuarioId y destinoId son requeridos.' });
@@ -1303,8 +1374,8 @@ app.post('/historial', (req, res) => {
             }
 
             // Insertar el destino en el historial
-            const sqlInsertHistorial = 'INSERT INTO Historial (usuarioId, destinoId, fechaVisita) VALUES (?, ?, ?)';
-            db.run(sqlInsertHistorial, [usuarioId, destinoId, fechaVisita], function (err) {
+            const sqlInsertHistorial = 'INSERT INTO Historial (usuarioId, destinoId, fechaEntrado) VALUES (?, ?, ?)';
+            db.run(sqlInsertHistorial, [usuarioId, destinoId, fechaEntrado], function (err) {
                 if (err) {
                     console.error('Error al guardar en el historial:', err.message);
                     return res.status(500).json({ error: 'Ocurrió un error al guardar en el historial.' });

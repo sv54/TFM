@@ -3,16 +3,21 @@ package com.example.tfm.activities
 import ApiService
 import RetrofitClient
 import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
+import com.bumptech.glide.Glide
 import com.example.tfm.FragmentChangeListener
 import com.example.tfm.R
 import com.example.tfm.databinding.ActivityMainBinding
@@ -32,11 +37,14 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
     private var searchMenuItem: MenuItem? = null
+    private lateinit var searchView:SearchView
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val sharedPreferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
 
         setSupportActionBar(findViewById(R.id.my_toolbar))
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -45,7 +53,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
-
+        navView.setCheckedItem(R.id.nav_explore)
         toggle = ActionBarDrawerToggle(
             this, drawerLayout
             //, findViewById(R.id.my_toolbar)
@@ -58,13 +66,20 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
 
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
+                R.id.nav_logout -> {
+                    sharedPreferences.edit().clear().apply()
+                    val intent = Intent(this, LoginRegisterActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
                 // Handle menu item selections here
             }
             drawerLayout.closeDrawers()
             true
         }
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
+
+        fab = findViewById(R.id.fab)
         fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
             hideKeyboard()
@@ -72,19 +87,40 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         }
 
 
+        //Desactivar el boton de ordenacion si el menu lateral esta abierto
+        fab.isEnabled = !drawerLayout.isDrawerOpen(navView)
+
+
         // Add an OnBackStackChangedListener to detect fragment changes
         supportFragmentManager.addOnBackStackChangedListener {
-            val fragment = supportFragmentManager.findFragmentById(R.id.main_content)
-            if (fragment is DestinoFragment) {
-                fab.hide()
-                searchMenuItem?.isVisible = false
-                supportActionBar?.setDisplayShowTitleEnabled(true)
-            } else {
-                searchMenuItem?.isVisible = true
-                fab.show()
-                supportActionBar?.setDisplayShowTitleEnabled(false)
-                supportActionBar?.setTitle("")
-            }
+            checkFragment()
+        }
+        checkFragment()
+
+        val headerView = navView.getHeaderView(0)
+        val textMenuUsername = headerView.findViewById<TextView>(R.id.textViewName)
+        val textMenuEmail = headerView.findViewById<TextView>(R.id.textViewEmail)
+        val menuImageProfile = headerView.findViewById<ImageView>(R.id.menuFotoPerfil)
+
+        val dataUsername = sharedPreferences.getString("UserUsername", "")
+        val dataEmail = sharedPreferences.getString("UserEmail", "")
+        val dataProfileImage = sharedPreferences.getString("UserPhoto", "")
+
+        textMenuUsername.text = dataUsername
+        textMenuEmail.text = dataEmail
+
+        if(dataProfileImage == ""){
+            menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
+        }
+        else{
+            Glide.with(menuImageProfile.context)
+                .load(dataProfileImage)
+                .into(menuImageProfile)
+        }
+
+        headerView.setOnClickListener{
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -95,13 +131,19 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             return true
         }
 
+
         return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         searchMenuItem = menu.findItem(R.id.action_search)
-        val searchView = searchMenuItem?.actionView as SearchView
+        searchView = searchMenuItem?.actionView as SearchView
+        checkFragment()
+
+        searchView.setOnClickListener {
+            fab.hide()
+        }
 
         // Configurar el SearchView
         searchView.queryHint = "Buscar..."
@@ -115,11 +157,22 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText.isNullOrEmpty()) {
+                    fab.show() // Mostrar el FAB si no hay texto de búsqueda
+                } else {
+                    fab.hide() // Ocultar el FAB mientras se escribe
+                }
                 return true
             }
         })
 
         searchView.setOnCloseListener {
+            fab.show()
+            val fragmento = supportFragmentManager.findFragmentById(R.id.main_content)
+
+            if (fragmento is HomeFragment) {
+                fragmento.onCloseSearch()
+            }
             false
         }
 
@@ -193,7 +246,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         toggle.syncState()
     }
 
-    fun hideKeyboard() {
+    private fun hideKeyboard() {
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         var view = currentFocus // Obtiene la vista actual que tiene el foco
 
@@ -202,6 +255,22 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         }
 
         imm.hideSoftInputFromWindow(view.windowToken, 0) // Oculta el teclado
+    }
+
+    private fun checkFragment() {
+        val fragment = supportFragmentManager.findFragmentById(R.id.main_content)
+        if (fragment is DestinoFragment) {
+            Log.i("tagg", "Is Destino Fragment")
+            fab.hide()
+            searchMenuItem?.isVisible = false
+            supportActionBar?.setDisplayShowTitleEnabled(true)
+        } else {
+            searchMenuItem?.isVisible = true
+            fab.show()
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+            supportActionBar?.setTitle("")
+        }
+
     }
 
 }

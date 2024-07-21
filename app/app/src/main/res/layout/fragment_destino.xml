@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     tools:context=".fragments.DestinoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,7 +40,7 @@
             app:icon="@drawable/ic_not_checked"
             app:iconGravity="start"
             app:iconSize="24dp"
-            app:layout_constraintEnd_toStartOf="@+id/buttonFavorito"
+            app:layout_constraintEnd_toStartOf="@+id/buttonProfileVisitados"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sub_service_list_view_cont" />
 
@@ -65,7 +63,7 @@
             app:layout_constraintTop_toBottomOf="@+id/recyclerActividades" />
 
         <Button
-            android:id="@+id/buttonFavorito"
+            android:id="@+id/buttonProfileVisitados"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
@@ -83,7 +81,7 @@
             android:orientation="vertical"
             android:visibility="visible"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/buttonFavorito">
+            app:layout_constraintTop_toBottomOf="@+id/buttonProfileVisitados">
 
             <Button
                 android:id="@+id/toggleDescriptionButton"
@@ -93,12 +91,12 @@
                 android:paddingLeft="0dp"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
+                android:text="Mostrar descripcion"
+                android:textColor="?android:attr/textColorPrimary"
                 app:icon="@drawable/ic_arrow_dropdown"
                 app:iconGravity="end"
                 app:iconSize="36dp"
-                app:iconTint="@color/black"
-                android:text="Mostrar descripcion"
-                android:textColor="?android:attr/textColorPrimary"/>
+                app:iconTint="@color/black" />
 
             <LinearLayout
                 android:id="@+id/descriptionContent"
@@ -119,7 +117,7 @@
                     android:textColor="?android:attr/textColorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/buttonFavorito" />
+                    app:layout_constraintTop_toBottomOf="@+id/buttonProfileVisitados" />
 
             </LinearLayout>
 
@@ -135,26 +133,22 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/descriptionContainer"
             tools:itemCount="1"
-            tools:listitem="@layout/item_info_destino"
-            />
+            tools:listitem="@layout/item_info_destino" />
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerActividades"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:itemCount="1"
-            tools:listitem="@layout/item_actividad"
             android:layout_marginHorizontal="8dp"
             android:layout_marginVertical="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerInfo"/>
+            app:layout_constraintTop_toBottomOf="@+id/recyclerInfo"
+            tools:itemCount="1"
+            tools:listitem="@layout/item_actividad" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout >
-
-
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.core.widget.NestedScrollView>

@@ -3,13 +3,18 @@ package com.example.tfm.fragments
 import ApiService
 import com.example.tfm.adapters.CarouselAdapter
 import RetrofitClient
+import SharedPreferencesManager
 import android.animation.ValueAnimator
+import android.app.DatePickerDialog
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
@@ -25,11 +30,18 @@ import com.example.tfm.R
 import com.example.tfm.adapters.DestinoActividadAdapter
 import com.example.tfm.adapters.DestinoInfoAdapter
 import com.example.tfm.databinding.FragmentHomeBinding
+import com.example.tfm.models.Favorite
+import com.example.tfm.models.History
+import com.example.tfm.models.UserAddFavData
+import com.example.tfm.models.UserAddHistData
+import com.example.tfm.models.UserAddVisitData
+import com.example.tfm.models.Visited
 import com.google.android.material.button.MaterialButton
 import com.google.gson.JsonObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Calendar
 
 
 // Definir el nombre de la clave como una constante de tipo String
@@ -73,9 +85,6 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         }
 
         getDestinoData()
-
-
-
         //Toast.makeText(context, "Item $destinoId clicked", Toast.LENGTH_SHORT).show()
     }
 
@@ -104,33 +113,77 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         textViewDescription = rootView.findViewById(R.id.description)
 
 
-        buttonFavorito = rootView.findViewById(R.id.buttonFavorito)
+        buttonFavorito = rootView.findViewById(R.id.buttonProfileVisitados)
         buttonVisitado = rootView.findViewById(R.id.buttonVisitado)
+
+        addToHistory()
+
+        if(SharedPreferencesManager.isFavorite(requireContext(), destinoId!!)){
+            favoritoMarked = true
+            buttonFavorito.icon = ResourcesCompat.getDrawable(resources,
+                R.drawable.ic_heart_fill, null)
+        }
+
 
         buttonFavorito.setOnClickListener {
             if(favoritoMarked){
                 favoritoMarked = false
                 buttonFavorito.icon = ResourcesCompat.getDrawable(resources,
                     R.drawable.ic_heart, null)
-
+                deleteFavorito()
             }
             else{
                 favoritoMarked = true
                 buttonFavorito.icon = ResourcesCompat.getDrawable(resources,
                     R.drawable.ic_heart_fill, null)
+                addToFavoritos()
             }
         }
+
+        if(SharedPreferencesManager.isVisited(requireContext(), destinoId!!)){
+            visitadoMarked = true
+            buttonVisitado.icon = ResourcesCompat.getDrawable(resources,
+                R.drawable.ic_checked, null)
+        }
+
+        Log.i("tagg", SharedPreferencesManager.isVisited(requireContext(), destinoId!!).toString())
 
         buttonVisitado.setOnClickListener {
             if(visitadoMarked){
                 visitadoMarked = false
                 buttonVisitado.icon = ResourcesCompat.getDrawable(resources,
                     R.drawable.ic_not_checked, null)
+                deleteVisitado()
+
             }
             else{
-                visitadoMarked = true
-                buttonVisitado.icon = ResourcesCompat.getDrawable(resources,
-                    R.drawable.ic_checked, null)
+                val calendar = Calendar.getInstance()
+                val year = calendar.get(Calendar.YEAR)
+                val month = calendar.get(Calendar.MONTH)
+                val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+                // Crear el DatePickerDialog
+                val datePickerDialog = DatePickerDialog(
+                    requireContext(),
+                    { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
+                        // Configurar el calendario con la fecha seleccionada
+                        calendar.set(selectedYear, selectedMonth, selectedDay)
+                        val selectedDateTimestamp = calendar.timeInMillis / 1000 // En segundos
+
+                        // Marcar el botón y añadir la fecha a visitados
+                        visitadoMarked = true
+                        buttonVisitado.icon = ResourcesCompat.getDrawable(resources, R.drawable.ic_checked, null)
+                        addToVisitados(selectedDateTimestamp)
+                    },
+                    year, month, day
+                )
+
+                // Configurar la fecha máxima (hoy)
+                val maxDate = Calendar.getInstance().timeInMillis
+                datePickerDialog.datePicker.maxDate = maxDate
+
+                // Mostrar el DatePickerDialog
+                datePickerDialog.show()
             }
         }
 
@@ -163,6 +216,151 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
 
 
         return rootView
+    }
+
+    private fun addToHistory(){
+        val calendar = Calendar.getInstance()
+        val timestamp = calendar.timeInMillis
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Agregamos a historia destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.addToHistory(UserAddHistData(userId, destinoId!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.addHistory(requireContext(), History(userId, destinoId!!, timestamp))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+    private fun deleteHistory(){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Borramos de visitados del destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.deleteFromVisitados(UserAddFavData(userId, destinoId!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.removeVisited(requireContext(), destinoId!!)
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+    private fun addToVisitados(timestamp: Long){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Agregamos a visitados del destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.addToVisitados(UserAddVisitData(userId, destinoId!!, timestamp))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.addVisited(requireContext(), Visited(userId, destinoId!!, timestamp))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+    private fun deleteVisitado(){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Borramos de visitados del destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.deleteFromVisitados(UserAddFavData(userId, destinoId!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.removeVisited(requireContext(), destinoId!!)
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+    private fun addToFavoritos(){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Agregamos a favoritos del destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.addToFavoritos(UserAddFavData(userId, destinoId!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.addFavorite(requireContext(), Favorite(userId, destinoId!!))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+    private fun deleteFavorito(){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Borramos de favoritos del destino con id $destinoId y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.deleteFromFavoritos(UserAddFavData(userId, destinoId!!))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    SharedPreferencesManager.removeFavorite(requireContext(), Favorite(userId, destinoId!!))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
     }
 
     private fun getDestinoData(){

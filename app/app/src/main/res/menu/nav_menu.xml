@@ -16,25 +16,31 @@
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
             android:title="@string/menu_slideshow" />
-
-        <item
-            android:id="@+id/nav_help"
-            android:icon="@drawable/ic_help"
-            android:title="@string/menu_about" />
-
         <item
             android:id="@+id/nav_settings"
             android:icon="@drawable/ic_settings"
             android:title="@string/menu_settings" />
+    </group>
 
+    <group
+        android:layout_gravity="bottom"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="@string/menu_about" />
         <item
             android:id="@+id/nav_privacy"
             android:icon="@drawable/ic_privacy"
             android:title="@string/menu_privacy" />
-
         <item
             android:id="@+id/nav_terms"
             android:icon="@drawable/ic_terms"
             android:title="@string/menu_terms" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="@string/menu_logout" />
     </group>
 </menu>

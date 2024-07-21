@@ -1043,19 +1043,19 @@ async function poblarVisitados() {
         const usuarioIds = [1, 2, 3, 4];
         for (const row of rows) {
             const destinoId = row.id;
-            const fechaMarcado = new Date().toISOString();
+            const fechaVisita = Math.floor(Date.now() / 1000);
             const usuarioId = usuarioIds[Math.floor(Math.random() * usuarioIds.length)];
-            await insertVisitado(usuarioId, destinoId, fechaMarcado);
+            await insertVisitado(usuarioId, destinoId, fechaVisita);
         }
     });
 }
 
-async function insertVisitado(usuarioId, destinoId, fechaMarcado) {
+async function insertVisitado(usuarioId, destinoId, fechaVisita) {
     const sqlInsertarVisitado = `
-        INSERT INTO Visitados (usuarioId, destinoId, fechaMarcado)
+        INSERT INTO Visitados (usuarioId, destinoId, fechaVisita)
         VALUES (?, ?, ?)
     `;
-    const params = [usuarioId, destinoId, fechaMarcado];
+    const params = [usuarioId, destinoId, fechaVisita];
 
     db.run(sqlInsertarVisitado, params, function (err) {
         if (err) {
@@ -1076,19 +1076,19 @@ async function poblarHistoria() {
         const usuarioIds = [1, 2, 3, 4];
         for (const row of rows) {
             const destinoId = row.id;
-            const fechaVisita = new Date().toISOString();
+            const fechaEntrado = Math.floor(Date.now() / 1000);
             const usuarioId = usuarioIds[Math.floor(Math.random() * usuarioIds.length)];
-            await insertHistorial(usuarioId, destinoId, fechaVisita);
+            await insertHistorial(usuarioId, destinoId, fechaEntrado);
         }
     });
 }
 
-async function insertHistorial(usuarioId, destinoId, fechaVisita) {
+async function insertHistorial(usuarioId, destinoId, fechaEntrado) {
     const sqlInsertarHistorial = `
-        INSERT INTO Historial (usuarioId, destinoId, fechaVisita)
+        INSERT INTO Historial (usuarioId, destinoId, fechaEntrado)
         VALUES (?, ?, ?)
     `;
-    const params = [usuarioId, destinoId, fechaVisita];
+    const params = [usuarioId, destinoId, fechaEntrado];
 
     db.run(sqlInsertarHistorial, params, function (err) {
         if (err) {

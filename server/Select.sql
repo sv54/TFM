@@ -7,10 +7,13 @@
 -- DELETE FROM Actividad;
 -- Delete from Comentario;
 -- Select * from Recomendacion;
-
-SELECT * From Destino;
-SELECT * From Actividad;
-
 SELECT * From Usuario;
 
-SELECT COUNT(id) From Comentario where destinoId = 1;
+SELECT * From Destino;
+-- SELECT * From ImgActividad;
+
+-- SELECT COUNT(id) From Comentario where destinoId = 1;
+SELECT * FROM Favoritos where usuarioId == 4;
+SELECT * FROM Visitados where usuarioId == 4;
+SELECT * FROM Historial where usuarioId == 4;
+-- DELETE FROM Historial where usuarioId == 4;

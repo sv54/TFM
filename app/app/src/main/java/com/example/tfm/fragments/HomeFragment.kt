@@ -40,9 +40,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
         homeRecyclerViewAdapter = HomeRecyclerViewAdapter(destinos, this)
         recyclerView.adapter = homeRecyclerViewAdapter
 
-        if(destinos.isEmpty()){
-            cargarDestinos()
-        }
+        cargarDestinos()
 
         val fragmentManager = requireActivity().supportFragmentManager
         val fragmentList = fragmentManager.fragments
@@ -78,6 +76,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
         return root
     }
+
+
 
 
     private fun cargarDestinos() {
@@ -145,6 +145,10 @@ class HomeFragment : Fragment(), OnItemClickListener {
 
     override fun onItemClick(item: ItemListaDestino) {
         fragmentChangeListener.onFragmentChange(item.id, item.titulo)
+    }
+
+    public fun onCloseSearch(){
+        cargarDestinos()
     }
 
 }
