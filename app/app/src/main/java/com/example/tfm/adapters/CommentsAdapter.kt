@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfm.models.ItemComment
 import com.example.tfm.R
 
-class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableListOf()) : RecyclerView.Adapter<CommentsAdapter.ViewHolder>() {
+class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableListOf()) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     interface OnLoadMoreListener {
         fun onLoadMore()
@@ -21,42 +21,72 @@ class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableLi
     }
 
     var moreComments: Boolean = true
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
+
+    companion object {
+        const val TYPE_SIMPLE = 0
+        const val TYPE_DETAILED = 1
+    }
+
+    open inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view), View.OnClickListener {
         val textUsername: TextView = view.findViewById(R.id.textUsername)
-        val textExpenses: TextView = view.findViewById(R.id.textExpenses)
-        val textDays: TextView = view.findViewById(R.id.textDays)
         val textComment: TextView = view.findViewById(R.id.textComment)
         val textRate: TextView = view.findViewById(R.id.textRate)
         override fun onClick(v: View?) {
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_comment, parent, false)
-        return ViewHolder(view)
+    inner class SimpleViewHolder(view: View) : ViewHolder(view)
+
+    inner class DetailedViewHolder(view: View) : ViewHolder(view) {
+        val textExpenses: TextView = view.findViewById(R.id.textExpenses)
+        val textDays: TextView = view.findViewById(R.id.textDays)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun getItemViewType(position: Int): Int {
+        return if (itemList[position].permissionExtra == 0) TYPE_SIMPLE else TYPE_DETAILED
+    }
 
-        holder.textComment.text = itemList[position].comment
-        holder.textExpenses.text = itemList[position].expenses.toString()
-        holder.textDays.text = itemList[position].days.toString()
-        holder.textUsername.text = itemList[position].username
-        holder.textRate.text = itemList[position].rate.toString()
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return if (viewType == TYPE_SIMPLE) {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_comment_simple, parent, false)
+            SimpleViewHolder(view)
+        } else {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_comment, parent, false)
+            DetailedViewHolder(view)
+        }
+    }
 
-        if (position === itemList.size - 1) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        val item = itemList[position]
+
+        when (holder.itemViewType) {
+            TYPE_SIMPLE -> {
+                val simpleHolder = holder as SimpleViewHolder
+                simpleHolder.textComment.text = item.comment
+                simpleHolder.textUsername.text = item.username
+                simpleHolder.textRate.text = item.rate.toString()
+            }
+            TYPE_DETAILED -> {
+                val detailedHolder = holder as DetailedViewHolder
+                detailedHolder.textComment.text = item.comment
+                detailedHolder.textExpenses.text = item.expenses.toString()
+                detailedHolder.textDays.text = item.days.toString()
+                detailedHolder.textUsername.text = item.username
+                detailedHolder.textRate.text = item.rate.toString()
+            }
+        }
+
+        if (position == itemList.size - 1) {
             if(moreComments){
                 onLoadMoreListener?.onLoadMore()
-            }
-            else{
+            } else {
                 val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
                 params.bottomMargin = 300 // last item bottom margin
                 holder.itemView.layoutParams = params
             }
-
-        }
-        else{
+        } else {
             val params = holder.itemView.layoutParams as RecyclerView.LayoutParams
             params.bottomMargin = 4
             holder.itemView.layoutParams = params

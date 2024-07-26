@@ -3,6 +3,7 @@ package com.example.tfm.fragments
 import ApiService
 import RetrofitClient
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import com.example.tfm.adapters.HomeRecyclerViewAdapter
 import com.example.tfm.models.ItemListaDestino
 import com.example.tfm.activities.MainActivity
 import com.example.tfm.OnItemClickListener
+import com.example.tfm.activities.DestinoActivity
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.google.gson.JsonArray
 import retrofit2.Call
@@ -144,7 +146,14 @@ class HomeFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(item: ItemListaDestino) {
-        fragmentChangeListener.onFragmentChange(item.id, item.titulo)
+        val destinoIdExtra = "DESTINOID"
+        val destinoTituloExtra = "DESTINOTITULO"
+        val intent = Intent(requireContext(), DestinoActivity::class.java).apply {
+            putExtra(destinoTituloExtra, item.titulo)
+            putExtra(destinoIdExtra, item.id)
+        }
+        startActivity(intent)
+        //fragmentChangeListener.onFragmentChange(item.id, item.titulo)
     }
 
     public fun onCloseSearch(){

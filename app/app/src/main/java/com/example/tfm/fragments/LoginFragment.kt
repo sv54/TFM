@@ -40,10 +40,16 @@ class LoginFragment : Fragment(), ApiListener {
     private var finalTokenSesion = ""
     private var finalExpSesion = ""
     private var finalFotoPerfil = ""
+    private var finalPaisId = 0
+    private var finalPaisNombre = ""
+    private var finalPaisISO = ""
+    private var finalContinenteNombre = ""
+    private var finalContinenteId = 0
 
     private var visitados: JsonArray = JsonArray()
     private var favoritos: JsonArray = JsonArray()
     private var historial: JsonArray = JsonArray()
+    private var recomendados: JsonArray = JsonArray()
 
     private lateinit var errorTextView:TextView
 
@@ -103,9 +109,16 @@ class LoginFragment : Fragment(), ApiListener {
 //                        finalTokenSesion = jsonObject.get("tokenSesion").asString.toString()
 //                        finalExpSesion = jsonObject.get("expSesion").asString.toString()
                         finalMetaViajes = jsonObject.get("metaViajes").asInt
+                        finalPaisId = jsonObject.get("paisId").asInt
+                        finalPaisNombre = jsonObject.get("paisNombre").asString
+                        finalPaisISO = jsonObject.get("paisIso").asString
+                        finalContinenteNombre = jsonObject.get("continenteNombre").asString
+                        finalContinenteId = jsonObject.get("continenteId").asInt
+
                         favoritos = jsonObject.getAsJsonArray("favoritos")
                         visitados = jsonObject.getAsJsonArray("visitados")
                         historial = jsonObject.getAsJsonArray("historial")
+                        recomendados = jsonObject.getAsJsonArray("recomendados")
                         onEventCompleted()
                     }
 
@@ -130,6 +143,7 @@ class LoginFragment : Fragment(), ApiListener {
         val favoritosJson = gson.toJson(favoritos)
         val visitadosJson = gson.toJson(visitados)
         val historialJson = gson.toJson(historial)
+        val recomendadosJson = gson.toJson(recomendados)
 
         val editor = sharedPreferences.edit()
         editor.putInt("UserId", userId)
@@ -138,14 +152,17 @@ class LoginFragment : Fragment(), ApiListener {
         editor.putString("UserPhoto", finalFotoPerfil)
 //        editor.putString("UserTokenSesion", finalTokenSesion)
 //        editor.putString("UserExpSesion", finalExpSesion)
+        editor.putInt("UserPaisId",finalPaisId)
+        editor.putString("UserPaisNombre",finalPaisNombre)
+        editor.putString("UserPaisISO",finalPaisISO)
+        editor.putString("UserContinenteNombre",finalContinenteNombre)
+        editor.putInt("UserContinenteId",finalContinenteId)
         editor.putInt("UserMetaViajes", finalMetaViajes)
         editor.putString("UserFavoritos", favoritosJson)
         editor.putString("UserVisitados", visitadosJson)
         editor.putString("UserHistorial", historialJson)
-
+        editor.putString("UserRecomendados", recomendadosJson)
         editor.apply()
-
-        Log.i("tagg", "userId: " + sharedPreferences.getInt("UserId", -1).toString())
 
         val intent = Intent(activity, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

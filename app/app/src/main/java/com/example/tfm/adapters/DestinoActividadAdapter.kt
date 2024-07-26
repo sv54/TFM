@@ -17,21 +17,19 @@ class DestinoActividadAdapter(
     private val listener: OnItemClickListener
 ) : RecyclerView.Adapter<DestinoActividadAdapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        val previewImage: ShapeableImageView = itemView.findViewById(R.id.previewImage)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val previewImage: ShapeableImageView = itemView.findViewById(R.id.previewImageVisitado)
         val actividadTitulo: TextView = itemView.findViewById(R.id.infoType)
         val numRecomendado: TextView = itemView.findViewById(R.id.data)
         val buttonRecomendar: ImageButton = itemView.findViewById(R.id.buttonRecomendar)
 
         init {
-            itemView.setOnClickListener(this)
-            buttonRecomendar.setOnClickListener {
-                listener.onItemClick(listaActividades[adapterPosition])
+            itemView.setOnClickListener {
+                listener.onItemClick(listaActividades[adapterPosition], false)
             }
-        }
-
-        override fun onClick(v: View?) {
-            listener.onItemClick(listaActividades[adapterPosition])
+            buttonRecomendar.setOnClickListener {
+                listener.onItemClick(listaActividades[adapterPosition], true)
+            }
         }
     }
 
@@ -50,6 +48,12 @@ class DestinoActividadAdapter(
         Glide.with(holder.itemView.context)
             .load(actividad.imagenes.firstOrNull())
             .into(holder.previewImage)
+
+        if (actividad.recomendado) {
+            holder.buttonRecomendar.setImageResource(R.drawable.ic_thumb_up_fill)
+        } else {
+            holder.buttonRecomendar.setImageResource(R.drawable.ic_thumb_up)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -58,13 +62,16 @@ class DestinoActividadAdapter(
 
     fun updateItems(newItems: MutableList<ItemActividad>) {
         listaActividades = newItems
-        Log.i("tagg", listaActividades.toString())
 
         notifyDataSetChanged()  // Notificar al RecyclerView que los datos han cambiado
     }
 
+    fun updateItems() {
+        notifyDataSetChanged()  // Notificar al RecyclerView que los datos han cambiado
+    }
+
     interface OnItemClickListener {
-        fun onItemClick(item: ItemActividad)
+        fun onItemClick(item: ItemActividad, isButtonClicked: Boolean)
     }
 
 }

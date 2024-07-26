@@ -6,6 +6,8 @@ import android.view.MenuItem
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.tfm.R
 import com.example.tfm.fragments.CommentFragment
+import com.example.tfm.fragments.PostCommentFragment
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CommentActivity : AppCompatActivity() {
 
@@ -13,6 +15,7 @@ class CommentActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private var destinoId: Int = -1
+    private lateinit var fabPost: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,6 +26,16 @@ class CommentActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         destinoId = intent.getIntExtra(destinoIdExtra, -1)
 
+        fabPost = findViewById(R.id.fabPostComment)
+
+        fabPost.setOnClickListener {
+            val fragment = PostCommentFragment().apply {
+                arguments = Bundle().apply {
+                    putInt("destinoId", destinoId)
+                }
+            }
+            fragment.show(supportFragmentManager, fragment.tag)
+        }
 
 
         if(destinoId == -1)

@@ -3,9 +3,12 @@ import android.content.SharedPreferences
 import android.util.Log
 import com.example.tfm.models.Favorite
 import com.example.tfm.models.History
+import com.example.tfm.models.Recommended
 import com.example.tfm.models.Visited
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.util.Calendar
+import java.util.Date
 
 // Clase Singleton para manejar SharedPreferences
 object SharedPreferencesManager {
@@ -86,7 +89,7 @@ object SharedPreferencesManager {
             val visited = iterator.next()
             if (visited.destinoId == destinoId) {
                 iterator.remove()
-                break // Si solo puede haber un elemento con ese destinoId, puedes salir del bucle aquí
+                break
             }
         }
 
@@ -109,7 +112,7 @@ object SharedPreferencesManager {
             val history = iterator.next()
             if (history.destinoId == destinoId) {
                 iterator.remove()
-                break // Si solo puede haber un elemento con ese destinoId, puedes salir del bucle aquí
+                break
             }
         }
 
@@ -124,6 +127,28 @@ object SharedPreferencesManager {
         val type = object : TypeToken<List<Favorite>>() {}.type
         return gson.fromJson(favoritosJson, type)
     }
+
+    fun getFavoriteIds(favorites: List<Favorite>): List<Int> {
+        return favorites.map { it.destinoId }
+    }
+
+    fun getVisitedIds(favorites: List<Visited>): List<Int> {
+        return favorites.map { it.destinoId }
+    }
+
+    fun getHistoryIds(favorites: List<History>): List<Int> {
+        return favorites.map { it.destinoId }
+    }
+
+    fun countVisitedInCurrentYear(visitedList: List<Visited>): Int {
+        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+        return visitedList.count { visited ->
+            val visitDate = Date(visited.fechaVisita * 1000)
+            val visitYear = Calendar.getInstance().apply { time = visitDate }.get(Calendar.YEAR)
+            visitYear == currentYear
+        }
+    }
+
 
     fun getVisited(context: Context): List<Visited> {
         val sharedPreferences = getSharedPreferences(context)
@@ -148,5 +173,54 @@ object SharedPreferencesManager {
     fun isVisited(context: Context, destinoId: Int): Boolean {
         val visited = getVisited(context)
         return visited.any { it.destinoId == destinoId }
+    }
+
+
+    fun addRecommended(context: Context, newRecommended: Recommended) {
+        val sharedPreferences = getSharedPreferences(context)
+        val recommendedJson = sharedPreferences.getString("UserRecomendados", "[]")
+        val type = object : TypeToken<MutableList<Recommended>>() {}.type
+        val recommended: MutableList<Recommended> = gson.fromJson(recommendedJson, type)
+
+        recommended.add(newRecommended)
+
+        val updatedRecommendedJson = gson.toJson(recommended)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserRecomendados", updatedRecommendedJson)
+        editor.apply()
+        Log.i("tagg", "recommended: " + sharedPreferences.getString("UserRecomendados", "[]"))
+
+    }
+
+    fun removeRecommended(context: Context, recommendedToRemove: Recommended) {
+        val sharedPreferences = getSharedPreferences(context)
+        val recommendedJson = sharedPreferences.getString("UserRecomendados", "[]")
+        val type = object : TypeToken<MutableList<Recommended>>() {}.type
+        val recommended: MutableList<Recommended> = gson.fromJson(recommendedJson, type)
+
+        recommended.remove(recommendedToRemove)
+
+        val updatedRecommendedJson = gson.toJson(recommended)
+        val editor = sharedPreferences.edit()
+        editor.putString("UserRecomendados", updatedRecommendedJson)
+        editor.apply()
+        Log.i("tagg", "recommended: " + sharedPreferences.getString("UserRecomendados", "[]"))
+
+    }
+
+    fun getRecommended(context: Context): List<Recommended> {
+        val sharedPreferences = getSharedPreferences(context)
+        val recommendedJson = sharedPreferences.getString("UserRecomendados", "[]")
+        val type = object : TypeToken<List<Recommended>>() {}.type
+        return gson.fromJson(recommendedJson, type)
+    }
+
+    fun isActivityRecommended(context: Context, actividadId: Int): Boolean {
+        val sharedPreferences = getSharedPreferences(context)
+        val recommendedJson = sharedPreferences.getString("UserRecomendados", "[]")
+        val type = object : TypeToken<List<Recommended>>() {}.type
+        val recommendedList: List<Recommended> = gson.fromJson(recommendedJson, type)
+
+        return recommendedList.any { it.actividadId == actividadId }
     }
 }

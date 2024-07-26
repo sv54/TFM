@@ -14,7 +14,7 @@ class CarouselAdapter(
     var imageUrls: MutableList<String>
 ) : RecyclerView.Adapter<CarouselAdapter.ViewHolder>() {
 
-    var onItemClickListener: OnItemClickListener? = null
+    private var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.item_image_carousel, parent, false)

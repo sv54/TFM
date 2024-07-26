@@ -58,4 +58,5 @@ dependencies {
     implementation ("androidx.drawerlayout:drawerlayout:1.2.0")
     implementation ("com.google.android.material:material:1.12.0")
     implementation("org.mindrot:jbcrypt:0.4")
+    implementation ("com.google.android.material:material:1.12.0")
 }

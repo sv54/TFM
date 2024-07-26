@@ -15,7 +15,6 @@
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
         android:transitionName="image"
-        app:shapeAppearanceOverlay="@style/RoundedCorners"
         />
 
 </com.google.android.material.carousel.MaskableFrameLayout>

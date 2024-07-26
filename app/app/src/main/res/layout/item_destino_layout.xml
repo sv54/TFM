@@ -10,7 +10,7 @@
 
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/previewImage"
+        android:id="@+id/previewImageVisitado"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
@@ -22,7 +22,7 @@
         app:srcCompat="@drawable/ic_explore" />
 
     <TextView
-        android:id="@+id/item_titulo"
+        android:id="@+id/item_titulo_visitado"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -36,11 +36,11 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/item_popularidad"
-        app:layout_constraintStart_toEndOf="@id/previewImage"
+        app:layout_constraintStart_toEndOf="@id/previewImageVisitado"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/item_puntuacion"
+        android:id="@+id/item_fecha_visitado"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
@@ -69,8 +69,8 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/item_puntuacion"
-        app:layout_constraintStart_toEndOf="@+id/item_titulo"
+        app:layout_constraintEnd_toStartOf="@+id/item_fecha_visitado"
+        app:layout_constraintStart_toEndOf="@+id/item_titulo_visitado"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.4"
         app:layout_constraintWidth_percent="0.15" />
@@ -88,7 +88,7 @@
         app:srcCompat="@android:drawable/btn_star_big_on" />
 
     <TextView
-        android:id="@+id/item_pais"
+        android:id="@+id/item_pais_visitado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -99,7 +99,7 @@
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/previewImage"
-        app:layout_constraintTop_toBottomOf="@+id/item_titulo" />
+        app:layout_constraintStart_toEndOf="@+id/previewImageVisitado"
+        app:layout_constraintTop_toBottomOf="@+id/item_titulo_visitado" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

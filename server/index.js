@@ -260,6 +260,26 @@ app.put('/usuario/changePassword', (req, res) => {
     });
 });
 
+// Update metaViajes endpoint
+app.put('/usuario/updateMetaViajes', (req, res) => {
+    const { userId, newMetaViajes } = req.body;
+
+    if (!userId || newMetaViajes === undefined) {
+        res.status(400).json({ error: 'Se requiere el ID y la nueva meta de viajes en el cuerpo de la solicitud.' });
+        return;
+    }
+
+    const updateQuery = 'UPDATE Usuario SET metaViajes = ? WHERE id = ?';
+    db.run(updateQuery, [newMetaViajes, userId], function (err) {
+        if (err) {
+            console.error('Error al actualizar la meta de viajes del usuario:', err.message);
+            res.status(500).send('Error del servidor al actualizar la meta de viajes del usuario: ' + err.message);
+            return;
+        }
+        res.status(201).send({message: "Successfully changed"});
+    });
+});
+
 app.put('/usuario/changeCountry', (req, res) => {
     const { userId, newCountryId } = req.body;
 
@@ -280,7 +300,7 @@ app.put('/usuario/changeCountry', (req, res) => {
 });
 
 
-app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => {
+app.put('/usuario/changeFotoOld/:id', uploadProfile.single('image'), (req, res) => {
     const id = req.params.id
     if (!id || !req.file) {
         res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
@@ -300,6 +320,60 @@ app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => 
         res.send(`Foto del usuario con ID ${id} cambiado correctamente.`);
     });
 });
+
+app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => {
+    const id = req.params.id;
+    if (!id || !req.file) {
+        res.status(400).json({ error: 'Se requiere el ID de usuario y la imagen nueva.' });
+        return;
+    }
+
+    // Obtener el nombre de la nueva foto
+    const newPhotoPath = req.file.filename;
+
+    // Paso 1: Obtener la foto actual del usuario
+    const selectQuery = 'SELECT fotoPerfil FROM Usuario WHERE id = ?';
+    db.get(selectQuery, [id], (err, row) => {
+        if (err) {
+            console.error('Error al obtener la foto del usuario:', err.message);
+            res.status(500).send('Error del servidor al obtener la foto del usuario: ' + err.message);
+            return;
+        }
+
+        // Verificar si hay una foto anterior para eliminar
+        const oldPhotoPath = row.fotoPerfil;
+        if (oldPhotoPath && oldPhotoPath.includes('sinFoto')) {
+            const oldPhotoFullPath = path.join(__dirname, 'public', 'imgProfile', oldPhotoPath);
+            
+            // Eliminar la foto anterior del servidor
+            fs.unlink(oldPhotoFullPath, (unlinkErr) => {
+                if (unlinkErr) {
+                    console.error('Error al eliminar la foto antigua:', unlinkErr.message);
+                    res.status(500).send('Error del servidor al eliminar la foto antigua: ' + unlinkErr.message);
+                    return;
+                }
+
+                // Actualizar la base de datos con la nueva foto
+                updatePhotoInDatabase(id, newPhotoPath, res);
+            });
+        } else {
+            // Si no hay foto anterior o es "sinFoto", solo actualiza la base de datos
+            updatePhotoInDatabase(id, newPhotoPath, res);
+        }
+    });
+});
+
+function updatePhotoInDatabase(id, newPhotoPath, res) {
+    const updateQuery = 'UPDATE Usuario SET fotoPerfil = ? WHERE id = ?';
+    db.run(updateQuery, [newPhotoPath, id], function (err) {
+        if (err) {
+            console.error('Error al cambiar la foto del usuario:', err.message);
+            res.status(500).send('Error del servidor al cambiar la foto del usuario: ' + err.message);
+            return;
+        }
+        res.send({newPhoto: baseProfileUrl + newPhotoPath});
+    });
+}
 
 app.get('/usuario/foto/:id', (req, res) => {
     const id = req.params.id;
@@ -338,16 +412,31 @@ app.post('/login', (req, res) => {
 
     // Consultar el usuario por email
     const sqlQuery = `
-        SELECT u.*, 
-            (SELECT json_group_array(json_object('usuarioId', f.usuarioId, 'destinoId', f.destinoId))
-             FROM Favoritos f WHERE f.usuarioId = u.id) AS favoritos,
-            (SELECT json_group_array(json_object('usuarioId', v.usuarioId, 'destinoId', v.destinoId, 'fechaVisita', v.fechaVisita))
-             FROM Visitados v WHERE v.usuarioId = u.id) AS visitados,
-            (SELECT json_group_array(json_object('usuarioId', h.usuarioId, 'destinoId', h.destinoId, 'fechaEntrado', h.fechaEntrado))
-             FROM Historial h WHERE h.usuarioId = u.id) AS historial
-        FROM Usuario u
-        WHERE email = ?;
-    `;
+    SELECT u.*, 
+           p.id AS paisId,
+           p.nombre AS paisNombre,
+           p.iso AS paisIso,
+           c.nombre AS continenteNombre,
+           c.id as continenteId,
+           (SELECT json_group_array(json_object('usuarioId', f.usuarioId, 'destinoId', f.destinoId))
+            FROM Favoritos f 
+            WHERE f.usuarioId = u.id) AS favoritos,
+           (SELECT json_group_array(json_object('usuarioId', v.usuarioId, 'destinoId', v.destinoId, 'fechaVisita', v.fechaVisita))
+            FROM Visitados v 
+            WHERE v.usuarioId = u.id) AS visitados,
+           (SELECT json_group_array(json_object('usuarioId', h.usuarioId, 'destinoId', h.destinoId, 'fechaEntrado', h.fechaEntrado))
+            FROM Historial h 
+            WHERE h.usuarioId = u.id) AS historial,
+           (SELECT json_group_array(json_object('usuarioId', r.usuarioId, 'actividadId', r.actividadId))
+            FROM Recomendacion r
+            WHERE r.usuarioId = u.id) AS recomendados
+    FROM Usuario u
+    LEFT JOIN Pais p ON u.paisOrigen = p.id
+    LEFT JOIN Continente c ON p.continente_id = c.id
+    WHERE email = ?
+    GROUP BY u.id;
+`;
+
 
     db.get(sqlQuery, email, async (err, row) => {
         if (err) {
@@ -371,26 +460,31 @@ app.post('/login', (req, res) => {
             if (result) {
                 // Convertir los campos JSON a objetos
                 row.favoritos = JSON.parse(row.favoritos);
-                console.log(row.favoritos)
                 row.visitados = JSON.parse(row.visitados);
-                console.log(row.visitados)
                 row.historial = JSON.parse(row.historial);
-                console.log(row.historial)
+                row.recomendados = JSON.parse(row.recomendados);
 
 
                 // Devolver la respuesta con los datos del usuario y los datos adicionales
-                const { id, nombre, email, metaViajes, tokenSesion, expSesion, fotoPerfil } = row;
+                const { id, nombre, email, metaViajes, tokenSesion, expSesion, fotoPerfil, paisId, paisNombre, paisIso, continenteNombre, continenteId } = row;
+                
                 res.json({
                     id,
                     nombre,
                     email,
                     metaViajes,
+                    paisId,
+                    paisNombre,
+                    paisIso,
+                    continenteNombre,
+                    continenteId,
                     tokenSesion,
                     expSesion,
                     fotoPerfil: baseProfileUrl + fotoPerfil,
                     favoritos: row.favoritos,
                     visitados: row.visitados,
-                    historial: row.historial
+                    historial: row.historial,
+                    recomendados: row.recomendados
                 });
             } else {
                 res.status(404).send('Usuario o contraseña son incorrectos.');
@@ -402,56 +496,80 @@ app.post('/login', (req, res) => {
 // #region Register
 
 
-app.post('/register', uploadProfile.single('photo'), (req, res) => {
-    const { nombre, email, password, paisOrigen, salt } = req.body
-    const metaViajes = 0
-    const sqlQuery = 'SELECT * FROM Usuario WHERE email = ? LIMIT 1';
+app.post('/register', uploadProfile.single('photo'), async (req, res) => {
+    const { nombre, email, password, paisOrigen } = req.body;
+    const metaViajes = 0;
+    const sqlQueryCheckUser = 'SELECT * FROM Usuario WHERE email = ? LIMIT 1';
 
-    if(email == undefined || email == "" || email == null){
-        res.status(401).send('Datos no recibidos correctamente');
+    if (!email) {
+        return res.status(401).send('Datos no recibidos correctamente');
     }
-    else{
-        db.get(sqlQuery, email, async (err, rows) => {
-            if (err) {
-                console.error('Error al obtener usuario:', err.message);
-                res.status(500).send('Error del servidor al obtener usuario: ' + err.message)
-                return;
-            }
-            else if (rows == undefined || rows == null || rows.length === 0) {
 
-                const salt = await bcrypt.genSalt(10)
-                const hashedPassword = await bcrypt.hash(password, salt)
-                //const hashedPassword = password
-                if (!req.file) {
-                    fotoPerfil = "SinFoto"
-                }
-                else {
-                    fotoPerfil = req.file.filename
-                }
-                const sqlQuery = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-                db.run(sqlQuery, [nombre, email, hashedPassword, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
+    db.get(sqlQueryCheckUser, email, async (err, rows) => {
+        if (err) {
+            console.error('Error al obtener usuario:', err.message);
+            return res.status(500).send('Error del servidor al obtener usuario: ' + err.message);
+        }
+
+        if (!rows) {
+            try {
+                const salt = await bcrypt.genSalt(10);
+                const hashedPassword = await bcrypt.hash(password, salt);
+                const fotoPerfil = req.file ? req.file.filename : "SinFoto";
+                
+                const sqlQueryInsert = `INSERT INTO Usuario (nombre, email, password, salt, paisOrigen, metaViajes, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+                db.run(sqlQueryInsert, [nombre, email, hashedPassword, salt, paisOrigen, metaViajes, fotoPerfil], function (err) {
                     if (err) {
                         console.error('Error al insertar usuario:', err.message);
-                        res.sendStatus(500).send('Error del servidor al crear usuario: ' + err.message)
-                        return;
+                        return res.status(500).send('Error del servidor al crear usuario: ' + err.message);
                     }
-                    //TODO crear el token de sesion en la base de datos
-                    const tokenSesion = null
-                    const expSesion = null
-                    // Obtener el ID del usuario insertado
-                    lastId = this.lastID
-                    //res.status(201).json({ "lastId": this.lastID })
-                    res.status(201).json({id: this.lastID, nombre, email, metaViajes, tokenSesion, expSesion, fotoPerfil: baseProfileUrl + fotoPerfil})
+
+                    const newUserId = this.lastID;
+                    const sqlQueryUserDetails = `
+                        SELECT u.*, 
+                               p.id AS paisId,
+                               p.nombre AS paisNombre,
+                               p.iso AS paisIso,
+                               c.nombre AS continenteNombre,
+                               c.id as continenteId
+                        FROM Usuario u
+                        LEFT JOIN Pais p ON u.paisOrigen = p.id
+                        LEFT JOIN Continente c ON p.continente_id = c.id
+                        WHERE u.id = ?
+                    `;
+
+                    db.get(sqlQueryUserDetails, newUserId, (err, userDetails) => {
+                        if (err) {
+                            console.error('Error al obtener detalles del usuario:', err.message);
+                            return res.status(500).send('Error del servidor al obtener detalles del usuario: ' + err.message);
+                        }
+
+                        // Devolver la respuesta con los datos del usuario, país y continente
+                        const { id, nombre, email, metaViajes, fotoPerfil, paisId, paisNombre, paisIso, continenteNombre, continenteId } = userDetails;
+                        res.status(201).json({
+                            id,
+                            nombre,
+                            email,
+                            metaViajes,
+                            tokenSesion: null, // TODO: Crear el token de sesión
+                            expSesion: null,   // TODO: Crear la expiración del token de sesión
+                            fotoPerfil: baseProfileUrl + fotoPerfil,
+                            paisId,
+                            paisNombre,
+                            paisIso,
+                            continenteNombre,
+                            continenteId
+                        });
+                    });
                 });
-
-
+            } catch (err) {
+                console.error('Error al procesar la contraseña:', err.message);
+                return res.status(500).send('Error al procesar la contraseña');
             }
-            else {
-                res.status(409).send('El email ya esta registrado')
-            }
-        });
-    }
-
+        } else {
+            res.status(409).send('El email ya está registrado');
+        }
+    });
 });
 
 // #region SignOut TODO
@@ -494,6 +612,120 @@ function getEthernetIpAddress() {
 // Uso de la función para obtener la IP local de ethernet
 
 
+app.get('/selectedDestinos', (req, res) => {
+    let ids = req.query.ids;
+
+    // Verifica si ids es una cadena y conviértelo a un array de enteros
+    if (typeof ids === 'string') {
+        ids = ids.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else if (Array.isArray(ids)) {
+        ids = ids.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else {
+        res.status(400).send('Formato de IDs no válido.');
+        return;
+    }
+
+    if (ids.length === 0) {
+        res.status(400).send('IDs no válidos.');
+        return;
+    }
+
+    // Escapa los IDs para prevenir inyecciones SQL
+    const placeholders = ids.map(() => '?').join(',');
+    const sqlQuery = `
+        SELECT 
+            Destino.*, 
+            imgDestino.nombre AS imagen,
+            Pais.nombre AS nombrePais
+        FROM 
+            Destino
+        LEFT JOIN 
+            imgDestino ON Destino.id = imgDestino.destinoId
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
+        WHERE 
+            Destino.id IN (${placeholders})
+        GROUP BY 
+            Destino.id;
+    `;
+
+    db.all(sqlQuery, ids, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener destinos:', err.message);
+            res.status(500).send('Error del servidor al obtener destinos: ' + err.message);
+            return;
+        }
+
+        // Añadir la URL completa de la imagen a cada destino
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
+
+        res.json(destinosConImagen);
+    });
+});
+
+app.get('/visitedDestinos', (req, res) => {
+    let ids = req.query.ids;
+
+    // Verifica si ids es una cadena y conviértelo a un array de enteros
+    if (typeof ids === 'string') {
+        ids = ids.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else if (Array.isArray(ids)) {
+        ids = ids.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else {
+        res.status(400).send('Formato de IDs no válido.');
+        return;
+    }
+
+    if (ids.length === 0) {
+        res.status(400).send('IDs no válidos.');
+        return;
+    }
+
+    // Escapa los IDs para prevenir inyecciones SQL
+    const placeholders = ids.map(() => '?').join(',');
+    const sqlQuery = `
+        SELECT 
+            Destino.id, 
+            Destino.titulo, 
+            (SELECT nombre FROM imgDestino WHERE imgDestino.destinoId = Destino.id LIMIT 1) AS imagen,
+            Pais.nombre AS nombrePais,
+            Visitados.fechaVisita AS fecha
+        FROM 
+            Destino
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
+        LEFT JOIN
+            Visitados ON Destino.id = Visitados.destinoId
+        WHERE 
+            Destino.id IN (${placeholders})
+        GROUP BY 
+            Destino.id
+    `;
+
+    db.all(sqlQuery, ids, (err, rows) => {
+        if (err) {
+            console.error('Error al obtener destinos:', err.message);
+            res.status(500).send('Error del servidor al obtener destinos: ' + err.message);
+            return;
+        }
+
+        // Añadir la URL completa de la imagen a cada destino
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
+        console.log(destinosConImagen)
+
+        res.json(destinosConImagen);
+    });
+});
 
 app.get('/destino', (req, res) => {
     const sqlQuery = `
@@ -961,26 +1193,59 @@ app.get('/comentario/:id', async (req, res) => {
 app.post('/comentario', (req, res) => {
     const { usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion } = req.body;
 
-    // Validar los datos recibidos
     if (!usuarioId || !destinoId || !valoracion) {
         return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
-    // Consulta SQL para insertar el nuevo comentario en la base de datos
     const sql = `
         INSERT INTO Comentario (usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion)
         VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
-    // Ejecutar la consulta con los parámetros
     db.run(sql, [usuarioId, destinoId, texto, permisoExtraInfo, estanciaDias, dineroGastado, valoracion], function (err) {
         if (err) {
             console.error('Error al insertar comentario:', err.message);
             return res.status(500).json({ error: 'Error al insertar comentario' });
         }
 
-        // Enviar la confirmación de que el comentario se ha creado correctamente
-        res.status(201).json({ mensaje: 'Comentario creado exitosamente', comentarioId: this.lastID });
+        if (permisoExtraInfo == 1) {
+            const updateSql = `
+                UPDATE Destino 
+                SET 
+                    numPuntuaciones = numPuntuaciones + 1,
+                    sumaPuntuaciones = sumaPuntuaciones + ?,
+                    diasEstanciaTotal = diasEstanciaTotal + ?, 
+                    gastoTotal = gastoTotal + ? 
+                WHERE id = ?
+            `;
+            db.run(updateSql, [valoracion ,estanciaDias, dineroGastado, destinoId], function (err) {
+                if (err) {
+                    console.error('Error al actualizar destino:', err.message);
+                    return res.status(500).json({ error: 'Error al actualizar destino' });
+                }
+                res.status(201).json({ mensaje: 'Comentario creado y destino con info adicional actualizados exitosamente', comentarioId: this.lastID });
+            });
+        } 
+        else if(permisoExtraInfo == 0){
+            const updateSql = `
+            UPDATE Destino 
+            SET 
+                numPuntuaciones = numPuntuaciones + 1,
+                sumaPuntuaciones = sumaPuntuaciones + ?
+            WHERE id = ?
+        `;
+        db.run(updateSql, [valoracion, destinoId], function (err) {
+            if (err) {
+                console.error('Error al actualizar destino:', err.message);
+                return res.status(500).json({ error: 'Error al actualizar destino' });
+            }
+            res.status(201).json({ mensaje: 'Comentario creado y destino sin info adicional actualizados exitosamente', comentarioId: this.lastID });
+        });
+        }
+        
+        else {
+            res.status(201).json({ mensaje: 'Comentario creado exitosamente', comentarioId: this.lastID });
+        }
     });
 });
 
@@ -1011,6 +1276,7 @@ app.post('/actividad/:id/recomendar', (req, res) => {
     if (!usuarioId) {
         return res.status(400).json({ error: 'ID de usuario no proporcionado en el cuerpo de la solicitud.' });
     }
+    
     // Comprobar si el usuario existe en la base de datos
     const sqlCheckUser = 'SELECT id FROM Usuario WHERE id = ?';
     db.get(sqlCheckUser, [usuarioId], (err, row) => {
@@ -1022,15 +1288,26 @@ app.post('/actividad/:id/recomendar', (req, res) => {
         if (!row) {
             return res.status(404).json({ error: 'El usuario no existe.' });
         }
+        
         // Insertar la recomendación en la base de datos
-        const sqlQuery = 'INSERT INTO Recomendacion (usuarioId, actividadId) VALUES (?, ?)';
-        db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+        const sqlInsertRecommendation = 'INSERT INTO Recomendacion (usuarioId, actividadId) VALUES (?, ?)';
+        db.run(sqlInsertRecommendation, [usuarioId, actividadId], function (err) {
             if (err) {
                 console.error('Error al recomendar la actividad:', err.message);
                 return res.status(500).json({ error: 'Ocurrió un error al recomendar la actividad.' });
             }
-            // Devolver una respuesta exitosa
-            res.status(201).json({ message: 'Actividad recomendada exitosamente.' });
+
+            // Actualizar el campo numRecomendado en la tabla Actividad
+            const sqlUpdateActivity = 'UPDATE Actividad SET numRecomendado = numRecomendado + 1 WHERE id = ?';
+            db.run(sqlUpdateActivity, [actividadId], function (err) {
+                if (err) {
+                    console.error('Error al actualizar la actividad:', err.message);
+                    return res.status(500).json({ error: 'Ocurrió un error al actualizar la actividad.' });
+                }
+                
+                // Devolver una respuesta exitosa
+                res.status(201).json({ message: 'Actividad recomendada exitosamente.' });
+            });
         });
     });
 });
@@ -1092,15 +1369,26 @@ app.delete('/actividad/:id/recomendar', (req, res) => {
     if (!usuarioId) {
         return res.status(400).json({ error: 'ID de usuario no proporcionado en el cuerpo de la solicitud.' });
     }
+    
     // Eliminar la recomendación de la base de datos
-    const sqlQuery = 'DELETE FROM Recomendacion WHERE usuarioId = ? AND actividadId = ?';
-    db.run(sqlQuery, [usuarioId, actividadId], function (err) {
+    const sqlDeleteRecommendation = 'DELETE FROM Recomendacion WHERE usuarioId = ? AND actividadId = ?';
+    db.run(sqlDeleteRecommendation, [usuarioId, actividadId], function (err) {
         if (err) {
             console.error('Error al eliminar la recomendación:', err.message);
             return res.status(500).json({ error: 'Ocurrió un error al eliminar la recomendación.' });
         }
-        // Devolver una respuesta exitosa
-        res.status(200).json({ message: 'Recomendación eliminada exitosamente.' });
+
+        // Actualizar el campo numRecomendado en la tabla Actividad
+        const sqlUpdateActivity = 'UPDATE Actividad SET numRecomendado = numRecomendado - 1 WHERE id = ?';
+        db.run(sqlUpdateActivity, [actividadId], function (err) {
+            if (err) {
+                console.error('Error al actualizar la actividad:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al actualizar la actividad.' });
+            }
+            
+            // Devolver una respuesta exitosa
+            res.status(200).json({ message: 'Recomendación eliminada exitosamente.' });
+        });
     });
 });
 
@@ -1262,15 +1550,30 @@ app.post('/visitados', (req, res) => {
 });
 
 app.get('/visitados/:id', (req, res) => {
-    const usuarioId = req.params.id;
+    const usuarioId = parseInt(req.params.id, 10);
+
+    if (isNaN(usuarioId)) {
+        return res.status(400).json({ error: 'ID de usuario no válido.' });
+    }
 
     // Consulta SQL para obtener los destinos visitados por el usuario
     const sqlQuery = `
-        SELECT Destino.*
-        FROM Visitados
-        JOIN Destino ON Visitados.destinoId = Destino.id
-        WHERE Visitados.usuarioId = ?
+        SELECT 
+            Visitados.fechaVisita AS fecha, 
+            Destino.id, 
+            Destino.titulo,
+            Pais.nombre AS nombrePais,
+            (SELECT nombre FROM imgDestino WHERE imgDestino.destinoId = Destino.id LIMIT 1) AS imagen 
+        FROM 
+            Visitados
+        LEFT JOIN 
+            Destino ON Visitados.destinoId = Destino.id
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
+        WHERE 
+            Visitados.usuarioId = ?
     `;
+
 
     db.all(sqlQuery, [usuarioId], (err, rows) => {
         if (err) {
@@ -1278,8 +1581,15 @@ app.get('/visitados/:id', (req, res) => {
             return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos visitados.' });
         }
 
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
         // Destinos visitados
-        res.status(200).json({ destinosVisitados: rows });
+        console.log(destinosConImagen)
+        res.status(200).json(destinosConImagen);
     });
 });
 

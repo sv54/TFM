@@ -14,6 +14,8 @@ import com.example.tfm.ApiListener
 import com.example.tfm.models.ItemComment
 import com.example.tfm.R
 import com.example.tfm.adapters.CommentsAdapter
+import com.example.tfm.adapters.HomeRecyclerViewAdapter
+import com.example.tfm.models.ItemListaDestino
 import com.google.gson.JsonArray
 import retrofit2.Call
 import retrofit2.Callback
@@ -22,11 +24,11 @@ import retrofit2.Response
 
 class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListener{
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: CommentsAdapter
+    //private lateinit var adapter: CommentsAdapter
     private var actualIndex = 1
     private var destinoId = -1
 
-    private var commentsList: MutableList<ItemComment> = mutableListOf()
+//    private var commentsList: MutableList<ItemComment> = mutableListOf()
 
 
 
@@ -52,6 +54,11 @@ class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListe
         getComments(actualIndex)
 
         return rootView
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("tagg", "Hola")
     }
 
 
@@ -111,6 +118,19 @@ class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListe
         })
 
     }
+
+    companion object{
+        private var commentsList: MutableList<ItemComment> = mutableListOf()
+        private lateinit var adapter: CommentsAdapter
+
+        fun addComment(newComment: ItemComment){
+            commentsList.add(newComment)
+            adapter.addItems(mutableListOf(newComment))
+
+        }
+    }
+
+
 
 
 }

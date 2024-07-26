@@ -8,7 +8,6 @@ import android.animation.ValueAnimator
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,9 +32,11 @@ import com.example.tfm.adapters.DestinoInfoAdapter
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.example.tfm.models.Favorite
 import com.example.tfm.models.History
+import com.example.tfm.models.Recommended
 import com.example.tfm.models.UserAddFavData
 import com.example.tfm.models.UserAddHistData
 import com.example.tfm.models.UserAddVisitData
+import com.example.tfm.models.UsuarioIdRequest
 import com.example.tfm.models.Visited
 import com.google.android.material.button.MaterialButton
 import com.google.gson.JsonObject
@@ -85,7 +87,6 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         }
 
         getDestinoData()
-        //Toast.makeText(context, "Item $destinoId clicked", Toast.LENGTH_SHORT).show()
     }
 
     override fun onCreateView(
@@ -146,7 +147,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 R.drawable.ic_checked, null)
         }
 
-        Log.i("tagg", SharedPreferencesManager.isVisited(requireContext(), destinoId!!).toString())
+        //Log.i("tagg", SharedPreferencesManager.isVisited(requireContext(), destinoId!!).toString())
 
         buttonVisitado.setOnClickListener {
             if(visitadoMarked){
@@ -169,6 +170,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                         // Configurar el calendario con la fecha seleccionada
                         calendar.set(selectedYear, selectedMonth, selectedDay)
                         val selectedDateTimestamp = calendar.timeInMillis / 1000 // En segundos
+                        //Log.i("tagg", selectedDateTimestamp.toString())
 
                         // Marcar el botón y añadir la fecha a visitados
                         visitadoMarked = true
@@ -493,8 +495,12 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         infoAdapter.addItem(ItemInfo(R.drawable.ic_weather, "Clima", destino.clima))
         infoAdapter.addItem(ItemInfo(R.drawable.ic_map, "Pais", destino.pais))
 //        infoAdapter.addItem(mutableListOf(ItemInfo(R.drawable.ic_warning, "Visado", destino.pais)))
+        Log.i("tagg", "recomendados: " + SharedPreferencesManager.getRecommended(requireContext()))
 
-
+        for (actividad in destino.actividades){
+            Log.i("tagg", "is activity recommende with id: "+actividad.id + " --> " + SharedPreferencesManager.isActivityRecommended(requireContext() ,actividad.id))
+            actividad.recomendado = SharedPreferencesManager.isActivityRecommended(requireContext() ,actividad.id)
+        }
         activityAdapter.updateItems(destino.actividades)
     }
 
@@ -502,8 +508,77 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-    override fun onItemClick(item: ItemActividad) {
-        TODO("Not yet implemented")
+    override fun onItemClick(item: ItemActividad, isButtonClicked: Boolean) {
+        if (isButtonClicked) {
+            if (item.recomendado){
+                deleteRecomendacion(item)
+//                Log.i("tagg", "recomendado: " + item.recomendado)
+            }
+            else{
+                postRecomendacion(item)
+//                Log.i("tagg", "recomendado: " + item.recomendado)
+
+            }
+        } else {
+            val fragment = ActivityDetailFragment.newInstance(item)
+            fragment.show(activity?.supportFragmentManager!!, fragment.tag)
+        }
+    }
+
+    private fun postRecomendacion(item: ItemActividad){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Agregamos a recomendados actividad con id " +item.id.toString() + " y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.postRecomendacion(item.id, UsuarioIdRequest(userId))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    item.recomendado = true
+                    item.numRecomendado = item.numRecomendado + 1
+                    activityAdapter.updateItems()
+                    SharedPreferencesManager.addRecommended(requireContext(), Recommended(userId, item.id))
+
+                    //SharedPreferencesManager.addFavorite(requireContext(), Favorite(userId, destinoId!!))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+    private fun deleteRecomendacion(item: ItemActividad){
+        val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("UserId", -1)
+        Log.d("tagg", "Agregamos a recomendados actividad con id " + item.id.toString() + " y usuario con id $userId")
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.deleteRecomendar(item.id, UsuarioIdRequest(userId))
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    item.recomendado = false
+                    item.numRecomendado = item.numRecomendado - 1
+                    activityAdapter.updateItems()
+                    SharedPreferencesManager.removeRecommended(requireContext(), Recommended(userId, item.id))
+
+                    //SharedPreferencesManager.addFavorite(requireContext(), Favorite(userId, destinoId!!))
+                } else {
+                    // Manejar error en la respuesta
+                    Log.e("tagg", "Error en la respuesta: ${response.message()}")
+
+
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                // Manejar fallo en la solicitud
+                Log.e("tagg", "Error en la solicitud: ${t.message}")
+            }
+        })
     }
 
     private fun expand(view: View) {

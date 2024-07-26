@@ -15,7 +15,7 @@
         >
 
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/previewImage"
+            android:id="@+id/previewImageVisitado"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
@@ -39,7 +39,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/data"
             app:layout_constraintHorizontal_bias="0.375"
-            app:layout_constraintStart_toEndOf="@+id/previewImage"
+            app:layout_constraintStart_toEndOf="@+id/previewImageVisitado"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.481" />
 

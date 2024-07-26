@@ -9,11 +9,15 @@
 -- Select * from Recomendacion;
 SELECT * From Usuario;
 
-SELECT * From Destino;
+SELECT * From Destino where id = 1;
 -- SELECT * From ImgActividad;
 
 -- SELECT COUNT(id) From Comentario where destinoId = 1;
-SELECT * FROM Favoritos where usuarioId == 4;
-SELECT * FROM Visitados where usuarioId == 4;
-SELECT * FROM Historial where usuarioId == 4;
+--SELECT * FROM Favoritos where usuarioId == 4;
+--SELECT * FROM Visitados where usuarioId == 4;
+--SELECT * FROM Historial where usuarioId == 4;
+SELECT * FROM Comentario where usuarioId == 4 and destinoId == 7;
+SELECT * From Recomendacion;
+SELECT * From Actividad;
+
 -- DELETE FROM Historial where usuarioId == 4;

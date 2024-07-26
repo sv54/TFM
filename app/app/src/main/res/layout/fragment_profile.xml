@@ -9,7 +9,6 @@
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageProfilePhoto"
         android:layout_width="150dp"
-
         android:layout_height="150dp"
         android:layout_marginTop="32dp"
         android:scaleType="centerCrop"
@@ -52,13 +51,47 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
                 android:text="Email"
                 android:textSize="16sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/textProfileUsername"
                 app:layout_constraintStart_toStartOf="@+id/textProfileUsername"
                 app:layout_constraintTop_toBottomOf="@+id/textProfileUsername" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textProfileEmail"
+                app:layout_constraintStart_toStartOf="@+id/textProfileEmail"
+                app:layout_constraintTop_toBottomOf="@+id/textProfileEmail">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:id="@+id/imageFlagProfile"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/gradient_background" />
+
+                    <TextView
+                        android:id="@+id/textPaisProfile"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="4dp"
+                        android:text="Pais"
+                        android:textSize="16sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/imageFlagProfile"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>

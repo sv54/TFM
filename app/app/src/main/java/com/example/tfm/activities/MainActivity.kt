@@ -4,7 +4,7 @@ import ApiService
 import RetrofitClient
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -39,12 +39,14 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
     private var searchMenuItem: MenuItem? = null
     private lateinit var searchView:SearchView
     private lateinit var fab: FloatingActionButton
+    private lateinit var menuImageProfile: ImageView
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val sharedPreferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+        sharedPreferences = this.getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
 
         setSupportActionBar(findViewById(R.id.my_toolbar))
         supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         }
 
 
-        fab = findViewById(R.id.fab)
+        fab = findViewById(R.id.fabPostComment)
         fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
             hideKeyboard()
@@ -100,7 +102,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         val headerView = navView.getHeaderView(0)
         val textMenuUsername = headerView.findViewById<TextView>(R.id.textViewName)
         val textMenuEmail = headerView.findViewById<TextView>(R.id.textViewEmail)
-        val menuImageProfile = headerView.findViewById<ImageView>(R.id.menuFotoPerfil)
+        menuImageProfile = headerView.findViewById<ImageView>(R.id.menuFotoPerfil)
 
         val dataUsername = sharedPreferences.getString("UserUsername", "")
         val dataEmail = sharedPreferences.getString("UserEmail", "")
@@ -121,6 +123,20 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         headerView.setOnClickListener{
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val dataProfileImage = sharedPreferences.getString("UserPhoto", "")
+        if(dataProfileImage == ""){
+            menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
+        }
+        else{
+            Glide.with(menuImageProfile.context)
+                .load(dataProfileImage)
+                .into(menuImageProfile)
         }
     }
 

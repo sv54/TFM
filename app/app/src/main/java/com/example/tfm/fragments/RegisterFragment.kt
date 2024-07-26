@@ -78,6 +78,11 @@ class RegisterFragment : Fragment(), ApiListener {
     private var finalExpSesion: String? = null
     private var finalFotoPerfil = ""
     private var finalPais = -1
+    private var finalPaisId = 0
+    private var finalPaisNombre = ""
+    private var finalPaisISO = ""
+    private var finalContinenteNombre = ""
+    private var finalContinenteId = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -228,6 +233,11 @@ class RegisterFragment : Fragment(), ApiListener {
                         finalUsername = jsonObject.get("nombre").asString
                         finalEmail = jsonObject.get("email").asString
                         finalFotoPerfil = jsonObject.get("fotoPerfil").asString
+                        finalPaisId = jsonObject.get("paisId").asInt
+                        finalPaisNombre = jsonObject.get("paisNombre").asString
+                        finalPaisISO = jsonObject.get("paisIso").asString
+                        finalContinenteNombre = jsonObject.get("continenteNombre").asString
+                        finalContinenteId = jsonObject.get("continenteId").asInt
 //                        finalTokenSesion = jsonObject.get("tokenSesion")?.asString
 //                        finalExpSesion = jsonObject.get("expSesion").asString
                         finalMetaViajes = jsonObject.get("metaViajes").asInt
@@ -252,6 +262,12 @@ class RegisterFragment : Fragment(), ApiListener {
         editor.putString("UserUsername", finalUsername)
         editor.putString("UserEmail", finalEmail)
         editor.putString("UserPhoto", finalFotoPerfil)
+        editor.putInt("UserPaisId",finalPaisId)
+        editor.putString("UserPaisNombre",finalPaisNombre)
+        editor.putString("UserPaisISO",finalPaisISO)
+        editor.putString("UserContinenteNombre",finalContinenteNombre)
+        editor.putInt("UserContinenteId",finalContinenteId)
+        editor.putInt("UserMetaViajes", finalMetaViajes)
 //        editor.putString("UserTokenSesion", finalTokenSesion)
 //        editor.putString("UserExpSesion", finalExpSesion)
         editor.putInt("UserMetaViajes", finalMetaViajes)

@@ -14,11 +14,11 @@ import com.example.tfm.R
 class SearchRecyclerViewAdapter(private var itemList: MutableList<ItemListaDestino> = mutableListOf()) : RecyclerView.Adapter<SearchRecyclerViewAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val textViewTitulo: TextView = view.findViewById(R.id.item_titulo)
-        val textViewPuntuacion: TextView = view.findViewById(R.id.item_puntuacion)
+        val textViewTitulo: TextView = view.findViewById(R.id.item_titulo_visitado)
+        val textViewPuntuacion: TextView = view.findViewById(R.id.item_fecha_visitado)
         val textViewVisitas: TextView = view.findViewById(R.id.item_popularidad)
-        val textViewPais: TextView = view.findViewById(R.id.item_pais)
-        val image: ImageView = view.findViewById(R.id.previewImage)
+        val textViewPais: TextView = view.findViewById(R.id.item_pais_visitado)
+        val image: ImageView = view.findViewById(R.id.previewImageVisitado)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
