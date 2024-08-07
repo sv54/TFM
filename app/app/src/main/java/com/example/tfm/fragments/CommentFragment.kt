@@ -58,7 +58,6 @@ class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListe
 
     override fun onResume() {
         super.onResume()
-        Log.i("tagg", "Hola")
     }
 
 
@@ -96,6 +95,7 @@ class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListe
                             itemComment.expenses = comment.get("dineroGastado").asInt
                             itemComment.rate = comment.get("valoracion").asInt
                             itemComment.username = comment.get("nombreUsuario").asString
+                            itemComment.userImage = comment.get("fotoPerfil").asString
                             commentsList.add(itemComment)
                         }
                         if(commentsList.size < 10){

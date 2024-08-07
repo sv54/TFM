@@ -1,3 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="gray_900">#E0E0E0</color>
+    <color name="blue_700">#90CAF9</color>
+    <color name="gray_100">#212121</color>
+
+    <!-- Primary branding color for the app -->
+    <color name="colorPrimary">#0074B8</color>
+    <color name="colorSecondary">#0067A3</color>
+    <color name="colorAccent">#FF8A65</color>
+
+    <color name="colorStatusBar">#003452</color>
+
+    <color name="colorBackground">#1F1F1F</color>
+    <color name="colorHeader">#424242</color>
+    <color name="cardBackground">#424242</color>
+    <color name="colorTextPrimary">#FFFFFF</color>
+    <color name="colorTextSecondary">#C1C1C1</color>
+    <color name="colorButtonText">#FFFFFF</color>
+
 </resources>

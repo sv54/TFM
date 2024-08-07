@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.example.tfm.ApiListener
 import com.example.tfm.R
 import com.example.tfm.activities.LoginRegisterActivity
@@ -34,7 +35,8 @@ class LoginFragment : Fragment(), ApiListener {
     private lateinit var userLoginData: UserLoginData
 
     private var userId = -1
-    private var finalUsername = ""
+    private var finalUsername
+    = ""
     private var finalEmail = ""
     private var finalMetaViajes = 0
     private var finalTokenSesion = ""
@@ -78,7 +80,6 @@ class LoginFragment : Fragment(), ApiListener {
             val email = rootView.findViewById<EditText>(R.id.editEmailLogin).text.toString()
             var password = rootView.findViewById<EditText>(R.id.editPasswordLogin).text.toString()
             //password = hashPassword(password, generateSalt())
-            Log.i("tagg", password)
             userLoginData = UserLoginData(email, password)
 
             login(userLoginData)
@@ -123,14 +124,16 @@ class LoginFragment : Fragment(), ApiListener {
                     }
 
                 } else {
-                    Log.i("tagg", "en el else pues")
+                    //Log.i("tagg", "en el else pues")
+                    //Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                     onEventFailed()
 
                 }
             }
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Log.i("tagg", "en el failure pues " + t.message)
+                //Log.i("tagg", "en el failure pues " + t.message)
+                //Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 onEventFailed()
             }
         })
@@ -170,7 +173,7 @@ class LoginFragment : Fragment(), ApiListener {
     }
 
     override fun onEventFailed() {
-        setErrorMessage("El usuario o la contraseña no existen")
+        setErrorMessage(getString(R.string.login_error))
     }
 
     private fun setErrorMessage(message: String) {

@@ -17,13 +17,19 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.preference.PreferenceManager
 import com.bumptech.glide.Glide
 import com.example.tfm.FragmentChangeListener
 import com.example.tfm.R
 import com.example.tfm.databinding.ActivityMainBinding
 import com.example.tfm.fragments.BottomSortOptions
 import com.example.tfm.fragments.DestinoFragment
+import com.example.tfm.fragments.HistoryFragment
 import com.example.tfm.fragments.HomeFragment
+import com.example.tfm.fragments.PrivacyPolicyFragment
+import com.example.tfm.fragments.ReportFragment
+import com.example.tfm.fragments.SettingsFragment
+import com.example.tfm.fragments.TermsOfUseFragment
 import com.example.tfm.models.ItemListaDestino
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -66,22 +72,8 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         //drawerLayout.addDrawerListener(toggle)
 
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_logout -> {
-                    sharedPreferences.edit().clear().apply()
-                    val intent = Intent(this, LoginRegisterActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
-                // Handle menu item selections here
-            }
-            drawerLayout.closeDrawers()
-            true
-        }
 
-
-        fab = findViewById(R.id.fabPostComment)
+        fab = findViewById(R.id.fabOrdenar)
         fab.setOnClickListener {
             val bottomSheetFragment = BottomSortOptions()
             hideKeyboard()
@@ -91,6 +83,42 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
 
         //Desactivar el boton de ordenacion si el menu lateral esta abierto
         fab.isEnabled = !drawerLayout.isDrawerOpen(navView)
+
+
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_logout -> {
+                    sharedPreferences.edit().clear().apply()
+                    val sharedPreferencesSettings = PreferenceManager.getDefaultSharedPreferences(this)
+                    sharedPreferencesSettings.edit().clear().apply()
+                    val intent = Intent(this, LoginRegisterActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+                R.id.nav_settings -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, SettingsFragment()).commit()
+                }
+                R.id.nav_explore -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, HomeFragment()).commit()
+                }
+                R.id.nav_help -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, ReportFragment()).commit()
+                }
+                R.id.nav_history -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, HistoryFragment()).commit()
+                }
+                R.id.nav_privacy -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, PrivacyPolicyFragment()).commit()
+                }
+                R.id.nav_terms -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.main_content, TermsOfUseFragment()).commit()
+                }
+                // Handle menu item selections here
+            }
+            drawerLayout.closeDrawers()
+            true
+        }
+
 
 
         // Add an OnBackStackChangedListener to detect fragment changes
@@ -111,7 +139,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         textMenuUsername.text = dataUsername
         textMenuEmail.text = dataEmail
 
-        if(dataProfileImage == ""){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
             menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -130,7 +158,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         super.onResume()
 
         val dataProfileImage = sharedPreferences.getString("UserPhoto", "")
-        if(dataProfileImage == ""){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
             menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -162,7 +190,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         }
 
         // Configurar el SearchView
-        searchView.queryHint = "Buscar..."
+        searchView.queryHint = getString(R.string.search_hint)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 query?.let {
@@ -280,9 +308,27 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             fab.hide()
             searchMenuItem?.isVisible = false
             supportActionBar?.setDisplayShowTitleEnabled(true)
-        } else {
+        } else if(fragment is HomeFragment){
             searchMenuItem?.isVisible = true
             fab.show()
+            supportActionBar?.setDisplayShowTitleEnabled(false)
+            supportActionBar?.setTitle("")
+        }
+        else if (fragment is SettingsFragment){
+            fab.hide()
+            searchMenuItem?.isVisible = false
+            supportActionBar?.setDisplayShowTitleEnabled(true)
+            supportActionBar?.title = getString(R.string.setting_toolbar_title)
+        }
+        else if (fragment is ReportFragment){
+            fab.hide()
+            searchMenuItem?.isVisible = false
+            supportActionBar?.setDisplayShowTitleEnabled(true)
+            supportActionBar?.title = getString(R.string.setting_toolbar_title)
+        }
+        else{
+            fab.hide()
+            searchMenuItem?.isVisible = false
             supportActionBar?.setDisplayShowTitleEnabled(false)
             supportActionBar?.setTitle("")
         }

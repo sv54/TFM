@@ -11,8 +11,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
+        android:layout_height="wrap_content">
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/previewImageVisitado"
@@ -34,7 +33,7 @@
             android:layout_marginVertical="4dp"
             android:gravity="center"
             android:lines="2"
-            android:text="TextView"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/data"
@@ -52,7 +51,7 @@
             android:layout_marginEnd="16dp"
             android:gravity="center"
             android:lines="1"
-            android:text="TextView"
+            android:textColor="?android:attr/textColorPrimary"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/buttonRecomendar"
@@ -67,7 +66,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="4dp"
             android:background="@android:color/transparent"
-            android:contentDescription="Recomendar"
+            android:contentDescription="@string/recommend_activity_button"
             android:minWidth="16dp"
             android:scaleType="centerInside"
             android:src="@drawable/ic_thumb_up"
@@ -75,7 +74,7 @@
             app:layout_constraintDimensionRatio="w,1:1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black" />
+            app:tint="?attr/iconTint" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

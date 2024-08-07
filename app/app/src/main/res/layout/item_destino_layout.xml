@@ -95,7 +95,6 @@
         android:layout_marginBottom="2dp"
         android:paddingStart="6dp"
         android:paddingTop="2dp"
-        android:text="TextView"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

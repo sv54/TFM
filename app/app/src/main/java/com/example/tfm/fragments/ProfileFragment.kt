@@ -96,7 +96,7 @@ class ProfileFragment : Fragment(), ApiListener {
                 }
             }
         } else {
-            Log.i("tagg", "Profile New Image Not OK")
+            Log.i("tagg", "Profile new image failure")
         }
     }
 
@@ -180,16 +180,35 @@ class ProfileFragment : Fragment(), ApiListener {
         emailText.text = dataEmail
 
         imageProfile.setOnClickListener {
-            if (checkPermission()) {
-                pickImageFromGallery()
-            } else {
-                requestPermission()
-            }
+            val options = arrayOf("Borrar foto", "Elegir nueva foto")
+
+            AlertDialog.Builder(requireContext())
+                .setTitle("Opciones de Foto")
+                .setItems(options) { dialog, which ->
+                    when (which) {
+                        0 -> {
+                            selectedImageUri = null
+                            deleteUserProfileImage()
+                        }
+                        1 -> {
+                            if (checkPermission()) {
+                                pickImageFromGallery()
+                            } else {
+                                requestPermission()
+                            }
+                        }
+                    }
+                }
+                .setNegativeButton("Cancelar") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+
         }
 
 
 
-        if(dataProfileImage == ""){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
             imageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -239,8 +258,8 @@ class ProfileFragment : Fragment(), ApiListener {
             progressBar.max = 100
             progressBar.progress = 0
         }
-        visitadosText.text = "Visitados: " + visitedThisYear
-        metaViajesText.text = "Meta: $metaViajes"
+        visitadosText.text = getString(R.string.visited_objective_profile) + visitedThisYear
+        metaViajesText.text =  getString(R.string.goal_per_year_profile) + metaViajes
     }
 
     private fun showNumberPickerDialog(){
@@ -252,8 +271,7 @@ class ProfileFragment : Fragment(), ApiListener {
         numberPicker.minValue = 0
 
         val dialog = AlertDialog.Builder(requireContext())
-            .setTitle("Select number of \n " +
-                    "destination to visit this year")
+            .setTitle(R.string.select_new_goal_profile)
             .setView(numberPickerView)
             .setPositiveButton("OK") { dialog, which ->
                 val selectedNumber = numberPicker.value
@@ -330,6 +348,34 @@ class ProfileFragment : Fragment(), ApiListener {
         })
     }
 
+    private fun deleteUserProfileImage(){
+        val apiService = RetrofitClient.instance.create(ApiService::class.java)
+        val call = apiService.deleteUserPhoto(userId)
+        call.enqueue(object : Callback<JsonObject> {
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                if (response.isSuccessful) {
+                    val userResponse = response.body()
+                    userResponse?.let { jsonObject ->
+                        val editor = sharedPreferences.edit()
+                        val newPhoto = jsonObject.get("newPhoto").asString
+                        editor.putString("UserPhoto", newPhoto)
+                        editor.apply()
+                    }
+                    Toast.makeText(requireContext(), getString(R.string.profile_picture_uploaded_success), Toast.LENGTH_LONG).show()
+                    imageProfile.setImageResource(R.drawable.ic_empty_photo)
+
+                } else {
+                    Toast.makeText(requireContext(), getString(R.string.profile_picture_error), Toast.LENGTH_LONG).show()
+                    Log.i("tagg","Error al actualizar la foto de perfil: ${response.errorBody()?.string()}")
+                }
+            }
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Log.i("tagg","Error en la solicitud: ${t.message}")
+            }
+        })
+    }
+
+
     private fun putUserProfileImage(){
         var photoPart: MultipartBody.Part? = null
         selectedImageUri?.let { uri ->
@@ -354,10 +400,10 @@ class ProfileFragment : Fragment(), ApiListener {
                             editor.putString("UserPhoto", newPhoto)
                             editor.apply()
                         }
-                        Toast.makeText(requireContext(), "Foto de perfil actualizada correctamente.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.profile_picture_uploaded_success), Toast.LENGTH_LONG).show()
 
                     } else {
-                        Toast.makeText(requireContext(), "Error al actualizar la foto de perfil.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.profile_picture_error), Toast.LENGTH_LONG).show()
                         Log.i("tagg","Error al actualizar la foto de perfil: ${response.errorBody()?.string()}")
                     }
                 }
@@ -393,12 +439,12 @@ class ProfileFragment : Fragment(), ApiListener {
             progressBar.progress = 0
         }
 
-        visitadosText.text = "Visitados: $visitadosCount"
-        metaViajesText.text = "Meta: $metaViajes"
+        visitadosText.text = getString(R.string.visited_objective_profile) + visitadosCount
+        metaViajesText.text = getString(R.string.goal_per_year_profile) + metaViajes
     }
 
     override fun onEventFailed() {
-        visitadosText.text = "Visitados: ?"
+        visitadosText.text = getString(R.string.visited_objective_profile) + 0
         progressBar.progress = 0
     }
 
@@ -429,7 +475,7 @@ class ProfileFragment : Fragment(), ApiListener {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 pickImageFromGallery()
             } else {
-                Toast.makeText(requireContext(), "Permisos para obtener la imagen no concedidos", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), getString(R.string.permission_not_granted), Toast.LENGTH_LONG).show()
             }
         }
     }

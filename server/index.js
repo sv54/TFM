@@ -73,7 +73,6 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Crear una instancia de la base de datos
 var db = new sqlite3.Database(dbPath);
-
 const httpsServer = https.createServer(credentials, app);
 
 const ethernetIpAddress = getEthernetIpAddress();
@@ -130,7 +129,7 @@ app.post('/restartDbData', async (req, res) => {
 
         res.status(200).json("Base de datos poblada con datos ejemplo");
     } catch (error) {
-        console.error('Error al ejecutar el script SQL:', error.message);
+        console.error('Error al ejecutar el script SQL:', error);
         res.status(500).json({ error: 'Error del servidor al ejecutar el script SQL: ' + error.message });
     }
 });
@@ -204,15 +203,75 @@ app.post('/usuario', (req, res) => {
 });
 
 app.delete('/usuario/:id', (req, res) => {
-    const id = req.params.id
-    const sqlQuery = 'DELETE FROM Usuario WHERE id == ?';
-    db.run(sqlQuery, id, function (err) {
-        if (err) {
-            console.error('Error al eliminar usuario:', err.message);
-            res.status(500).send('Error del servidor al eliminar usuario: ' + err.message);
-            return;
-        }
-        res.send(`Usuario con ID ${id} eliminado correctamente.`);
+    const id = req.params.id;
+
+    // Iniciar una transacción para asegurarse de que todas las eliminaciones ocurran de manera atómica
+    db.serialize(() => {
+        db.run('BEGIN TRANSACTION');
+
+        // Eliminar registros de la tabla Historial
+        db.run('DELETE FROM Historial WHERE usuarioId = ?', id, function (err) {
+            if (err) {
+                console.error('Error al eliminar historial:', err.message);
+                db.run('ROLLBACK');
+                res.status(500).send('Error del servidor al eliminar historial: ' + err.message);
+                return;
+            }
+
+            // Eliminar registros de la tabla Visitados
+            db.run('DELETE FROM Visitados WHERE usuarioId = ?', id, function (err) {
+                if (err) {
+                    console.error('Error al eliminar visitados:', err.message);
+                    db.run('ROLLBACK');
+                    res.status(500).send('Error del servidor al eliminar visitados: ' + err.message);
+                    return;
+                }
+
+                // Eliminar registros de la tabla Favoritos
+                db.run('DELETE FROM Favoritos WHERE usuarioId = ?', id, function (err) {
+                    if (err) {
+                        console.error('Error al eliminar favoritos:', err.message);
+                        db.run('ROLLBACK');
+                        res.status(500).send('Error del servidor al eliminar favoritos: ' + err.message);
+                        return;
+                    }
+
+                    // Eliminar registros de la tabla Comentario
+                    db.run('DELETE FROM Comentario WHERE usuarioId = ?', id, function (err) {
+                        if (err) {
+                            console.error('Error al eliminar comentarios:', err.message);
+                            db.run('ROLLBACK');
+                            res.status(500).send('Error del servidor al eliminar comentarios: ' + err.message);
+                            return;
+                        }
+
+                        // Eliminar registros de la tabla Recomendacion
+                        db.run('DELETE FROM Recomendacion WHERE usuarioId = ?', id, function (err) {
+                            if (err) {
+                                console.error('Error al eliminar recomendaciones:', err.message);
+                                db.run('ROLLBACK');
+                                res.status(500).send('Error del servidor al eliminar recomendaciones: ' + err.message);
+                                return;
+                            }
+
+                            // Finalmente eliminar el usuario
+                            db.run('DELETE FROM Usuario WHERE id = ?', id, function (err) {
+                                if (err) {
+                                    console.error('Error al eliminar usuario:', err.message);
+                                    db.run('ROLLBACK');
+                                    res.status(500).send('Error del servidor al eliminar usuario: ' + err.message);
+                                    return;
+                                }
+
+                                // Confirmar la transacción
+                                db.run('COMMIT');
+                                res.send(`Usuario con ID ${id} y todos los registros relacionados eliminados correctamente.`);
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
 });
 
@@ -299,6 +358,55 @@ app.put('/usuario/changeCountry', (req, res) => {
     });
 });
 
+app.delete('/usuarioDeletePhoto/:id', (req, res) => {
+    const userId = req.params.id;
+
+    // Paso 1: Obtener la foto actual del usuario
+    const selectQuery = 'SELECT fotoPerfil FROM Usuario WHERE id = ?';
+    db.get(selectQuery, [userId], (err, row) => {
+        if (err) {
+            console.error('Error al obtener la foto del usuario:', err.message);
+            res.status(500).send('Error del servidor al obtener la foto del usuario: ' + err.message);
+            return;
+        }
+
+        // Verificar si hay una foto anterior para eliminar
+        const oldPhotoPath = row.fotoPerfil;
+        if (oldPhotoPath && oldPhotoPath !== 'sinFoto') {
+            const oldPhotoFullPath = path.join(__dirname, 'public', 'imgProfile', oldPhotoPath);
+
+            // Eliminar la foto anterior del servidor
+            fs.unlink(oldPhotoFullPath, (unlinkErr) => {
+                if (unlinkErr) {
+                    console.error('Error al eliminar la foto antigua:', unlinkErr.message);
+                    res.status(500).send('Error del servidor al eliminar la foto antigua: ' + unlinkErr.message);
+                    return;
+                }
+
+                // Actualizar la base de datos para cambiar la foto a "sinFoto"
+                updatePhotoInDatabase(userId, 'sinFoto', res);
+            });
+        } else {
+            // Si no hay foto anterior o ya es "sinFoto", solo actualiza la base de datos
+            updatePhotoInDatabase(userId, 'sinFoto', res);
+        }
+    });
+});
+
+// Función para actualizar la foto en la base de datos
+function updatePhotoInDatabase(userId, newPhotoPath, res) {
+    const updateQuery = 'UPDATE Usuario SET fotoPerfil = ? WHERE id = ?';
+    db.run(updateQuery, [newPhotoPath, userId], function(err) {
+        if (err) {
+            console.error('Error al actualizar la foto en la base de datos:', err.message);
+            res.status(500).send('Error del servidor al actualizar la foto en la base de datos: ' + err.message);
+            return;
+        }
+
+        res.send(`Foto de perfil del usuario con ID ${userId} cambiada a ${newPhotoPath}.`);
+    });
+}
+
 
 app.put('/usuario/changeFotoOld/:id', uploadProfile.single('image'), (req, res) => {
     const id = req.params.id
@@ -342,7 +450,7 @@ app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => 
 
         // Verificar si hay una foto anterior para eliminar
         const oldPhotoPath = row.fotoPerfil;
-        if (oldPhotoPath && oldPhotoPath.includes('sinFoto')) {
+        if (oldPhotoPath && !oldPhotoPath.includes('sinFoto')) {
             const oldPhotoFullPath = path.join(__dirname, 'public', 'imgProfile', oldPhotoPath);
             
             // Eliminar la foto anterior del servidor
@@ -451,6 +559,7 @@ app.post('/login', (req, res) => {
 
         // Comparar la contraseña
         bcrypt.compare(password, row.password, (err, result) => {
+            console.log(password, row.password)
             if (err) {
                 console.error('Error al comparar contraseñas:', err);
                 res.status(500).send('Error al comparar contraseñas');
@@ -961,8 +1070,14 @@ app.get('/buscarDestino', (req, res) => {
 
 app.get('/destinoOrdenado', (req, res) => {
     const tipo = req.query.tipo;
+    console.log(req.query.ids)
+    const ids = req.query.ids ? req.query.ids.split(',').map(id => parseInt(id)) : [];
     let orderByClause;
+    let whereClause = '';
     switch (tipo) {
+        case 'none':
+            orderByClause = '';
+            break;
         case 'nombreAsc':
             orderByClause = 'ORDER BY Destino.titulo ASC';
             break;
@@ -985,6 +1100,12 @@ app.get('/destinoOrdenado', (req, res) => {
             return res.status(400).json({ error: 'Tipo de ordenación no válido' });
     }
 
+    if (ids.length > 0) {
+        const placeholders = ids.map(() => '?').join(',');
+        whereClause = `WHERE Destino.paisId IN (${placeholders})`;
+        console.log(whereClause)
+    }
+
 
     // Realizar la búsqueda en la base de datos
     const sqlQuery = `SELECT Destino.*, 
@@ -994,10 +1115,11 @@ app.get('/destinoOrdenado', (req, res) => {
         FROM Destino
         LEFT JOIN imgDestino ON Destino.id = imgDestino.destinoId
         LEFT JOIN Pais ON Destino.paisId = Pais.id
+        ${whereClause}
         GROUP BY Destino.id
         ${orderByClause}`;
 
-    db.all(sqlQuery, [], (err, rows) => {
+    db.all(sqlQuery, ids, [], (err, rows) => {
         if (err) {
             console.error('Error al buscar destinos:', err.message);
             return res.status(500).json({ error: 'Ocurrió un error al buscar destinos.' });
@@ -1144,7 +1266,7 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
     // console.log(endIndex)
 
     const sql = `
-        SELECT c.*, Usuario.nombre AS nombreUsuario
+        SELECT c.*, Usuario.nombre AS nombreUsuario, Usuario.fotoPerfil as fotoPerfil
         FROM Comentario c
         LEFT JOIN
             usuario ON c.usuarioId = Usuario.id
@@ -1160,9 +1282,14 @@ app.get('/destino/:id/comentario/:index', (req, res) => {
             return;
         }
         //console.log(rows.length)
-
+        const modifiedRows = rows.map(row => {
+            if (row.fotoPerfil) {
+                row.fotoPerfil = baseProfileUrl + row.fotoPerfil;
+            } 
+            return row;
+        });
         // Enviar los comentarios obtenidos como respuesta
-        res.json(rows);
+        res.json(modifiedRows);
     });
 });
 
@@ -1327,7 +1454,6 @@ app.get('/actividad/:actividadId/recomendar', (req, res) => {
 });
 
 app.get('/actividad/recomendar', (req, res) => {
-    console.log("Llamado")
 
     const actividadIds = req.query.ids;
 
@@ -1572,6 +1698,8 @@ app.get('/visitados/:id', (req, res) => {
             Pais ON Destino.paisId = Pais.id
         WHERE 
             Visitados.usuarioId = ?
+        ORDER BY
+            Visitados.fechaVisita DESC
     `;
 
 
@@ -1631,28 +1759,28 @@ app.delete('/visitados/', (req, res) => {
 
 // #region Historial 
 
-app.get('/historial/:id', (req, res) => {
-    const usuarioId = req.params.id;
+// app.get('/historial/:id', (req, res) => {
+//     const usuarioId = req.params.id;
 
-    // Consulta SQL para obtener los destinos del historial del usuario
-    const sqlQuery = `
-        SELECT Destino.*, Historial.fechaEntrado
-        FROM Historial
-        JOIN Destino ON Historial.destinoId = Destino.id
-        WHERE Historial.usuarioId = ?
-        ORDER BY Historial.fechaEntrado DESC
-    `;
+//     // Consulta SQL para obtener los destinos del historial del usuario
+//     const sqlQuery = `
+//         SELECT Destino.*, Historial.fechaEntrado
+//         FROM Historial
+//         JOIN Destino ON Historial.destinoId = Destino.id
+//         WHERE Historial.usuarioId = ?
+//         ORDER BY Historial.fechaEntrado DESC
+//     `;
 
-    db.all(sqlQuery, [usuarioId], (err, rows) => {
-        if (err) {
-            console.error('Error al obtener el historial:', err.message);
-            return res.status(500).json({ error: 'Ocurrió un error al obtener el historial.' });
-        }
+//     db.all(sqlQuery, [usuarioId], (err, rows) => {
+//         if (err) {
+//             console.error('Error al obtener el historial:', err.message);
+//             return res.status(500).json({ error: 'Ocurrió un error al obtener el historial.' });
+//         }
 
-        // Devolver el historial encontrado
-        res.status(200).json({ historial: rows });
-    });
-});
+//         // Devolver el historial encontrado
+//         res.status(200).json({ historial: rows });
+//     });
+// });
 
 app.post('/historial', (req, res) => {
     const { usuarioId, destinoId } = req.body;
@@ -1683,18 +1811,32 @@ app.post('/historial', (req, res) => {
                 return res.status(404).json({ error: 'El destino no existe.' });
             }
 
-            // Insertar el destino en el historial
+            // Intentar insertar el destino en el historial
             const sqlInsertHistorial = 'INSERT INTO Historial (usuarioId, destinoId, fechaEntrado) VALUES (?, ?, ?)';
             db.run(sqlInsertHistorial, [usuarioId, destinoId, fechaEntrado], function (err) {
                 if (err) {
-                    console.error('Error al guardar en el historial:', err.message);
-                    return res.status(500).json({ error: 'Ocurrió un error al guardar en el historial.' });
+                    if (err.message.includes('UNIQUE constraint failed')) {
+                        // Si la inserción falla por un error de restricción única, realiza un UPDATE
+                        const sqlUpdateHistorial = 'UPDATE Historial SET fechaEntrado = ? WHERE usuarioId = ? AND destinoId = ?';
+                        db.run(sqlUpdateHistorial, [fechaEntrado, usuarioId, destinoId], function (err) {
+                            if (err) {
+                                console.error('Error al actualizar en el historial:', err.message);
+                                return res.status(500).json({ error: 'Ocurrió un error al actualizar en el historial.' });
+                            }
+                            res.status(200).json({ message: 'Timestamp actualizado exitosamente.' });
+                        });
+                    } else {
+                        console.error('Error al guardar en el historial:', err.message);
+                        return res.status(500).json({ error: 'Ocurrió un error al guardar en el historial.' });
+                    }
+                } else {
+                    res.status(201).json({ message: 'Destino agregado al historial exitosamente.' });
                 }
-                res.status(201).json({ message: 'Destino agregado al historial exitosamente.' });
             });
         });
     });
 });
+
 
 app.delete('/historial', (req, res) => {
     const { usuarioId, destinoId } = req.body;
@@ -1719,5 +1861,83 @@ app.delete('/historial', (req, res) => {
 
         // Éxito al eliminar el registro
         res.status(200).json({ message: 'Registro del historial eliminado exitosamente.' });
+    });
+});
+app.get('/historial/:id', (req, res) => {
+    const usuarioId = parseInt(req.params.id, 10);
+
+    if (isNaN(usuarioId)) {
+        return res.status(400).json({ error: 'ID de usuario no válido.' });
+    }
+
+    // Consulta SQL para obtener los destinos visitados por el usuario
+    const sqlQuery = `
+        SELECT 
+            Historial.fechaEntrado AS fecha, 
+            Destino.id, 
+            Destino.titulo,
+            Pais.nombre AS nombrePais,
+            (SELECT nombre FROM imgDestino WHERE imgDestino.destinoId = Destino.id LIMIT 1) AS imagen 
+        FROM 
+            Historial
+        LEFT JOIN 
+            Destino ON Historial.destinoId = Destino.id
+        LEFT JOIN 
+            Pais ON Destino.paisId = Pais.id
+        WHERE 
+            Historial.usuarioId = ?
+    `;
+
+    db.all(sqlQuery, [usuarioId], (err, rows) => {
+        if (err) {
+            console.error('Error al obtener destinos visitados:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener los destinos visitados.' });
+        }
+
+        const destinosConImagen = rows.map(row => {
+            if (row.imagen) {
+                row.imagen = baseDestinoUrl + row.imagen;
+            }
+            return row;
+        });
+        // Destinos visitados
+        res.status(200).json(destinosConImagen);
+    });
+});
+
+
+// #region Reportes
+
+app.post('/reportes', (req, res) => {
+    const { titulo, textoReporte, timestamp, usuarioId } = req.body;
+
+    // Validar los datos de entrada
+    if (!titulo || !textoReporte || !timestamp || !usuarioId) {
+        return res.status(400).json({ error: 'Faltan datos en el cuerpo de la solicitud.' });
+    }
+
+    // Comprobar si el usuario existe en la base de datos
+    const sqlCheckUser = 'SELECT id FROM Usuario WHERE id = ?';
+    db.get(sqlCheckUser, [usuarioId], (err, row) => {
+        if (err) {
+            console.error('Error al comprobar la existencia del usuario:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al comprobar la existencia del usuario.' });
+        }
+
+        if (!row) {
+            return res.status(404).json({ error: 'El usuario no existe.' });
+        }
+
+        // Insertar el nuevo reporte en la base de datos
+        const sqlInsertReport = 'INSERT INTO Reporte (titulo, textoReporte, timestamp, id_usuario) VALUES (?, ?, ?, ?)';
+        db.run(sqlInsertReport, [titulo, textoReporte, timestamp, usuarioId], function (err) {
+            if (err) {
+                console.error('Error al insertar el reporte:', err.message);
+                return res.status(500).json({ error: 'Ocurrió un error al insertar el reporte.' });
+            }
+
+            // Devolver una respuesta exitosa
+            res.status(201).json({ message: 'Reporte creado exitosamente.' });
+        });
     });
 });

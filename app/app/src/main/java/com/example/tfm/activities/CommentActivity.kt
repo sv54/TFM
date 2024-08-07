@@ -2,6 +2,7 @@ package com.example.tfm.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.tfm.R
@@ -11,10 +12,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class CommentActivity : AppCompatActivity() {
 
-    val destinoIdExtra = "DESTINOID"
+    private val destinoIdExtra = "DESTINOID"
+    private val destinoTituloExtra = "DESTINOTITULO"
+    private val destinoPostCommentExtra = "POSTCOMMENT"
 
     private lateinit var drawerLayout: DrawerLayout
     private var destinoId: Int = -1
+    private var destinoTitulo: String? = ""
     private lateinit var fabPost: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,9 +26,13 @@ class CommentActivity : AppCompatActivity() {
         setContentView(R.layout.activity_comnent)
 
         setSupportActionBar(findViewById(R.id.my_toolbar_comment))
-        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         destinoId = intent.getIntExtra(destinoIdExtra, -1)
+        destinoTitulo = intent.getStringExtra(destinoTituloExtra)
+
+        Log.i("tagg", "Destino Titulo $destinoTitulo")
+        supportActionBar?.title = destinoTitulo
 
         fabPost = findViewById(R.id.fabPostComment)
 
@@ -35,6 +43,10 @@ class CommentActivity : AppCompatActivity() {
                 }
             }
             fragment.show(supportFragmentManager, fragment.tag)
+        }
+
+        if(intent.getBooleanExtra(destinoPostCommentExtra, false)){
+            fabPost.callOnClick()
         }
 
 

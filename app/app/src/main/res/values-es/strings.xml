@@ -1,3 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">TFM</string>
+    <string name="navigation_drawer_open" translatable="false">Abrir el menú de navegación</string>
+    <string name="navigation_drawer_close" translatable="false">Cerrar el menú de navegación</string>
+    <string name="nav_header_title" translatable="false">Android Studio</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_header_desc" translatable="false">Encabezado de navegación</string>
+
+    <string name="menu_home">Explorar</string>
+    <string name="menu_gallery">Filtrar</string>
+    <string name="menu_slideshow">Historial</string>
+    <string name="menu_report">Informar un Problema</string>
+    <string name="button_post_report">Informar un Problema</string>
+    <string name="menu_privacy">Política de privacidad</string>
+    <string name="menu_settings">Ajustes</string>
+    <string name="menu_terms">Términos del servicio</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hola fragmento en blanco</string>
+    <string name="show_sort_options">Mostrar opciones de ordenación</string>
+    <string name="menu_logout">Cerrar sesión</string>
+    <string name="info_icon">Ícono sobre información general</string>
+    <string name="total_expeces">Total de gastos:</string>
+    <string name="total_days">Total de días:</string>
+    <string name="recommend_activity_button">Recomendar actividad</string>
+    <string name="upload_profile_image">Subir imagen de perfil</string>
+    <string name="username">Nombre de usuario</string>
+    <string name="email">Correo electrónico</string>
+    <string name="country">País</string>
+    <string name="password">Contraseña</string>
+    <string name="repeat_password">Repetir contraseña</string>
+    <string name="create_account">Crear cuenta</string>
+    <string name="country_flag">Bandera del país</string>
+    <string name="visited_list_button">Visitados</string>
+    <string name="favorits_list_button">Favoritos</string>
+    <string name="your_opinion">Tu opinión</string>
+    <string name="consent_off">No consentir</string>
+    <string name="consent_on">Consentir</string>
+    <string name="permission_to_get_more_data">Permiso para obtener más datos</string>
+    <string name="total_expences">Total de gastos</string>
+    <string name="total_days_of_visit">Total de días de visita</string>
+    <string name="comment_post_error">Debes completar el formulario para publicar el comentario</string>
+    <string name="post_comment">Publicar comentario</string>
+    <string name="forgot_your_password">¿Olvidaste tu contraseña?</string>
+    <string name="dont_have_an_account">¿No tienes una cuenta?</string>
+    <string name="register_here">¡Regístrate aquí!</string>
+    <string name="log_in_button">Iniciar sesión</string>
+    <string name="destination_home_header">Destino</string>
+    <string name="visits_home_header">Visitas</string>
+    <string name="rating_home_header">Puntuacion</string>
+    <string name="visited_button_dest">¿Visitado?</string>
+    <string name="comments_button_dest">Comentarios</string>
+    <string name="favorit_button_dest">Favorito</string>
+    <string name="show_description">Mostrar descripción</string>
+    <string name="general_data">Datos generales</string>
+    <string name="activities_dest">Actividades</string>
+    <string name="sort_destinations_by">Ordenar todos los destinos por:</string>
+    <string name="descending_sorting">Descendente</string>
+    <string name="ascending_sorting">Ascendente</string>
+    <string name="apply_sorting">Aplicar</string>
+    <string name="no_marked_as_visited">¡No hay destinos marcados como visitados!</string>
+    <string name="visited_header">Visitados</string>
+    <string name="no_marked_as_favorites">¡No hay destinos marcados como favoritos!</string>
+    <string name="sort_by_name">Nombre</string>
+    <string name="sort_by_visits">Visitas</string>
+    <string name="sort_by_rating">Puntuación</string>
+    <string name="sort_by_none">Sin orden</string>
+    <string name="favorits_toolbar">Favoritos</string>
+    <string name="dest_no_sequrity_no_info">Sin información</string>
+    <string name="search_hint">Buscar…</string>
+    <string name="visited_toolbar">Visitados</string>
+    <string name="hide_description">Ocultar descripción</string>
+    <string name="expenses_info">Gastos</string>
+    <string name="currency_info">Moneda</string>
+    <string name="safty_index_info">Índice de seguridad</string>
+    <string name="country_info">País</string>
+    <string name="weather_info">Clima</string>
+    <string name="check_visa_warning_info">¡Siempre revisa la información de visa en la página oficial!</string>
+    <string name="login_error">Nombre de usuario o contraseña incorrectos</string>
+    <string name="server_error_try_later">Algo salió mal, por favor, inténtalo más tarde</string>
+    <string name="visited_objective_profile">Visitados:</string>
+    <string name="goal_per_year_profile">Meta:</string>
+    <string name="select_new_goal_profile">Selecciona el número de destinos \n a visitar este año</string>
+    <string name="profile_picture_uploaded_success">Foto de perfil actualizada correctamente</string>
+    <string name="profile_picture_error">Error al subir la nueva foto, por favor, intenta más tarde</string>
+    <string name="permission_not_granted">Permisos para acceder a la imagen no concedidos</string>
+    <string name="email_already_in_use">Este correo electrónico ya está registrado</string>
+    <string name="email_invalid_error">El formato del correo electrónico no es válido</string>
+    <string name="username_length_register_error">El nombre de usuario debe tener al menos 6 caracteres</string>
+    <string name="username_all_number_register_error">El nombre de usuario no puede ser completamente numérico</string>
+    <string name="register_error_password_doesnt_match">Las contraseñas no coinciden</string>
+    <string name="register_password_length_error">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="preferences_language">Idioma</string>
+    <string name="preferences_theme">Tema</string>
+    <string name="select_language">Selecciona el idioma de la aplicación</string>
+    <string name="select_theme">Selecciona el tema de la aplicación</string>
+    <string name="please_describe_the_problem_or_suggestion">Por favor, explique el problema o haga una sugerencia</string>
+    <string name="report_text">Detalles</string>
+    <string name="fill_form_report">Por favor, complete todos los campos del formulario antes de enviarlo</string>
+    <string name="report_title">Asunto</string>
+    <string name="setting_toolbar_title">Configuracion</string>
+    <string name="report_toolbar_title">Reporte</string>
+    <string name="report_title_hint">Descripcion breve</string>
+    <string name="submit_button">Enviar</string>
+    <string name="entered_header">Fecha</string>
+    <string name="no_history">No hay informacion de historial</string>
+    <string name="privacy_policy_title">Política de Privacidad</string>
+    <string name="privacy_policy_content">
+        <![CDATA[
+        Introducción\n
+        Nuestra aplicación respeta y protege la privacidad de nuestros usuarios. Esta Política de Privacidad explica qué información recopilamos y cómo la usamos.\n\n
+        Recopilación de Datos\n
+        Recopilamos solo la información necesaria para proporcionar nuestros servicios. Esto incluye información de la cuenta de usuario y datos de uso.\n\n
+        Uso de Datos\n
+        Los datos recopilados se utilizan para mejorar nuestros servicios y ofrecer contenido personalizado. No compartimos sus datos con terceros sin su consentimiento.\n\n
+        Seguridad de Datos\n
+        Implementamos medidas de seguridad para proteger sus datos. Sin embargo, ningún método de transmisión por internet o almacenamiento electrónico es 100% seguro.\n\n
+        Cambios a Esta Política\n
+        Podemos actualizar nuestra Política de Privacidad ocasionalmente. Le notificaremos de cualquier cambio publicando la nueva Política de Privacidad en esta página.\n\n
+        Contáctenos\n
+        Si tiene alguna pregunta sobre esta Política de Privacidad, comuníquese con nosotros en support@example.com.
+        ]]>
+    </string>
+
+    <string name="terms_of_use_title">Términos de Uso</string>
+    <string name="terms_of_use_content">
+        <![CDATA[
+        Bienvenido\n
+        Al acceder y utilizar nuestra aplicación, usted acepta los siguientes términos y condiciones.\n\n
+        Responsabilidades del Usuario\n
+        Los usuarios son responsables de mantener la confidencialidad de su cuenta y contraseña, así como de restringir el acceso a sus dispositivos.\n\n
+        Acciones Prohibidas\n
+        No puede usar la aplicación para ningún propósito ilegal ni participar en ninguna conducta que pueda dañar la aplicación o interferir con el uso de la aplicación por parte de otro usuario.\n\n
+        Propiedad Intelectual\n
+        Todo el contenido, marcas comerciales y datos en esta aplicación son propiedad de los creadores de la aplicación o se utilizan bajo licencia. El uso no autorizado está prohibido.\n\n
+        Limitación de Responsabilidad\n
+        No somos responsables de ningún daño directo, indirecto, incidental o consecuente que surja de su uso de la aplicación.\n\n
+        Cambios en los Términos\n
+        Podemos actualizar estos términos de vez en cuando. Su uso continuado de la aplicación después de cualquier cambio indica su aceptación de los nuevos términos.\n\n
+        Contáctenos\n
+        Si tiene alguna pregunta sobre estos Términos de Uso, comuníquese con nosotros en support@example.com.
+        ]]>
+    </string>
+    <string name="sort_all_counties">Todos los países</string>
+    <string name="sort_my_country">Mi país</string>
+    <string name="sort_list_of_countries">Seleccionar países</string>
+    <string name="hint_type_countries">Escriba los países</string>
+    <string name="please_enter_at_least_one_country">Por favor, introduzca al menos un país</string>
+    <string name="register_choose_at_least_one_country">"Debe seleccionar el país!"</string>
+
+    <!-- Delete Account -->
+    <string name="delete_account">Borrar cuenta</string>
+    <string name="delete_account_summary">Elimina permanentemente tu cuenta</string>
+    <string name="delete_account_title">¿Estás seguro?</string>
+    <string name="delete">Borrar</string>
+    <string name="cancel">Cancelar</string>
+
+    <string name="incentive_dialog_title">Comparte tu Experiencia</string>
+    <string name="incentive_dialog_message">¿Te gustaría dejar una reseña sobre tu visita? Tu opinión a otros usuarios a tomar decisiones informadas.</string>
+    <string name="leave_review">Dejar Reseña</string>
+    <string name="later">Más Tarde</string>
+
+
 </resources>

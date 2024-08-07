@@ -5,6 +5,8 @@ import RetrofitClient
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +14,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.tfm.FragmentChangeListener
 import com.example.tfm.adapters.HomeRecyclerViewAdapter
 import com.example.tfm.models.ItemListaDestino
 import com.example.tfm.activities.MainActivity
 import com.example.tfm.OnItemClickListener
+import com.example.tfm.R
 import com.example.tfm.activities.DestinoActivity
 import com.example.tfm.databinding.FragmentHomeBinding
 import com.google.gson.JsonArray
@@ -33,6 +37,7 @@ class HomeFragment : Fragment(), OnItemClickListener {
     private lateinit var mainActivity: MainActivity
     private lateinit var recyclerView: RecyclerView
     private lateinit var fragmentChangeListener: FragmentChangeListener
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,16 +46,21 @@ class HomeFragment : Fragment(), OnItemClickListener {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         homeRecyclerViewAdapter = HomeRecyclerViewAdapter(destinos, this)
         recyclerView.adapter = homeRecyclerViewAdapter
-
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
         cargarDestinos()
+
+        swipeRefreshLayout.setOnRefreshListener {
+            cargarDestinos()
+            Handler(Looper.getMainLooper()).postDelayed({
+                swipeRefreshLayout.isRefreshing = false
+            }, 750)
+        }
 
         val fragmentManager = requireActivity().supportFragmentManager
         val fragmentList = fragmentManager.fragments
 
         for (fragment in fragmentList) {
-            val tag = fragment.id // Aquí obtienes el tag asociado al Fragmento
-            // Puedes hacer lo que necesites con el tag, por ejemplo, imprimirlo
-            Log.d("FragmentTag", "Fragment tag: $tag")
+            val tag = fragment.id
         }
 
     }
@@ -69,13 +79,8 @@ class HomeFragment : Fragment(), OnItemClickListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
-
-
         return root
     }
 

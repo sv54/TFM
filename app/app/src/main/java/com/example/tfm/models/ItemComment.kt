@@ -7,5 +7,6 @@ data class ItemComment(
     var permissionExtra: Int = 0,
     var days: Int = -1,
     var expenses: Int = -1,
-    var rate: Int = -1
+    var rate: Int = -1,
+    var userImage: String = ""
 )

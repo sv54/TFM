@@ -1,51 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="blue_500">#2196F3</color>
-    <color name="blue_700">#1976D2</color>
-    <color name="turquoise_500">#00BCD4</color>
-    <color name="turquoise_700">#0097A7</color>
-    <color name="backgroundColor">#bddffc</color>
-    <color name="backgroundColorNight">#212121</color>
-    <color name="cardColorNight">#3e4e5c</color>
-    <color name="green_500">#43A047</color>
-    <color name="green_700">#2E7D32</color>
-    <color name="secondary">#43A047</color>
-    <color name="secondaryVariant">#2E7D32</color>
-    <color name="orange_500">#FB8C00</color>
-    <color name="orange_700">#EF6C00</color>
-    <color name="gray_100">#F5F5F5</color>
-    <color name="colorPressed">#ffed85</color>
-    <color name="colorNotPressed">#ffd900</color>
     <color name="gray_900">#212121</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="gray_100">#F5F5F5</color>
 
     <!-- Primary branding color for the app -->
-    <color name="colorPrimary">#4CAF50</color> <!-- Green 500 -->
-    <color name="colorPrimaryVariant">#388E3C</color> <!-- Green 700 -->
+    <color name="colorPrimary">#29B6F6</color>
+    <color name="colorSecondary">#33B4FF</color>
+    <color name="colorAccent">#F3603F</color>
 
-    <!-- Secondary branding color for the app -->
-    <color name="colorSecondary">#03A9F4</color> <!-- Light Blue 500 -->
-    <color name="colorSecondaryVariant">#0288D1</color> <!-- Light Blue 700 -->
+    <color name="colorStatusBar">#008EE0</color>
+    <color name="colorBackground">#F5F5F5</color>
+    <color name="colorHeader">#D6F0FF</color>
+    <color name="cardBackground">#D6F0FF</color>
 
-    <!-- Background color for the app -->
-    <color name="colorBackground">#FFFFFF</color> <!-- White -->
+    <color name="colorTextPrimary">#000000</color>
+    <color name="colorTextSecondary">#333333</color>
 
-    <!-- Surface color for elements like cards and menus -->
-    <color name="colorSurface">#F5F5F5</color> <!-- Grey 100 -->
+    <color name="colorButtonText">#000000</color>
 
-    <!-- Color for indicating errors -->
-    <color name="colorError">#D32F2F</color> <!-- Red 700 -->
-
-    <!-- Colors for text and icons -->
-    <color name="colorOnPrimary">#FFFFFF</color> <!-- White -->
-    <color name="colorOnSecondary">#FFFFFF</color> <!-- White -->
-    <color name="colorOnBackground">#000000</color> <!-- Black -->
-    <color name="colorOnSurface">#000000</color> <!-- Black -->
-    <color name="colorOnError">#FFFFFF</color> <!-- White -->
 </resources>

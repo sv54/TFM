@@ -3,8 +3,10 @@ package com.example.tfm.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.tfm.models.ItemComment
 import com.example.tfm.R
 
@@ -31,6 +33,7 @@ class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableLi
         val textUsername: TextView = view.findViewById(R.id.textUsername)
         val textComment: TextView = view.findViewById(R.id.textComment)
         val textRate: TextView = view.findViewById(R.id.textRate)
+        val userImage: ImageView = view.findViewById(R.id.imageProfileComment)
         override fun onClick(v: View?) {
         }
     }
@@ -67,6 +70,9 @@ class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableLi
                 simpleHolder.textComment.text = item.comment
                 simpleHolder.textUsername.text = item.username
                 simpleHolder.textRate.text = item.rate.toString()
+                Glide.with(holder.itemView.context)
+                    .load(itemList[position].userImage)
+                    .into(holder.userImage)
             }
             TYPE_DETAILED -> {
                 val detailedHolder = holder as DetailedViewHolder
@@ -75,6 +81,9 @@ class CommentsAdapter(private var itemList: MutableList<ItemComment> = mutableLi
                 detailedHolder.textDays.text = item.days.toString()
                 detailedHolder.textUsername.text = item.username
                 detailedHolder.textRate.text = item.rate.toString()
+                Glide.with(holder.itemView.context)
+                    .load(itemList[position].userImage)
+                    .into(holder.userImage)
             }
         }
 

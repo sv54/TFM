@@ -1,20 +1,159 @@
 <resources>
     <string name="app_name">TFM</string>
-    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
-    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
-    <string name="nav_header_title" translatable="false">Android Studio</string>
-    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
-    <string name="nav_header_desc" translatable="false">Navigation header</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
 
     <string name="menu_home">Explore</string>
     <string name="menu_gallery">Filter</string>
     <string name="menu_slideshow">History</string>
-    <string name="menu_about">Help</string>
+    <string name="menu_report">Report a Problem</string>
+    <string name="button_post_report">Report a Problem</string>
     <string name="menu_privacy">Privacy policy</string>
     <string name="menu_settings">Settings</string>
     <string name="menu_terms">Terms of service</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="show_sort_options">Show sort options</string>
     <string name="menu_logout">Logout</string>
+    <string name="info_icon">Icon about general information</string>
+    <string name="total_expeces">Total Expeces:</string>
+    <string name="total_days">Total Days:</string>
+    <string name="recommend_activity_button">Recommend activity</string>
+    <string name="upload_profile_image">Upload profile image</string>
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="country">Country</string>
+    <string name="password">Password</string>
+    <string name="repeat_password">Repeat Password</string>
+    <string name="create_account">Create Account</string>
+    <string name="country_flag">Country flag</string>
+    <string name="visited_list_button">Visited</string>
+    <string name="favorits_list_button">Favoritos</string>
+    <string name="your_opinion">Your opinion</string>
+    <string name="consent_off">Don\'t consent</string>
+    <string name="consent_on">Consent</string>
+    <string name="permission_to_get_more_data">Permission to get more data</string>
+    <string name="total_expences">Total expences</string>
+    <string name="total_days_of_visit">Total days of visit</string>
+    <string name="comment_post_error">You must fill the form to post comment</string>
+    <string name="post_comment">Post Comment</string>
+    <string name="forgot_your_password">Forgot your password?</string>
+    <string name="dont_have_an_account">Dont have an account?</string>
+    <string name="register_here">Register here!</string>
+    <string name="log_in_button">Log In</string>
+    <string name="destination_home_header">Destination</string>
+    <string name="visits_home_header">Visits</string>
+    <string name="rating_home_header">Rating</string>
+    <string name="visited_button_dest">Visited?</string>
+    <string name="comments_button_dest">Comentarios</string>
+    <string name="favorit_button_dest">Favorit</string>
+    <string name="show_description">Show description</string>
+    <string name="general_data">General data</string>
+    <string name="activities_dest">Activities</string>
+    <string name="sort_destinations_by">Sort all destinations by:</string>
+    <string name="descending_sorting">Descending</string>
+    <string name="ascending_sorting">Ascending</string>
+    <string name="apply_sorting">Apply</string>
+    <string name="no_marked_as_visited">No destinations marked as visited!</string>
+    <string name="visited_header">Visited</string>
+    <string name="no_marked_as_favorites">No destinations marked as favorites!</string>
+    <string name="sort_by_name">Name</string>
+    <string name="sort_by_visits">Visits</string>
+    <string name="sort_by_rating">Rating</string>
+    <string name="sort_by_none">No order</string>
+    <string name="favorits_toolbar">Favorits</string>
+    <string name="dest_no_sequrity_no_info">No info</string>
+    <string name="search_hint">Search...</string>
+    <string name="visited_toolbar">Visited</string>
+    <string name="hide_description">Hide Description</string>
+    <string name="expenses_info">Expenses</string>
+    <string name="currency_info">Currency</string>
+    <string name="safty_index_info">Safety index</string>
+    <string name="country_info">Country</string>
+    <string name="weather_info">Wheather</string>
+    <string name="check_visa_warning_info">Always check visa info on official page!</string>
+    <string name="login_error">Incorrect username or password</string>
+    <string name="server_error_try_later">Something went wrong, please, try later</string>
+    <string name="visited_objective_profile">Visited:</string>
+    <string name="goal_per_year_profile">Goal:</string>
+    <string name="select_new_goal_profile">Select number of destination \n to visit this year</string>
+    <string name="profile_picture_uploaded_success">Profile picture updated successfully</string>
+    <string name="profile_picture_error">Error on uploading new picture, plese, try later</string>
+    <string name="permission_not_granted">Permissions to access the image not granted</string>
+    <string name="email_already_in_use">This email is already registered</string>
+    <string name="email_invalid_error">The email format is invalid</string>
+    <string name="username_length_register_error">The username must be at least 6 characters long</string>
+    <string name="username_all_number_register_error">The username cannot be entirely numeric</string>
+    <string name="register_error_password_doesnt_match">The passwords do not match</string>
+    <string name="register_password_length_error">The password must be at least 6 characters long</string>
+    <string name="preferences_language">Language</string>
+    <string name="preferences_theme">Theme</string>
+    <string name="select_language">Select the language of the application</string>
+    <string name="select_theme">Select the theme of the application</string>
+    <string name="report_text">Details</string>
+    <string name="fill_form_report">Please complete all fields in the form before submitting</string>
+    <string name="report_title">Subject</string>
+    <string name="setting_toolbar_title">Settings</string>
+    <string name="report_toolbar_title">Report</string>
+    <string name="report_title_hint">Short description</string>
+    <string name="please_describe_the_problem_or_suggestion">Please explain the problem or provide a suggestion</string>
+    <string name="submit_button">Submit</string>
+    <string name="entered_header">Date</string>
+    <string name="no_history">No history data!</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="privacy_policy_content">
+        <![CDATA[
+        Introduction\n
+        Our application respects and protects the privacy of our users. This Privacy Policy explains what information we collect and how we use it.\n\n
+        Data Collection\n
+        We collect only necessary information to provide our services. This includes user account information and usage data.\n\n
+        Data Usage\n
+        The data collected is used to improve our services and provide personalized content. We do not share your data with third parties without your consent.\n\n
+        Data Security\n
+        We implement security measures to protect your data. However, no method of transmission over the internet or electronic storage is 100% secure.\n\n
+        Changes to This Policy\n
+        We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page.\n\n
+        Contact Us\n
+        If you have any questions about this Privacy Policy, please contact us at support@example.com.
+        ]]>
+    </string>
+
+    <string name="terms_of_use_title">Terms of Use</string>
+    <string name="terms_of_use_content">
+        <![CDATA[
+        Welcome\n
+        By accessing and using our application, you agree to the following terms and conditions.\n\n
+        User Responsibilities\n
+        Users are responsible for maintaining the confidentiality of their account and password and for restricting access to their devices.\n\n
+        Prohibited Actions\n
+        You may not use the app for any unlawful purpose or engage in any conduct that could harm the app or interfere with another user\'s use of the app.\n\n
+        Intellectual Property\n
+        All content, trademarks, and data on this app are the property of the app\'s creators or are used under license. Unauthorized use is prohibited.\n\n
+        Limitation of Liability\n
+        We are not liable for any direct, indirect, incidental, or consequential damages arising from your use of the app.\n\n
+        Changes to the Terms\n
+        We may update these terms from time to time. Your continued use of the app after any changes indicates your acceptance of the new terms.\n\n
+        Contact Us\n
+        If you have any questions about these Terms of Use, please contact us at support@example.com.
+        ]]>
+    </string>
+    <string name="hint_type_countries">Type countries</string>
+    <string name="please_enter_at_least_one_country">Please enter at least one country</string>
+    <string name="register_choose_at_least_one_country">"You must choose at least one country!"</string>
+
+    <!-- Delete Account -->
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_account_summary">Permanently delete your account</string>
+    <string name="delete_account_title">Are you sure?</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="incentive_dialog_title">Share Your Experience</string>
+    <string name="incentive_dialog_message">Would you like to leave a review about your visit? Your feedback helps other users make informed decisions.</string>
+    <string name="leave_review">Leave Review</string>
+    <string name="later">Later</string>
+
 </resources>

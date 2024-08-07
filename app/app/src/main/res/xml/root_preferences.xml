@@ -1,35 +1,33 @@
-<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory app:title="@string/messages_header">
+    <ListPreference
+        android:key="language_preference"
+        android:title="@string/preferences_language"
+        android:summary="@string/select_language"
+        android:entries="@array/language_entries"
+        android:entryValues="@array/language_values"
+        android:icon="@drawable/ic_language"
+        android:iconTint="?attr/iconTint"
+        android:defaultValue="es"/>
 
-        <EditTextPreference
-            app:key="signature"
-            app:title="@string/signature_title"
-            app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
-            app:defaultValue="reply"
-            app:entries="@array/reply_entries"
-            app:entryValues="@array/reply_values"
-            app:key="reply"
-            app:title="@string/reply_title"
-            app:useSimpleSummaryProvider="true" />
+    <ListPreference
+        android:key="theme_preference"
+        android:title="@string/preferences_theme"
+        android:summary="@string/select_theme"
+        android:entries="@array/theme_entries"
+        android:entryValues="@array/theme_values"
+        android:icon="@drawable/ic_settings_theme"
+        android:fillColor="?attr/iconTint"
+        android:defaultValue="system"/>
 
-    </PreferenceCategory>
-
-    <PreferenceCategory app:title="@string/sync_header">
-
-        <SwitchPreferenceCompat
-            app:key="sync"
-            app:title="@string/sync_title" />
-
-        <SwitchPreferenceCompat
-            app:dependency="sync"
-            app:key="attachment"
-            app:summaryOff="@string/attachment_summary_off"
-            app:summaryOn="@string/attachment_summary_on"
-            app:title="@string/attachment_title" />
-
-    </PreferenceCategory>
+    <Preference
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:icon="@drawable/ic_delete"
+        android:key="delete_account"
+        android:summary="@string/delete_account_summary"
+        android:title="@string/delete_account" />
 
 </PreferenceScreen>

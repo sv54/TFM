@@ -12,16 +12,27 @@ import com.example.tfm.R
 
 class DestinoInfoAdapter(private var itemList: MutableList<ItemInfo> = mutableListOf()) : RecyclerView.Adapter<DestinoInfoAdapter.ViewHolder>() {
 
-    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    companion object {
+        private const val VIEW_TYPE_SIMPLE = 0
+        private const val VIEW_TYPE_FULL = 1
+    }
+
+    inner class ViewHolder(view: View, viewType: Int) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.icInfo)
         val textViewInfoType: TextView = view.findViewById(R.id.infoType)
-        val textViewData: TextView = view.findViewById(R.id.data)
+        val textViewData: TextView? = if (viewType == VIEW_TYPE_FULL) view.findViewById(R.id.data) else null
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        // Aquí puedes definir la lógica para decidir el tipo de vista
+        return if (itemList[position].data.isEmpty()) VIEW_TYPE_SIMPLE else VIEW_TYPE_FULL
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layoutId = if (viewType == VIEW_TYPE_FULL) R.layout.item_info_destino else R.layout.item_info_destino_simple
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_info_destino, parent, false)
-        return ViewHolder(view)
+            .inflate(layoutId, parent, false)
+        return ViewHolder(view, viewType)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -32,8 +43,7 @@ class DestinoInfoAdapter(private var itemList: MutableList<ItemInfo> = mutableLi
             .into(holder.imageView)
 
         holder.textViewInfoType.text = item.info
-        holder.textViewData.text = item.data
-
+        holder.textViewData?.text = item.data
     }
 
     override fun getItemCount(): Int = itemList.size
@@ -46,6 +56,6 @@ class DestinoInfoAdapter(private var itemList: MutableList<ItemInfo> = mutableLi
 
     fun addItem(newItem: ItemInfo) {
         itemList.add(newItem)
-        notifyItemInserted(0)
+        notifyItemInserted(itemList.size - 1) // Cambiado para agregar al final de la lista
     }
 }

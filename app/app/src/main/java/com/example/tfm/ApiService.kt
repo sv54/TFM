@@ -1,4 +1,5 @@
 import com.example.tfm.models.PostComment
+import com.example.tfm.models.Reporte
 import com.example.tfm.models.UserAddFavData
 import com.example.tfm.models.UserAddHistData
 import com.example.tfm.models.UserAddVisitData
@@ -9,7 +10,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -28,7 +28,7 @@ interface ApiService {
     fun buscarDestino(@Query("titulo") titulo: String): Call<JsonArray>
 
     @GET("destinoOrdenado/")
-    fun destinoOrdenado(@Query("tipo") titulo: String): Call<JsonArray>
+    fun destinoOrdenado(@Query("tipo") titulo: String, @Query("ids") ids: String?): Call<JsonArray>
 
     @GET("destino/")
     fun destinosAll(): Call<JsonArray>
@@ -62,6 +62,11 @@ interface ApiService {
     @GET("usuario/{id}")
     fun getUserData(@Path("id") id: Int): Call<JsonObject>
 
+    @DELETE("usuario/{id}")
+    fun deleteUser(@Path("id") id: Int): Call<JsonObject>
+
+    @DELETE("usuarioDeletePhoto/{id}")
+    fun deleteUserPhoto(@Path("id") id: Int): Call<JsonObject>
     @PUT("usuario/updateMetaViajes")
     fun updateMetaViajes(@Body userUpdateMeta: UserUpdateMeta): Call<JsonObject>
 
@@ -69,7 +74,7 @@ interface ApiService {
     @PUT("usuario/changeFoto/{id}")
     fun updateProfilePhoto(
         @Path("id") userId: Int,
-        @Part photo: MultipartBody.Part
+        @Part photo: MultipartBody.Part?
     ): Call<JsonObject>
 
     @POST("favoritos/")
@@ -98,6 +103,9 @@ interface ApiService {
         @Body userDeleteHistoryData: UserAddFavData
     ): Call<JsonObject>
 
+    @GET("historial/{id}")
+    fun getHistoryDestinos(@Path("id") id: Int): Call<JsonArray>
+
 
     @HTTP(method = "DELETE", path = "actividad/{id}/recomendar/", hasBody = true)
     fun deleteRecomendar(
@@ -110,4 +118,7 @@ interface ApiService {
         @Path("id") actividadId: Int,
         @Body request: UsuarioIdRequest
     ): Call<JsonObject>
+
+    @POST("/reportes")
+    fun enviarReporte(@Body reporte: Reporte): Call<JsonObject>
 }

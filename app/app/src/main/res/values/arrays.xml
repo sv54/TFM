@@ -1,9 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sort_options">
-        <item>Nombre</item>
-        <item>Número de Visitas</item>
-        <item>Puntuación</item>
-        <item>Sin Ordenar</item>
+        <item>@string/sort_by_name</item>
+        <item>@string/sort_by_visits</item>
+        <item>@string/sort_by_rating</item>
+        <item>@string/sort_by_none</item>
     </string-array>
+
+    <string-array name="country_options">
+        <item>@string/sort_all_counties</item>
+        <item>@string/sort_my_country</item>
+        <item>@string/sort_list_of_countries</item>
+    </string-array>
+
+    <string-array name="language_entries">
+        <item>Español</item>
+        <item>English</item>
+    </string-array>
+    <string-array name="language_values">
+        <item>es</item>
+        <item>en</item>
+    </string-array>
+
+    <string-array name="theme_entries">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System Default</item>
+    </string-array>
+    <string-array name="theme_values">
+        <item>light</item>
+        <item>dark</item>
+        <item>system</item>
+    </string-array>
+    <string name="sort_all_counties">All counties</string>
+    <string name="sort_my_country">My country</string>
+    <string name="sort_list_of_countries">Selected countries</string>
 </resources>

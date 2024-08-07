@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.tfm.OnItemVisitedClickListener
 import com.example.tfm.R
 import com.example.tfm.adapters.VisitedAdapter
+import com.example.tfm.models.ItemDestinoHistory
 import com.example.tfm.models.ItemDestinoVisitado
 import com.google.gson.JsonArray
 import retrofit2.Call
@@ -34,7 +35,7 @@ class VisistedActivity : AppCompatActivity(), OnItemVisitedClickListener {
 
         setSupportActionBar(findViewById(R.id.my_toolbar_visited))
         supportActionBar?.setDisplayShowTitleEnabled(true)
-        supportActionBar?.title = "Visitados"
+        supportActionBar?.title = getString(R.string.visited_toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         recyclerView = findViewById(R.id.visited_main_content)

@@ -11,15 +11,17 @@
         android:layout_height="wrap_content">
 
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/AppIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_marginTop="64dp"
-            android:src="@drawable/ic_add_photo"
+            android:scaleType="fitXY"
+            android:src="@mipmap/ic_app"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearanceOverlay="@style/RoundedCorners" />
 
         <EditText
             android:id="@+id/editEmailLogin"
@@ -28,11 +30,12 @@
             android:layout_marginHorizontal="32dp"
             android:layout_marginTop="32dp"
             android:ems="10"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/AppIcon" />
+            app:layout_constraintTop_toBottomOf="@+id/AppIcon"
+            android:autofillHints="emailAddress" />
 
         <EditText
             android:id="@+id/editPasswordLogin"
@@ -41,11 +44,12 @@
             android:layout_marginHorizontal="32dp"
             android:layout_marginTop="32dp"
             android:ems="10"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editEmailLogin" />
+            app:layout_constraintTop_toBottomOf="@+id/editEmailLogin"
+            android:autofillHints="password" />
 
         <CheckBox
             android:id="@+id/checkBox"
@@ -55,6 +59,7 @@
             android:layout_marginTop="24dp"
             android:text="Remember Me"
             android:textSize="18sp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textErrorLogin" />
@@ -64,7 +69,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
-            android:text="Log In"
+            android:text="@string/log_in_button"
+            android:textColor="?android:attr/textColorPrimary"
+            app:iconTint="?attr/iconTint"
             android:minWidth="128dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,8 +82,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_marginTop="8dp"
             android:padding="8dp"
-            android:text="Forgot your password?"
+            android:text="@string/forgot_your_password"
             android:textColor="@color/blue_700"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="@+id/buttonLogin"
@@ -87,6 +95,7 @@
             android:id="@+id/linearLayoutCompat"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -96,7 +105,7 @@
                 android:id="@+id/textDontHaveAcc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Dont have an account?"
+                android:text="@string/dont_have_an_account"
                 android:textColor="?android:attr/textColorPrimary"
                 android:textSize="18sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -108,7 +117,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:padding="8dp"
-                android:text="Register here!"
+                android:text="@string/register_here"
                 android:textColor="@color/blue_700"
                 android:textSize="18sp"
                 app:layout_constraintEnd_toEndOf="parent"

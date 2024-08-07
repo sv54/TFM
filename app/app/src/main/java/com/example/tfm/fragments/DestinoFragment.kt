@@ -8,6 +8,9 @@ import android.animation.ValueAnimator
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +20,8 @@ import android.widget.DatePicker
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -71,6 +76,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
     private lateinit var carouselAdapter: CarouselAdapter
 
     private lateinit var textViewDescription: TextView
+    private lateinit var textViewActividades: TextView
 
     private lateinit var buttonFavorito: MaterialButton
     private lateinit var buttonVisitado: MaterialButton
@@ -112,7 +118,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         recyclerInfo.layoutManager = LinearLayoutManager(requireContext())
 
         textViewDescription = rootView.findViewById(R.id.description)
-
+        textViewActividades = rootView.findViewById(R.id.textActividadesList)
 
         buttonFavorito = rootView.findViewById(R.id.buttonProfileVisitados)
         buttonVisitado = rootView.findViewById(R.id.buttonVisitado)
@@ -183,9 +189,13 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 // Configurar la fecha máxima (hoy)
                 val maxDate = Calendar.getInstance().timeInMillis
                 datePickerDialog.datePicker.maxDate = maxDate
-
+                datePickerDialog.setOnDismissListener {
+                    // Mostrar el diálogo de incentivación una vez que se haya cerrado el DatePickerDialog
+                    showIncentiveDialog()
+                }
                 // Mostrar el DatePickerDialog
                 datePickerDialog.show()
+
             }
         }
 
@@ -195,14 +205,14 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
             if (contentLayout.visibility == View.GONE) {
                 expand(contentLayout)
                 contentLayout.visibility = View.VISIBLE
-                toggleButton.text = "Ocultar descripcion"
+                toggleButton.text = getString(R.string.hide_description)
                 toggleButton.icon = ResourcesCompat.getDrawable(resources,
                     R.drawable.ic_arrow_dropup, null)
 
             } else {
                 collapse(contentLayout)
                 contentLayout.visibility = View.GONE
-                toggleButton.text = "Mostrar descripcion"
+                toggleButton.text = getString(R.string.show_description)
                 toggleButton.icon = ResourcesCompat.getDrawable(resources,
                     R.drawable.ic_arrow_dropdown, null)
 
@@ -213,6 +223,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         buttonComentarios.setOnClickListener{
             val intent = Intent(activity, CommentActivity::class.java)
             intent.putExtra("DESTINOID", destinoId)
+            intent.putExtra("DESTINOTITULO", destino.titulo)
             startActivity(intent)
         }
 
@@ -220,6 +231,44 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         return rootView
     }
 
+    private fun showIncentiveDialog() {
+
+        val iconDrawable: Drawable? = ContextCompat.getDrawable(requireContext(), R.drawable.ic_add_comment)
+        if(isDarkTheme()) {
+            iconDrawable?.setColorFilter(
+                ContextCompat.getColor(requireContext(), R.color.white),
+                PorterDuff.Mode.SRC_ATOP
+            )
+        }
+        else {
+            iconDrawable?.setColorFilter(
+                ContextCompat.getColor(requireContext(), R.color.black),
+                PorterDuff.Mode.SRC_ATOP
+            )
+        }
+
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.incentive_dialog_title)
+            .setMessage(R.string.incentive_dialog_message)
+            .setPositiveButton(R.string.leave_review) { dialog, _ ->
+                val intent = Intent(requireContext(), CommentActivity::class.java)
+                intent.putExtra("POSTCOMMENT", true)
+                intent.putExtra("DESTINOID", destinoId)
+                intent.putExtra("DESTINOTITULO", destino.titulo)
+                startActivity(intent)
+                dialog.dismiss()
+            }
+            .setNegativeButton(R.string.later) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setIcon(iconDrawable)
+            .show()
+    }
+
+    private fun isDarkTheme(): Boolean {
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
+    }
     private fun addToHistory(){
         val calendar = Calendar.getInstance()
         val timestamp = calendar.timeInMillis
@@ -280,6 +329,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 if (response.isSuccessful) {
                     SharedPreferencesManager.addVisited(requireContext(), Visited(userId, destinoId!!, timestamp))
                 } else {
+                    Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                     // Manejar error en la respuesta
                     Log.e("tagg", "Error en la respuesta: ${response.message()}")
 
@@ -287,6 +337,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 }
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 // Manejar fallo en la solicitud
                 Log.e("tagg", "Error en la solicitud: ${t.message}")
             }
@@ -304,6 +355,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 if (response.isSuccessful) {
                     SharedPreferencesManager.removeVisited(requireContext(), destinoId!!)
                 } else {
+                    Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                     // Manejar error en la respuesta
                     Log.e("tagg", "Error en la respuesta: ${response.message()}")
 
@@ -311,6 +363,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 }
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 // Manejar fallo en la solicitud
                 Log.e("tagg", "Error en la solicitud: ${t.message}")
             }
@@ -320,7 +373,6 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
     private fun addToFavoritos(){
         val sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
         val userId = sharedPreferences.getInt("UserId", -1)
-        Log.d("tagg", "Agregamos a favoritos del destino con id $destinoId y usuario con id $userId")
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
         val call = apiService.addToFavoritos(UserAddFavData(userId, destinoId!!))
         call.enqueue(object : Callback<JsonObject> {
@@ -328,6 +380,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 if (response.isSuccessful) {
                     SharedPreferencesManager.addFavorite(requireContext(), Favorite(userId, destinoId!!))
                 } else {
+                    Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                     // Manejar error en la respuesta
                     Log.e("tagg", "Error en la respuesta: ${response.message()}")
 
@@ -335,6 +388,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 }
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 // Manejar fallo en la solicitud
                 Log.e("tagg", "Error en la solicitud: ${t.message}")
             }
@@ -352,6 +406,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 if (response.isSuccessful) {
                     SharedPreferencesManager.removeFavorite(requireContext(), Favorite(userId, destinoId!!))
                 } else {
+                    Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                     // Manejar error en la respuesta
                     Log.e("tagg", "Error en la respuesta: ${response.message()}")
 
@@ -359,6 +414,7 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
                 }
             }
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 // Manejar fallo en la solicitud
                 Log.e("tagg", "Error en la solicitud: ${t.message}")
             }
@@ -470,8 +526,9 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
 
         carouselAdapter.updateItems(destino.imagenes)
 
-        infoAdapter.addItem(ItemInfo(R.drawable.ic_expenses, "Gasto", destino.gastoDia.toString() + "/dia"))
-        infoAdapter.addItem(ItemInfo(R.drawable.ic_currency, "Moneda", destino.moneda))
+        infoAdapter.addItem(ItemInfo(R.drawable.ic_expenses, getString(R.string.expenses_info), destino.gastoDia.toString() + "/dia"))
+        infoAdapter.addItem(ItemInfo(R.drawable.ic_currency, getString(R.string.currency_info), destino.moneda))
+        infoAdapter.addItem(ItemInfo(R.drawable.ic_map, getString(R.string.country_info), destino.pais))
 
         val icSeguridad: Int
         var dataSeguridad: String = destino.indiceSeguridad.toString()
@@ -489,19 +546,25 @@ class DestinoFragment : Fragment(), ApiListener, DestinoActividadAdapter.OnItemC
         }
         else{
             icSeguridad = R.drawable.ic_shield_question
-            dataSeguridad = "No info"
+            dataSeguridad = getString(R.string.dest_no_sequrity_no_info)
         }
-        infoAdapter.addItem(ItemInfo(icSeguridad, "Indice de Seguridad", dataSeguridad))
-        infoAdapter.addItem(ItemInfo(R.drawable.ic_weather, "Clima", destino.clima))
-        infoAdapter.addItem(ItemInfo(R.drawable.ic_map, "Pais", destino.pais))
-//        infoAdapter.addItem(mutableListOf(ItemInfo(R.drawable.ic_warning, "Visado", destino.pais)))
-        Log.i("tagg", "recomendados: " + SharedPreferencesManager.getRecommended(requireContext()))
+        infoAdapter.addItem(ItemInfo(icSeguridad, getString(R.string.safty_index_info), dataSeguridad))
+        infoAdapter.addItem(ItemInfo(R.drawable.ic_weather, getString(R.string.weather_info), destino.clima))
+        infoAdapter.addItem(ItemInfo(R.drawable.ic_warning, getString(R.string.check_visa_warning_info), ""))
+        //Log.i("tagg", "recomendados: " + SharedPreferencesManager.getRecommended(requireContext()))
 
         for (actividad in destino.actividades){
-            Log.i("tagg", "is activity recommende with id: "+actividad.id + " --> " + SharedPreferencesManager.isActivityRecommended(requireContext() ,actividad.id))
+            //Log.i("tagg", "is activity recommende with id: "+actividad.id + " --> " + SharedPreferencesManager.isActivityRecommended(requireContext() ,actividad.id))
             actividad.recomendado = SharedPreferencesManager.isActivityRecommended(requireContext() ,actividad.id)
         }
+        if(destino.actividades.isEmpty()){
+            textViewActividades.visibility = View.GONE
+        }
+        else{
+            textViewActividades.visibility = View.VISIBLE
+        }
         activityAdapter.updateItems(destino.actividades)
+
     }
 
     override fun onEventFailed() {

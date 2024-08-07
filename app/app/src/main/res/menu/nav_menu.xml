@@ -8,10 +8,10 @@
             android:id="@+id/nav_explore"
             android:icon="@drawable/ic_explore"
             android:title="@string/menu_home" />
-        <item
-            android:id="@+id/nav_filter"
-            android:icon="@drawable/ic_filter"
-            android:title="@string/menu_gallery" />
+<!--        <item-->
+<!--            android:id="@+id/nav_filter"-->
+<!--            android:icon="@drawable/ic_filter"-->
+<!--            android:title="@string/menu_gallery" />-->
         <item
             android:id="@+id/nav_history"
             android:icon="@drawable/ic_history"
@@ -28,7 +28,7 @@
         <item
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help"
-            android:title="@string/menu_about" />
+            android:title="@string/menu_report" />
         <item
             android:id="@+id/nav_privacy"
             android:icon="@drawable/ic_privacy"

@@ -36,7 +36,7 @@ class FavoritesActivity : AppCompatActivity(), OnItemClickListener {
 
         setSupportActionBar(findViewById(R.id.my_toolbar_favorite))
         supportActionBar?.setDisplayShowTitleEnabled(true)
-        supportActionBar?.title = "Favoritos"
+        supportActionBar?.title = getString(R.string.favorits_toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         cardViewHeader = findViewById(R.id.cardViewHeaderFav)

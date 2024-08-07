@@ -114,7 +114,6 @@ class RegisterFragment : Fragment(), ApiListener {
             if (countryId != null) {
                 finalPais = countryId
             }
-            // Usa countryId según sea necesario
         }
 
 
@@ -122,14 +121,17 @@ class RegisterFragment : Fragment(), ApiListener {
         emailEdit.setText("email@gmail.com")
         passwordEdit.setText("123456")
         passwordRepeatEdit.setText("123456")
-        if (checkPermission()) {
-        } else {
-            requestPermission()
-        }
+        //TODO delete this part
+
+
 
         addPhotoButton = rootView.findViewById(R.id.buttonAddPhoto)
         addPhotoButton.setOnClickListener{
-            pickImageFromGallery()
+            if (checkPermission()) {
+                pickImageFromGallery()
+            } else {
+                requestPermission()
+            }
         }
 
         backButton = rootView.findViewById(R.id.buttonBackToLogin)
@@ -146,7 +148,7 @@ class RegisterFragment : Fragment(), ApiListener {
             val password = passwordEdit.text.toString()
 
             if(finalPais < 1){
-                setErrorMessage("Debe seleccionar el pais!")
+                setErrorMessage(getString(R.string.register_choose_at_least_one_country))
             }
             else {
 
@@ -282,7 +284,7 @@ class RegisterFragment : Fragment(), ApiListener {
 
 
     override fun onEventFailed() {
-        setErrorMessage("Este email ya esta registrado")
+        setErrorMessage(getString(R.string.email_already_in_use))
     }
 
 
@@ -311,19 +313,19 @@ class RegisterFragment : Fragment(), ApiListener {
 
     private fun checkData(data: UserRegisterData): String {
         if (!isValidEmail(data.email)) {
-            return "El formato del correo electrónico no es válido"
+            return getString(R.string.email_invalid_error)
         }
         if (data.username.length < 6) {
-            return "El nombre de usuario debe tener al menos 6 caracteres y no puede ser completamente numérico"
+            return getString(R.string.username_length_register_error)
         }
         if (data.username.all { it.isDigit() }) {
-            return "El nombre de usuario no puede ser completamente numérico"
+            return getString(R.string.username_all_number_register_error)
         }
         if (data.password != passwordRepeatEdit.text.toString()) {
-            return "Las contraseñas no coinciden"
+            return getString(R.string.register_error_password_doesnt_match)
         }
         if (data.password.length < 6) {
-            return "La contraseña debe tener al menos 6 caracteres"
+            return getString(R.string.register_password_length_error)
         }
         return "ok"
     }
@@ -364,9 +366,9 @@ class RegisterFragment : Fragment(), ApiListener {
 
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido, procede con la lógica para seleccionar la imagen
+                pickImageFromGallery()
             } else {
-                Toast.makeText(requireContext(), "Permisos para obtener la imagen no concedidos", Toast.LENGTH_LONG)
+                Toast.makeText(requireContext(), getString(R.string.permission_not_granted), Toast.LENGTH_LONG).show()
             }
         }
     }

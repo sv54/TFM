@@ -5,8 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="4dp"
     android:background="@drawable/round_background"
-    android:elevation="4dp"
-    android:clickable="true">
+    android:clickable="true"
+    android:elevation="4dp">
 
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -36,10 +36,9 @@
         android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/item_fecha_visitado"
-        app:layout_constraintStart_toEndOf="@id/previewImageVisitado"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintHorizontal_weight="0.50"
-        />
+        app:layout_constraintStart_toEndOf="@id/previewImageVisitado"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/item_fecha_visitado"
@@ -68,7 +67,6 @@
         android:layout_marginBottom="2dp"
         android:paddingStart="6dp"
         android:paddingTop="2dp"
-        android:text="TextView"
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"

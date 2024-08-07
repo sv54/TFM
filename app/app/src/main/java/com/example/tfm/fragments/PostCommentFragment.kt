@@ -116,9 +116,6 @@ class PostCommentFragment : BottomSheetDialogFragment() {
     }
 
     private fun postComentario(){
-
-        Log.i("tagg", "posting comment")
-
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
         val userId = sharedPreferences.getInt("UserId", -1)
         val username = sharedPreferences.getString("UserUsername", "")!!
@@ -146,13 +143,13 @@ class PostCommentFragment : BottomSheetDialogFragment() {
                     dismiss()
                 } else {
                     Log.e("tagg", response.body().toString())
-                    Toast.makeText(requireContext(), "Something went wrong, try later", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
 
                 }
             }
 
             override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                Toast.makeText(requireContext(), "Something went wrong, try later", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), getString(R.string.server_error_try_later), Toast.LENGTH_SHORT).show()
                 Log.i("tagg", "en el failure pues " + t.message)
             }
         })

@@ -8,8 +8,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Ordenar todos destinos por:"
-        android:textColor="@android:color/black"
+        android:text="@string/sort_destinations_by"
+        android:textColor="?android:attr/textColorPrimary"
         android:textSize="18sp" />
 
     <!-- Spinner para seleccionar el tipo de ordenamiento -->
@@ -38,26 +38,63 @@
             android:id="@+id/radio_desc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Descendente"
+            android:text="@string/descending_sorting"
             android:checked="true" />
 
         <RadioButton
             android:id="@+id/radio_asc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ascendente" />
+            android:text="@string/ascending_sorting" />
     </RadioGroup>
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="12dp"/>
     <!-- Botón Aplicar -->
+    <Spinner
+        android:id="@+id/spinner_country"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/spinner_background"
+        android:entries="@array/country_options"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:spinnerMode="dropdown" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="12dp"/>
+
+    <MultiAutoCompleteTextView
+        android:id="@+id/selectCountries"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_type_countries" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="12dp" />
+
+    <TextView
+        android:id="@+id/textErrorSort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/please_enter_at_least_one_country" />
+
     <Button
         android:id="@+id/btn_apply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Aplicar"
+        android:text="@string/apply_sorting"
         android:textSize="18sp"
         android:layout_marginTop="16dp"
-        android:textColor="@android:color/black"
+        android:textColor="?android:attr/textColorPrimary"
         android:paddingVertical="12dp"
         android:paddingHorizontal="16dp"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="364dp" />
 
 </LinearLayout>

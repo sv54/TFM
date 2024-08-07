@@ -36,10 +36,12 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:drawableStart="@drawable/ic_not_checked"
-            android:text="Visitado?"
+            android:text="@string/visited_button_dest"
+            android:textColor="?android:attr/textColorPrimary"
             app:icon="@drawable/ic_not_checked"
             app:iconGravity="start"
             app:iconSize="24dp"
+            app:iconTint="?attr/iconTint"
             app:layout_constraintEnd_toStartOf="@+id/buttonProfileVisitados"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/sub_service_list_view_cont" />
@@ -53,10 +55,12 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="32dp"
-            android:text="Comentarios"
+            android:text="@string/comments_button_dest"
+            android:textColor="?android:attr/textColorPrimary"
             app:icon="@drawable/ic_comments"
             app:iconGravity="start"
             app:iconSize="24dp"
+            app:iconTint="?attr/iconTint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +71,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="Favorito"
+            android:text="@string/favorit_button_dest"
+            android:textColor="?android:attr/textColorPrimary"
+            app:iconTint="?attr/iconTint"
             app:icon="@drawable/ic_heart"
             app:iconSize="24dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -88,15 +94,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:paddingLeft="0dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:paddingTop="0dp"
                 android:paddingBottom="0dp"
-                android:text="Mostrar descripcion"
+                android:text="@string/show_description"
                 android:textColor="?android:attr/textColorPrimary"
                 app:icon="@drawable/ic_arrow_dropdown"
                 app:iconGravity="end"
                 app:iconSize="36dp"
-                app:iconTint="@color/black" />
+                app:iconTint="?attr/iconTint" />
 
             <LinearLayout
                 android:id="@+id/descriptionContent"
@@ -112,8 +119,7 @@
                     android:layout_margin="8dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:background="@color/white"
-                    android:text="Description of Destination"
+                    android:text="Description of a Destination"
                     android:textColor="?android:attr/textColorPrimary"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -131,7 +137,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionContainer"
+            app:layout_constraintTop_toBottomOf="@+id/textView3"
             tools:itemCount="1"
             tools:listitem="@layout/item_info_destino" />
 
@@ -141,11 +147,35 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:layout_marginVertical="16dp"
+            android:layout_marginVertical="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerInfo"
+            app:layout_constraintTop_toBottomOf="@+id/textActividadesList"
             tools:itemCount="1"
             tools:listitem="@layout/item_actividad" />
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/general_data"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionContainer" />
+
+        <TextView
+            android:id="@+id/textActividadesList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/activities_dest"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="20sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerInfo" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

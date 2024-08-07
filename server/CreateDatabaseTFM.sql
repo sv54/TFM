@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS Actividad;
 DROP TABLE IF EXISTS Favoritos;
 DROP TABLE IF EXISTS Visitados;
 DROP TABLE IF EXISTS Historial;
+DROP TABLE IF EXISTS Reporte;
 
 CREATE TABLE IF NOT EXISTS Continente (
     id INTEGER PRIMARY KEY,
@@ -413,8 +414,18 @@ CREATE TABLE IF NOT EXISTS  Historial (
   usuarioId INTEGER,
   destinoId INTEGER,
   fechaEntrado INTEGER,
-  FOREIGN KEY (usuarioId) REFERENCES Usuario(id),
-  FOREIGN KEY (destinoId) REFERENCES Destino(id)
+  FOREIGN KEY (usuarioId) REFERENCES Usuario(id) ON DELETE CASCADE,
+  FOREIGN KEY (destinoId) REFERENCES Destino(id),
+  UNIQUE (usuarioId, destinoId)
+);
+
+CREATE TABLE Reporte (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    titulo TEXT NOT NULL,
+    textoReporte TEXT NOT NULL,
+    timestamp INTEGER NOT NULL,
+    id_usuario INTEGER NOT NULL,
+    FOREIGN KEY (id_usuario) REFERENCES Usuario(id)
 );
 
 
