@@ -9,6 +9,7 @@
 -- Select * from Recomendacion;
 SELECT * From Usuario;
 SELECT * From Destino;
+SELECT * From Comentario where destinoId = 5;
 
 -- SELECT * From Destino;
 -- SELECT * From Actividad;

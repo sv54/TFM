@@ -25,7 +25,7 @@ import retrofit2.Response
 class CommentFragment : Fragment(), ApiListener, CommentsAdapter.OnLoadMoreListener{
     private lateinit var recyclerView: RecyclerView
     //private lateinit var adapter: CommentsAdapter
-    private var actualIndex = 1
+    private var actualIndex = 0
     private var destinoId = -1
 
 //    private var commentsList: MutableList<ItemComment> = mutableListOf()

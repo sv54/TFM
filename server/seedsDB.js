@@ -29,7 +29,7 @@ var usuariosEjemplo = [
 		fotoPerfil: 'ruta/a/la/foto_pedro.jpg'
 	}
 ];
-
+// #region Destinos
 const destinoEjemplo = [
 	{
 		titulo: "Madrid",
@@ -411,6 +411,166 @@ const actividadesEjemplo = [
 	}
 ];
 
+// #region Comentarios Textos
+const textoPositivo = [
+    "Me sentí renovado después de este viaje.",
+    "Cada momento fue una nueva aventura.",
+    "Volví con recuerdos inolvidables.",
+    "Conocí gente maravillosa en el camino.",
+    "Disfruté cada segundo del viaje.",
+    "Fue una experiencia que superó mis expectativas.",
+    "Todo salió perfecto durante el viaje.",
+    "Me encantó descubrir cosas nuevas.",
+    "Volví con una perspectiva renovada.",
+    "El viaje fue una mezcla perfecta de relajación y emoción.",
+    "Este viaje fue exactamente lo que necesitaba.",
+    "Regresé a casa lleno de energía.",
+    "Me llevé muchas enseñanzas de este viaje.",
+    "El viaje fue mejor de lo que esperaba.",
+    "Viví momentos muy especiales.",
+    "El itinerario fue impecable.",
+    "Tuve la oportunidad de desconectarme por completo.",
+    "El viaje fue una experiencia enriquecedora.",
+    "Disfruté de cada pequeño detalle.",
+    "Fue un viaje lleno de emociones positivas.",
+    "Me sorprendí gratamente con todo lo que viví.",
+    "Volvería a hacerlo sin dudarlo.",
+    "Me llevé recuerdos que atesoraré siempre.",
+    "Fue un viaje que superó todas mis expectativas.",
+    "Disfruté cada instante de esta experiencia.",
+    "Me sentí conectado con el entorno.",
+    "La organización del viaje fue excelente.",
+    "Cada día trajo una nueva sorpresa.",
+    "Me sentí pleno y satisfecho.",
+    "El viaje me llenó de alegría.",
+    "Fue una experiencia que recordaré toda la vida.",
+    "Disfruté mucho explorando nuevos lugares.",
+    "Volví con el corazón lleno de gratitud.",
+    "Este viaje me dio una nueva perspectiva.",
+    "Fue una experiencia transformadora.",
+    "Cada día fue una aventura diferente.",
+    "El viaje fue todo lo que había soñado.",
+    "Me siento afortunado de haber vivido esto.",
+    "Fue un viaje lleno de momentos inolvidables.",
+    "Volví con una nueva energía.",
+    "Disfruté de cada momento del viaje.",
+    "Me llevé recuerdos increíbles.",
+    "Fue un viaje lleno de sorpresas agradables.",
+    "El viaje fue una experiencia muy enriquecedora.",
+    "Me encantó cada parte de este viaje.",
+    "Todo fue mejor de lo que imaginé.",
+    "Volví sintiéndome completamente renovado.",
+    "Este viaje fue una experiencia única.",
+    "Me sentí completamente feliz durante el viaje.",
+    "Fue una experiencia que me dejó sin palabras.",
+    "El viaje me llenó de inspiración.",
+	"El viaje fue una experiencia maravillosa, con muchas oportunidades para explorar y descubrir cosas nuevas. Aunque hubo algunos momentos desafiantes, en general, me sentí satisfecho con todo lo que viví.",
+    "Me encantó la forma en que todo estuvo organizado, lo que hizo que cada día fuera una nueva aventura sin preocupaciones. Los lugares que visité fueron fascinantes y me dejaron con ganas de más.",
+    "Este viaje superó mis expectativas en muchos aspectos. Pude disfrutar de momentos tranquilos y también de actividades emocionantes, lo que lo hizo muy equilibrado.",
+    "La combinación de actividades y tiempo libre fue perfecta, permitiéndome disfrutar del viaje a mi propio ritmo. Me llevé muchos recuerdos que atesoraré por siempre.",
+    "Cada día fue una sorpresa agradable, desde la comida hasta las vistas espectaculares. Este viaje fue justo lo que necesitaba para desconectar y recargar energías.",
+    "El itinerario estuvo bien pensado, lo que me permitió aprovechar al máximo cada momento. Regresé a casa sintiéndome renovado y satisfecho con mi experiencia.",
+    "Las experiencias que viví durante este viaje fueron únicas y emocionantes. Me encantó cada momento y me llevé muchos recuerdos especiales.",
+    "Disfruté muchísimo de las actividades que hicimos, y la atención al detalle en la organización hizo que todo fuera muy fluido y agradable. Definitivamente recomendaría esta experiencia.",
+    "Me encantó la mezcla de relajación y aventura que ofreció este viaje. Fue una experiencia bien equilibrada que me permitió disfrutar de lo mejor de ambos mundos.",
+    "Este viaje fue una excelente manera de desconectar de la rutina y vivir nuevas experiencias. Pude explorar, aprender y relajarme en igual medida, lo cual fue perfecto.",
+    "Me sorprendió gratamente la calidad de las actividades y las experiencias que tuvimos. Cada día fue una nueva aventura que disfruté al máximo.",
+    "Este viaje fue una mezcla perfecta de cultura, naturaleza y descanso. Cada momento fue especial y me permitió desconectar completamente de la rutina.",
+    "La organización del viaje fue impecable, lo que hizo que cada experiencia fuera aún más agradable. Disfruté mucho de todo lo que hice y de las personas que conocí en el camino.",
+    "Fue un viaje increíblemente gratificante, con un equilibrio perfecto entre actividades y tiempo libre. Pude disfrutar del entorno y también relajarme por completo.",
+    "Disfruté cada momento del viaje, desde los paisajes hasta las experiencias culturales. Fue una oportunidad única para desconectar y disfrutar al máximo.",
+    "Me encantó la variedad de actividades y lugares que pude visitar durante este viaje. Cada día fue una nueva oportunidad para descubrir algo nuevo y emocionante.",
+    "Este viaje fue exactamente lo que necesitaba para recargar energías. La combinación de aventura y relajación fue perfecta y regresé a casa sintiéndome renovado.",
+    "Cada detalle estuvo bien pensado, lo que hizo que el viaje fuera muy fluido y agradable. Me llevé recuerdos increíbles y muchas experiencias enriquecedoras.",
+    "Este viaje me ofreció justo la cantidad adecuada de aventura y descanso. Disfruté cada día al máximo y me llevé muchos recuerdos especiales a casa.",
+    "La planificación del viaje fue excelente, lo que me permitió disfrutar sin preocupaciones. Cada actividad fue emocionante y me dejó con ganas de más.",
+    "Disfruté mucho de la variedad de experiencias que ofreció este viaje. Pude explorar, aprender y relajarme, todo en un solo viaje.",
+    "Este viaje fue una experiencia completa que combinó lo mejor de la aventura y la relajación. Regresé a casa sintiéndome pleno y satisfecho.",
+    "La atención al detalle durante el viaje fue impresionante, lo que hizo que cada momento fuera especial. Me encantó cada parte de esta experiencia.",
+    "Me sorprendió lo bien organizado que estuvo todo. Pude disfrutar de cada actividad y también tener tiempo para relajarme y disfrutar del entorno.",
+    "Este viaje fue una combinación perfecta de emoción y tranquilidad. Cada día ofreció algo nuevo y emocionante, lo que hizo que la experiencia fuera inolvidable.",
+    "Disfruté mucho de cada actividad y del tiempo que tuve para relajarme. Fue un viaje bien equilibrado que me permitió disfrutar al máximo.",
+    "El viaje superó mis expectativas en todos los aspectos. Desde la organización hasta las actividades, todo fue perfecto y me permitió disfrutar al máximo.",
+    "La variedad de experiencias que viví durante este viaje fue impresionante. Pude disfrutar de momentos de aventura, pero también de relajación y tranquilidad.",
+    "Me encantó la forma en que el viaje estuvo organizado, lo que me permitió aprovechar al máximo cada momento. Volví a casa con muchos recuerdos especiales.",
+    "Este viaje fue una excelente combinación de exploración y descanso. Pude disfrutar de lo mejor de ambos mundos y regresar a casa sintiéndome renovado.",
+    "Cada actividad fue una nueva aventura que disfruté al máximo. Me encantó la diversidad de experiencias que viví durante este viaje.",
+    "Disfruté muchísimo de cada momento del viaje. La combinación de actividades y tiempo libre fue perfecta, lo que hizo que la experiencia fuera inolvidable.",
+    "La organización del viaje fue excelente, lo que me permitió disfrutar de cada actividad sin preocupaciones. Me llevé muchos recuerdos especiales.",
+    "Este viaje fue una experiencia enriquecedora que me permitió desconectar y disfrutar de nuevas experiencias. Volvería a hacerlo sin dudarlo.",
+    "Disfruté mucho de la diversidad de experiencias que ofreció este viaje. Cada día fue una nueva oportunidad para descubrir algo emocionante.",
+    "Este viaje fue justo lo que necesitaba para recargar energías. La combinación de aventura y descanso fue perfecta y me permitió disfrutar al máximo.",
+    "Cada detalle del viaje estuvo bien pensado, lo que hizo que la experiencia fuera muy agradable. Me llevé muchos recuerdos inolvidables a casa.",
+    "Me encantó la variedad de actividades y lugares que pude explorar durante este viaje. Fue una experiencia completa y muy gratificante.",
+    "Disfruté cada momento de este viaje, desde las actividades hasta los momentos de relajación. Fue una experiencia muy equilibrada y placentera.",
+    "La planificación del viaje fue impecable, lo que me permitió disfrutar al máximo de cada actividad. Regresé a casa sintiéndome completamente satisfecho.",
+    "Este viaje fue una excelente manera de desconectar de la rutina y vivir nuevas experiencias. Pude explorar, aprender y relajarme, todo en un solo viaje.",
+    "Disfruté mucho de la combinación de aventura y descanso que ofreció este viaje. Fue una experiencia muy completa que me dejó con ganas de más.",
+    "La atención al detalle durante el viaje fue impresionante, lo que hizo que cada momento fuera especial. Me encantó cada parte de esta experiencia.",
+    "Este viaje superó mis expectativas en todos los aspectos. Desde la organización hasta las actividades, todo fue perfecto y me permitió disfrutar al máximo.",
+    "Me encantó la variedad de actividades y experiencias que ofreció este viaje. Pude disfrutar de momentos de aventura y también de relajación.",
+    "Disfruté mucho de cada actividad y del tiempo que tuve para relajarme. Fue un viaje bien equilibrado que me permitió disfrutar al máximo.",
+    "Este viaje fue una combinación perfecta de emoción y tranquilidad. Cada día ofreció algo nuevo y emocionante, lo que hizo que la experiencia fuera inolvidable.",
+    "La organización del viaje fue excelente, lo que me permitió disfrutar de cada actividad sin preocupaciones. Me llevé muchos recuerdos especiales.",
+    "Cada día fue una sorpresa agradable, desde la comida hasta las vistas espectaculares. Este viaje fue justo lo que necesitaba para desconectar y recargar energías.",
+    "Disfruté muchísimo de las actividades que hicimos, y la atención al detalle en la organización hizo que todo fuera muy fluido y agradable. Definitivamente recomendaría esta experiencia.",
+];
+
+const textoMediano = [
+    "El viaje fue bastante agradable, aunque hubo algunos contratiempos.",
+    "Disfruté de varias partes del viaje, pero no todo fue perfecto.",
+    "Fue un viaje decente, pero me esperaba un poco más.",
+    "Hubo momentos buenos, pero también algunos desafíos.",
+    "El viaje cumplió su propósito, aunque no fue extraordinario.",
+    "Fue una experiencia interesante, aunque no todo salió como esperaba.",
+    "Tuve un tiempo aceptable, aunque podría haber sido mejor.",
+    "El viaje fue satisfactorio en general, aunque algunos detalles no me convencieron.",
+    "La experiencia fue buena, pero no tan memorable como esperaba.",
+    "Hubo momentos agradables, pero también algunos inconvenientes.",
+    "El viaje estuvo bien, aunque algunas cosas podrían mejorarse.",
+    "Tuve una experiencia mixta, con aspectos buenos y otros no tanto.",
+    "El viaje fue bueno, pero no superó mis expectativas.",
+    "Disfruté algunas partes del viaje, aunque no todas.",
+    "Fue un viaje aceptable, pero con algunos altibajos.",
+    "El viaje fue bastante estándar, sin grandes sorpresas.",
+    "Me gustó el viaje, aunque no todo salió según lo planeado.",
+    "Hubo momentos destacables, pero también algunos problemas.",
+    "El viaje estuvo bien, aunque no fue todo lo que esperaba.",
+    "Fue una experiencia decente, pero no inolvidable.",
+    "El viaje cumplió, pero me dejó con ganas de un poco más.",
+    "Hubo partes buenas, pero también cosas que no me encantaron.",
+    "El viaje fue agradable, aunque algunos detalles me decepcionaron.",
+    "Fue un viaje correcto, pero con margen de mejora.",
+    "La experiencia fue buena, aunque podría haber sido mejor.",
+    "El viaje estuvo bien en general, aunque con algunas fallas.",
+    "Me divertí en algunas partes del viaje, pero no en todas.",
+    "El viaje fue razonable, pero no sin sus desafíos.",
+    "Hubo cosas que disfruté, aunque otras no tanto.",
+    "Fue un viaje aceptable, aunque me faltó algo más.",
+    "La experiencia fue buena en general, aunque con altibajos.",
+    "El viaje fue decente, pero no tan emocionante como esperaba.",
+    "Tuve algunos buenos momentos, aunque no todo fue positivo.",
+    "El viaje fue satisfactorio, pero no memorable.",
+    "Hubo partes del viaje que me gustaron, pero otras no tanto.",
+    "Fue una experiencia mixta, con puntos altos y bajos.",
+    "El viaje fue aceptable, pero con algunos problemas.",
+    "La experiencia fue correcta, aunque no excepcional.",
+    "Tuve un tiempo agradable, aunque no sin inconvenientes.",
+    "El viaje estuvo bien, aunque no fue espectacular.",
+    "Disfruté de algunas partes, aunque otras no tanto.",
+    "El viaje fue adecuado, pero podría haber sido mejor.",
+    "Fue un viaje decente, pero no del todo satisfactorio.",
+    "La experiencia fue buena, pero esperaba más.",
+    "El viaje estuvo bien, aunque con algunos contratiempos.",
+    "Disfruté del viaje en general, pero con algunas reservas.",
+    "Fue una experiencia aceptable, aunque no sin sus fallas.",
+    "El viaje fue razonable, pero no sin sus problemas.",
+    "Me llevé buenos recuerdos, pero también algunos momentos difíciles.",
+    "El viaje fue satisfactorio, aunque no perfecto.",
+];
+
+
+
 const comentariosEjemplo = [
 	{
 		"usuarioId": 1,
@@ -512,7 +672,7 @@ const comentariosEjemplo = [
 		"valoracion": 5
 	}
 ];
-
+// #region Imgagenes
 const nombresImgActividades = ['Buckingham1.jpg', 'Buckingham2.png', 'Buckingham3.jpg', 'CascoAntiguo1.jpg', 'CascoAntiguo2.jpg', 'CascoAntiguo3.jpg', 'CastilloDeSantaBarbara1.jpg', 'CastilloDeSantaBarbara2.jpg', 'CastilloDeSantaBarbara3.jpg', 'Coliseo1.jpg', 'Coliseo2.jpg', 'Coliseo3.jpeg', 'ForoRomano1.jpg', 'ForoRomano2.png', 'ForoRomano3.jpg', 'GranBazar1.jpg', 'GranBazar2.jpg', 'LondonEye1.JPG', 'LondonEye2.png', 'LondonEye3.jpg', 'Louvre1.png', 'Louvre2.png', 'Louvre3.jpeg', 'MezquitaAzul1.jpg', 'MezquitaAzul2.jpeg', 'MonasterioCuevasKiev1.jpg', 'MonasterioCuevasKiev2.jpg', 'Montmartre1.jpg', 'Montmartre2.JPG', 'Montmartre3.jpg', 'MuroDeBerlin1.jpg', 'MuroDeBerlin2.png', 'MuseoBritanico1.jpg', 'MuseoBritanico2.jpg', 'MuseoDelPrado1.jpg', 'MuseodelPrado2.png', 'MuseoDelPrado3.png', 'MuseoDePergamo1.jpg', 'MuseoDePergamo2.jpg', 'MuseoDePergamo3.jpeg', 'MuseoNacionalDeHistoriaDeUcrania1.jpg', 'MuseoNacionalDeHistoriaDeUcrania2.jpg', 'MuseoNacionalDeHistoriaDeUcrania3.jpg', 'PalacioImperial1.jpg', 'PalacioImperial2.jpg', 'PalacioImperial3.jpg', 'PalacioReal1.jpg', 'PalacioReal2.jpg', 'PalacioReal3.jpg', 'PalacioTopkapi1.jpg', 'PalacioTopkapi2.jpg', 'PalacioTopkapi3.jpg', 'ParqueDelRetiro1.jpg', 'ParqueDelRetiro2.png', 'ParqueDelRetiro3.png', 'PlayaDelPostiguet1.jpg', 'PlayaDelPostiguet2.jpg', 'PlazaDeLaIndependencia1.jpg', 'PlazaDeLaIndependencia2.jpg', 'Senso-ji1.jpg', 'Senso-ji2.jpg', 'Senso-ji3.jpg', 'Shibuya1.jpg', 'Shibuya2.png', 'Shibuya3.jpg', 'TorreEiffel1.jpg', 'TorreEiffel2.jpg', 'TorreEiffel3.png', 'Vaticano1.png', 'Vaticano2.jpg'];
 
 const nombresImgDestinos = ['Alicante1.jpg', 'Alicante2.png', 'Bangkok1.jpg', 'Bangkok2.jpg', 'Bangkok3.jpg', 'Barcelona1.jpg', 'Barcelona2.jpg', 'Barcelona3.png', 'Berlín1.jpg', 'Berlín2.png', 'Berlín3.png', 'Berlín4.jpg', 'Buenos Aires1.png', 'Buenos Aires2.jpeg', 'Buenos Aires3.jpg', 'Dubai1.jpg', 'Dubai2.png', 'Estambul1.png', 'Estambul2.jpeg', 'Kiev1.jpg', 'Kiev2.jpg', 'Kiev3.jpg', 'Londres1.jpg', 'Londres2.jpg', 'Londres3.png', 'Madrid1.png', 'Madrid2.png', 'Madrid3.jpg', 'Nueva York1.jpg', 'Nueva York2.jpg', 'París1.jpg', 'París2.png', 'París3.jpg', 'Roma1.jpg', 'Roma2.jpg', 'Roma3.jpg', 'Seúl1.jpg', 'Seúl2.jpg', 'Seúl3.jpg', 'Sidney1.png', 'Sidney2.jpg', 'Sidney3.png', 'Tokio1.jpg', 'Tokio2.jpg', 'Tokio3.jpg', 'Toronto1.png', 'Toronto2.jpg', 'Toronto3.png'];
@@ -587,12 +747,7 @@ function getAllUsuarios(callback) {
 	});
 }
 
-
-
-// insertarSerhii()
-// CheckIfBDNull()
-// getAllDestinos(ConsoleLog)
-// getAllUsuarios(ConsoleLog)
+//PoblarComentarioNuevo()
 
 async function poblarUsuarios() {
 	for (let i = 0; i < usuariosEjemplo.length; i++) {
@@ -619,7 +774,7 @@ function ConsoleLog(mensaje, rows) {
 		// console.log('Callback:', "NULL");
 	}
 }
-
+// #region Main Function
 async function CheckIfBDNull() {
 	const sqlQuery = 'SELECT COUNT(*) AS count FROM Destino';
 
@@ -1002,6 +1157,15 @@ async function insertComentario(destinoId, comentario) {
 	});
 }
 
+function generarNumeroAleatorioRedondo(min, max) {
+    const minMultiple = Math.ceil(min / 50);
+    const maxMultiple = Math.floor(max / 50);
+    const randomIndex = Math.floor(Math.random() * (maxMultiple - minMultiple + 1)) + minMultiple;
+    return randomIndex * 50;
+}
+
+poblarComentarios()
+
 async function poblarComentarios() {
 	const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
 	db.all(sqlSeleccionarDestinos, async (err, rows) => {
@@ -1009,24 +1173,60 @@ async function poblarComentarios() {
 			console.error('Error al seleccionar los destinos:', err.message);
 			return;
 		}
-		for (const row of rows) {
-			const destinoId = row.id;
-			const repeticiones = 2;
-			for (var i = 0; i < 2; i++) {
-				for (const comentario of comentariosEjemplo) {
-					comentario.texto = comentario.texto + " Id: " + destinoId;
-					await insertComentario(destinoId, comentario);
+		for(const row of rows){
+			const destinoIdComentario = row.id
+			const numComentarios = generarNumeroAleatorio(11, 17)
+			for (var i = 0; i<numComentarios; i++){
+				const valoracion = generarNumeroAleatorio(2,5)
+				var texto = ""
+				if(valoracion < 4){
+					texto = textoMediano[Math.floor(Math.random() * textoMediano.length)]
 				}
+				else{
+					texto = textoPositivo[Math.floor(Math.random() * textoPositivo.length)]
+				}
+				const probabilidadPermiso = 0.7
+				const permisoExtraInfo = Math.random() < probabilidadPermiso
+				var gastosTotales = 0
+				var diasTotal = 0
+				if(permisoExtraInfo){
+					gastosTotales = generarNumeroAleatorioRedondo(500, 1600)
+					diasTotal = Math.floor(gastosTotales/generarNumeroAleatorioRedondo(200, 450))
+				}
+				const comentario = {
+					"usuarioId": generarNumeroAleatorio(1, 4),
+					"destinoId": "",
+					"texto": texto,
+					"permisoExtraInfo": permisoExtraInfo,
+					"estanciaDias": diasTotal,
+					"dineroGastado": gastosTotales,
+					"valoracion": valoracion
+				}
+				// console.log(comentario)
+				// if(destinoIdComentario == 1){
+				// 	console.log(comentario)
+				// }
+				await insertComentario(destinoIdComentario, comentario)
 			}
 		}
+
+
+		// for (const row of rows) {
+		// 	const destinoId = row.id;
+		// 	const repeticiones = 2;
+		// 	for (var i = 0; i < 2; i++) {
+		// 		for (const comentario of comentariosEjemplo) {
+		// 			comentario.texto = comentario.texto + " Id: " + destinoId;
+		// 			await insertComentario(destinoId, comentario);
+		// 		}
+		// 	}
+		// }
 	});
 }
 
 
 function generarNumeroAleatorio(min, max) {
-	// Generar un número aleatorio entre 0 (inclusive) y 1 (exclusivo)
 	const random = Math.random();
-	// Escalar el número aleatorio al rango deseado y redondearlo
 	const numeroAleatorio = Math.floor(random * (max - min + 1)) + min;
 	return numeroAleatorio;
 }
