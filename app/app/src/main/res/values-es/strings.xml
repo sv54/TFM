@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TFM</string>
     <string name="navigation_drawer_open" translatable="false">Abrir el menú de navegación</string>
     <string name="navigation_drawer_close" translatable="false">Cerrar el menú de navegación</string>
     <string name="nav_header_title" translatable="false">Android Studio</string>
@@ -59,7 +58,7 @@
     <string name="ascending_sorting">Ascendente</string>
     <string name="apply_sorting">Aplicar</string>
     <string name="no_marked_as_visited">¡No hay destinos marcados como visitados!</string>
-    <string name="visited_header">Visitados</string>
+    <string name="visited_header">Visitado</string>
     <string name="no_marked_as_favorites">¡No hay destinos marcados como favoritos!</string>
     <string name="sort_by_name">Nombre</string>
     <string name="sort_by_visits">Visitas</string>
@@ -80,7 +79,7 @@
     <string name="server_error_try_later">Algo salió mal, por favor, inténtalo más tarde</string>
     <string name="visited_objective_profile">Visitados:</string>
     <string name="goal_per_year_profile">Meta:</string>
-    <string name="select_new_goal_profile">Selecciona el número de destinos \n a visitar este año</string>
+    <string name="select_new_goal_profile">Número de destinos a visitar este año</string>
     <string name="profile_picture_uploaded_success">Foto de perfil actualizada correctamente</string>
     <string name="profile_picture_error">Error al subir la nueva foto, por favor, intenta más tarde</string>
     <string name="permission_not_granted">Permisos para acceder a la imagen no concedidos</string>
@@ -98,7 +97,7 @@
     <string name="report_text">Detalles</string>
     <string name="fill_form_report">Por favor, complete todos los campos del formulario antes de enviarlo</string>
     <string name="report_title">Asunto</string>
-    <string name="setting_toolbar_title">Configuracion</string>
+    <string name="setting_toolbar_title">Configuración</string>
     <string name="report_toolbar_title">Reporte</string>
     <string name="report_title_hint">Descripcion breve</string>
     <string name="submit_button">Enviar</string>
@@ -159,6 +158,14 @@
     <string name="incentive_dialog_message">¿Te gustaría dejar una reseña sobre tu visita? Tu opinión a otros usuarios a tomar decisiones informadas.</string>
     <string name="leave_review">Dejar Reseña</string>
     <string name="later">Más Tarde</string>
+    <string name="terms_and_privacy_checkbox">He leído y acepto los </string>
+    <string name="and">y </string>
+    <string name="accept_terms_error">Debes aceptar los Términos de Servicio y la Política de Privacidad para registrarte.</string>
+    <string name="toolbar_history">Historial</string>
+
+
+
+
 
 
 </resources>

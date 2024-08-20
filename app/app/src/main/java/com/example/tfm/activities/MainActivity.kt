@@ -83,6 +83,24 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
 
         //Desactivar el boton de ordenacion si el menu lateral esta abierto
         fab.isEnabled = !drawerLayout.isDrawerOpen(navView)
+        drawerLayout.addDrawerListener(object: DrawerLayout.DrawerListener{
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                fab.hide()
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                fab.hide()
+            }
+
+            override fun onDrawerClosed(drawerView: View) {
+                checkFragment()
+            }
+
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+        })
+        if(drawerLayout.isDrawerOpen(navView)){
+        }
 
 
         navView.setNavigationItemSelectedListener { menuItem ->
@@ -112,6 +130,8 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
                 }
                 R.id.nav_terms -> {
                     supportFragmentManager.beginTransaction().replace(R.id.main_content, TermsOfUseFragment()).commit()
+                    checkFragment()
+
                 }
                 // Handle menu item selections here
             }
@@ -139,7 +159,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         textMenuUsername.text = dataUsername
         textMenuEmail.text = dataEmail
 
-        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto") || dataProfileImage.contains("SinFoto") ){
             menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -158,7 +178,7 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
         super.onResume()
 
         val dataProfileImage = sharedPreferences.getString("UserPhoto", "")
-        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto") || dataProfileImage.contains("SinFoto")){
             menuImageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -324,7 +344,13 @@ class MainActivity : AppCompatActivity(), FragmentChangeListener {
             fab.hide()
             searchMenuItem?.isVisible = false
             supportActionBar?.setDisplayShowTitleEnabled(true)
-            supportActionBar?.title = getString(R.string.setting_toolbar_title)
+            supportActionBar?.title = getString(R.string.report_toolbar_title)
+        }
+        else if (fragment is HistoryFragment){
+            fab.hide()
+            searchMenuItem?.isVisible = false
+            supportActionBar?.setDisplayShowTitleEnabled(true)
+            supportActionBar?.title = getString(R.string.toolbar_history)
         }
         else{
             fab.hide()

@@ -29,6 +29,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -64,6 +65,7 @@ class ProfileFragment : Fragment(), ApiListener {
     private lateinit var progressBar: ProgressBar
     private lateinit var flagImg: ImageView
     private lateinit var countryText: TextView
+    private lateinit var progressBarLayout: ConstraintLayout
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -137,14 +139,15 @@ class ProfileFragment : Fragment(), ApiListener {
         progressBar = rootView.findViewById(R.id.progressBarViajes)
         countryText = rootView.findViewById(R.id.textPaisProfile)
         flagImg = rootView.findViewById(R.id.imageFlagProfile)
+        progressBarLayout = rootView.findViewById(R.id.ProgressBarLayout)
 
-        metaViajesText.setOnClickListener{
-            showNumberPickerDialog()
-        }
-        visitadosText.setOnClickListener{
-            showNumberPickerDialog()
-        }
-        progressBar.setOnClickListener{
+//        metaViajesText.setOnClickListener{
+//            showNumberPickerDialog()
+//        }
+//        visitadosText.setOnClickListener{
+//            showNumberPickerDialog()
+//        }
+        progressBarLayout.setOnClickListener{
             showNumberPickerDialog()
         }
 
@@ -180,35 +183,59 @@ class ProfileFragment : Fragment(), ApiListener {
         emailText.text = dataEmail
 
         imageProfile.setOnClickListener {
-            val options = arrayOf("Borrar foto", "Elegir nueva foto")
-
-            AlertDialog.Builder(requireContext())
-                .setTitle("Opciones de Foto")
-                .setItems(options) { dialog, which ->
-                    when (which) {
-                        0 -> {
-                            selectedImageUri = null
-                            deleteUserProfileImage()
-                        }
-                        1 -> {
-                            if (checkPermission()) {
-                                pickImageFromGallery()
-                            } else {
-                                requestPermission()
+            var options = arrayOf<String>()
+            if(sharedPreferences.getString("UserPhoto", "") == ""){
+                options = arrayOf("Elegir nueva foto")
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Opciones de Foto")
+                    .setItems(options) { dialog, which ->
+                        when (which) {
+                            0 -> {
+                                if (checkPermission()) {
+                                    pickImageFromGallery()
+                                } else {
+                                    requestPermission()
+                                }
                             }
                         }
                     }
-                }
-                .setNegativeButton("Cancelar") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                .show()
+                    .setNegativeButton("Cancelar") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+            else{
+                options = arrayOf("Borrar foto", "Elegir nueva foto")
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Opciones de Foto")
+                    .setItems(options) { dialog, which ->
+                        when (which) {
+                            0 -> {
+                                selectedImageUri = null
+                                deleteUserProfileImage()
+                            }
+                            1 -> {
+                                if (checkPermission()) {
+                                    pickImageFromGallery()
+                                } else {
+                                    requestPermission()
+                                }
+                            }
+                        }
+                    }
+                    .setNegativeButton("Cancelar") { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
+
 
         }
 
 
 
-        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto")){
+        if(dataProfileImage == "" || dataProfileImage!!.contains("sinFoto") || dataProfileImage.contains("SinFoto")){
             imageProfile.setImageResource(R.drawable.ic_empty_photo)
         }
         else{
@@ -239,6 +266,11 @@ class ProfileFragment : Fragment(), ApiListener {
 
     override fun onResume() {
         super.onResume()
+        Log.i("tagg",sharedPreferences.getString("UserPhoto","")!!.contains("SinFoto").toString())
+        val userPhoto = sharedPreferences.getString("UserPhoto","")
+        if(userPhoto == "" || userPhoto!!.contains("sinFoto") || userPhoto.contains("SinFoto") ){
+            imageProfile.setImageResource(R.drawable.ic_empty_photo)
+        }
         updateProgressBar()
     }
 
@@ -357,12 +389,15 @@ class ProfileFragment : Fragment(), ApiListener {
                     val userResponse = response.body()
                     userResponse?.let { jsonObject ->
                         val editor = sharedPreferences.edit()
-                        val newPhoto = jsonObject.get("newPhoto").asString
-                        editor.putString("UserPhoto", newPhoto)
+                        editor.putString("UserPhoto", "")
                         editor.apply()
+
                     }
                     Toast.makeText(requireContext(), getString(R.string.profile_picture_uploaded_success), Toast.LENGTH_LONG).show()
                     imageProfile.setImageResource(R.drawable.ic_empty_photo)
+                    val editor = sharedPreferences.edit()
+                    editor.putString("UserPhoto", null)
+                    editor.apply()
 
                 } else {
                     Toast.makeText(requireContext(), getString(R.string.profile_picture_error), Toast.LENGTH_LONG).show()
@@ -399,6 +434,10 @@ class ProfileFragment : Fragment(), ApiListener {
                             val newPhoto = jsonObject.get("newPhoto").asString
                             editor.putString("UserPhoto", newPhoto)
                             editor.apply()
+                            Glide.with(imageProfile.context)
+                                .load(newPhoto)
+                                .into(imageProfile)
+
                         }
                         Toast.makeText(requireContext(), getString(R.string.profile_picture_uploaded_success), Toast.LENGTH_LONG).show()
 

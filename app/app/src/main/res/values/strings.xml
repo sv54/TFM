@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TFM</string>
+    <string name="app_name" translatable="false">TripsTip</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -79,7 +79,7 @@
     <string name="server_error_try_later">Something went wrong, please, try later</string>
     <string name="visited_objective_profile">Visited:</string>
     <string name="goal_per_year_profile">Goal:</string>
-    <string name="select_new_goal_profile">Select number of destination \n to visit this year</string>
+    <string name="select_new_goal_profile">Number of destination to visit this year</string>
     <string name="profile_picture_uploaded_success">Profile picture updated successfully</string>
     <string name="profile_picture_error">Error on uploading new picture, plese, try later</string>
     <string name="permission_not_granted">Permissions to access the image not granted</string>
@@ -155,5 +155,11 @@
     <string name="incentive_dialog_message">Would you like to leave a review about your visit? Your feedback helps other users make informed decisions.</string>
     <string name="leave_review">Leave Review</string>
     <string name="later">Later</string>
+    <string name="terms_and_privacy_checkbox">I have read and accept the </string>
+    <string name="and">and </string>
+    <string name="accept_terms_error">You must accept the Terms of Service and Privacy Policy to register.</string>
+    <string name="toolbar_history">History</string>
+
+
 
 </resources>

@@ -26,7 +26,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
-                android:layout_height="200sp"
+                android:layout_height="@dimen/carousel_item_height"
                 app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager" />
         </RelativeLayout>
 

@@ -27,9 +27,25 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.root_preferences, rootKey)
         sharedPreferences = requireContext().getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+
+        val idiomaActual = sharedPreferences.getString("PreferencesLanguage", getSystemLanguage(requireContext()))
+        val temaActual = sharedPreferences.getString("PreferencesTheme", "system")
+
+        Log.i("tagg", "idioma actual = " + idiomaActual)
+        Log.i("tagg", "idioma configuracin actual = " + getSystemLanguage(requireContext()))
+        Log.i("tagg", "tema actual = " + temaActual)
+
+        if(getSystemLanguage(requireContext()) != idiomaActual){
+            setLocale(idiomaActual!!)
+        }
+//        if(sharedPreferences.getString("PreferencesLanguage", "es")!! != "es")
+//        setLocale(sharedPreferences.getString("PreferencesLanguage", "es")!!)
+//        setTheme(sharedPreferences.getString("PreferencesTheme", "system")!!)
         val languagePreference: ListPreference? = findPreference("language_preference")
         val themePreference: ListPreference? = findPreference("theme_preference")
         val deleteAccount: Preference? = findPreference("delete_account")
+
+        languagePreference!!.setDefaultValue(sharedPreferences.getString("PreferencesLanguage", "es"))
 
         deleteAccount?.setOnPreferenceClickListener {
             showDeleteAccountDialog()
@@ -48,6 +64,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
     }
+
+    fun getSystemLanguage(context: Context): String {
+        val configuration = context.resources.configuration
+        val locale = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            configuration.locales[0]
+        } else {
+            configuration.locale
+        }
+        return locale.language
+    }
+
 
     private fun showDeleteAccountDialog() {
         AlertDialog.Builder(requireContext())
@@ -102,6 +129,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         Locale.setDefault(locale)
         val config = Configuration()
         config.setLocale(locale)
+        val editor = sharedPreferences.edit()
+        editor.putString("PreferencesLanguage", localeCode)
+        editor.apply()
         requireContext().resources.updateConfiguration(config, requireContext().resources.displayMetrics)
         requireActivity().recreate()
     }
@@ -112,6 +142,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             "dark" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             "system" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
         }
-        requireActivity().recreate()
+        val editor = sharedPreferences.edit()
+        editor.putString("PreferencesTheme", theme)
+        editor.apply()
     }
 }

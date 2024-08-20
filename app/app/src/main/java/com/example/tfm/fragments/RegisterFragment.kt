@@ -20,6 +20,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -32,6 +33,7 @@ import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.tfm.ApiListener
 import com.example.tfm.R
+import com.example.tfm.activities.LoginRegisterActivity
 import com.example.tfm.activities.MainActivity
 import com.example.tfm.models.UserLoginData
 import com.example.tfm.models.UserRegisterData
@@ -68,6 +70,10 @@ class RegisterFragment : Fragment(), ApiListener {
     private lateinit var passwordRepeatEdit:EditText
     private lateinit var paisEdit:EditText
     private lateinit var errorTextView:TextView
+    private lateinit var checkBoxTermsPrivacy: CheckBox
+    private lateinit var termsText: TextView
+    private lateinit var privacyText: TextView
+
 
     private var selectedImageUri: Uri? = null
     private var userId = -1
@@ -100,8 +106,18 @@ class RegisterFragment : Fragment(), ApiListener {
         paisEdit = rootView.findViewById<AutoCompleteTextView>(R.id.editCountry)
         passwordRepeatEdit = rootView.findViewById<EditText>(R.id.editRepeatPassword)
         errorTextView = rootView.findViewById(R.id.textError)
+        checkBoxTermsPrivacy = rootView.findViewById(R.id.checkBoxTermsPrivacy)
+        termsText = rootView.findViewById(R.id.textRegisterTermsOfUse)
+        privacyText = rootView.findViewById(R.id.textRegisterPrivacyPolicy)
 
         super.onCreate(savedInstanceState)
+
+        termsText.setOnClickListener{
+            (activity as? LoginRegisterActivity)?.replaceFragment(TermsOfUseFragment())
+        }
+        privacyText.setOnClickListener{
+            (activity as? LoginRegisterActivity)?.replaceFragment(PrivacyPolicyFragment())
+        }
 
         val countries = countryMap.keys.toList()
         val adapter = CountryAdapter(requireContext(), countries, flagAssets)
@@ -117,10 +133,10 @@ class RegisterFragment : Fragment(), ApiListener {
         }
 
 
-        usernameEdit.setText("username")
-        emailEdit.setText("email@gmail.com")
-        passwordEdit.setText("123456")
-        passwordRepeatEdit.setText("123456")
+//        usernameEdit.setText("username")
+//        emailEdit.setText("email@gmail.com")
+//        passwordEdit.setText("123456")
+//        passwordRepeatEdit.setText("123456")
         //TODO delete this part
 
 
@@ -146,10 +162,13 @@ class RegisterFragment : Fragment(), ApiListener {
             val username = usernameEdit.text.toString()
             val email = emailEdit.text.toString()
             val password = passwordEdit.text.toString()
-
             if(finalPais < 1){
                 setErrorMessage(getString(R.string.register_choose_at_least_one_country))
             }
+            else if(!checkBoxTermsPrivacy.isChecked){
+                setErrorMessage(getString(R.string.accept_terms_error))
+            }
+
             else {
 
                 userRegisterData =
@@ -169,9 +188,6 @@ class RegisterFragment : Fragment(), ApiListener {
                 }
             }
         }
-
-
-
         return rootView
 
     }

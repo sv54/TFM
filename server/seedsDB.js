@@ -2,31 +2,58 @@ const bcrypt = require('bcrypt')
 
 var usuariosEjemplo = [
 	{
-		nombre: 'Juan',
-		email: 'juan@example.com',
+		nombre: 'Luis Gómez',
+		email: 'luis@example.com',
 		password: '123456',
 		salt: 'salty123',
 		paisOrigen: 211,
 		metaViajes: 1,
-		fotoPerfil: 'ruta/a/la/foto_juan.jpg'
+		fotoPerfil: 'imgProfile1.png'
 	},
 	{
-		nombre: 'María',
+		nombre: 'María Fernández',
 		email: 'maria@example.com',
+		password: '123456',
+		salt: 'salty123',
+		paisOrigen: 211,
+		metaViajes: 1,
+		fotoPerfil: 'imgProfile2.jpeg'
+	},
+	{
+		nombre: 'Carlos Rodríguez',
+		email: 'carlos@example.com',
+		password: '123456',
+		salt: 'salty123',
+		paisOrigen: 211,
+		metaViajes: 1,
+		fotoPerfil: 'imgProfile3.png'
+	},
+	{
+		nombre: 'Ana Pérez',
+		email: 'ana@example.com',
+		password: '123456',
+		salt: 'salty123',
+		paisOrigen: 211,
+		metaViajes: 1,
+		fotoPerfil: 'imgProfile4.jpg'
+	},
+	{
+		nombre: 'José Martínez',
+		email: 'jose@example.com',
 		password: '123456',
 		salt: 'salty456',
 		paisOrigen: 211,
 		metaViajes: 2,
-		fotoPerfil: 'ruta/a/la/foto_maria.jpg'
+		fotoPerfil: 'imgProfile5.jpg'
 	},
 	{
-		nombre: 'Pedro',
-		email: 'pedro@example.com',
+		nombre: 'Laura Sánchez',
+		email: 'laura@example.com',
 		password: '123456',
 		salt: 'salty789',
 		paisOrigen: 211,
 		metaViajes: 3,
-		fotoPerfil: 'ruta/a/la/foto_pedro.jpg'
+		fotoPerfil: 'imgProfile6.png'
 	}
 ];
 // #region Destinos
@@ -687,7 +714,7 @@ const usuarioSerhii = {
 	salt: null,
 	paisOrigen: 211,
 	metaViajes: 3,
-	fotoPerfil: 'serhii.jpg'
+	fotoPerfil: 'serhii.png'
 }
 
 const sqlite3 = require('sqlite3').verbose();
@@ -798,7 +825,7 @@ async function CheckIfBDNull() {
 			await poblarHistoria();
 			await poblarFavoritos();
 
-			insertarSerhii()
+			//insertarSerhii()
 
 
 		}
@@ -1164,8 +1191,6 @@ function generarNumeroAleatorioRedondo(min, max) {
     return randomIndex * 50;
 }
 
-poblarComentarios()
-
 async function poblarComentarios() {
 	const sqlSeleccionarDestinos = `SELECT id FROM Destino`;
 	db.all(sqlSeleccionarDestinos, async (err, rows) => {
@@ -1194,7 +1219,7 @@ async function poblarComentarios() {
 					diasTotal = Math.floor(gastosTotales/generarNumeroAleatorioRedondo(200, 450))
 				}
 				const comentario = {
-					"usuarioId": generarNumeroAleatorio(1, 4),
+					"usuarioId": generarNumeroAleatorio(1, 6),
 					"destinoId": "",
 					"texto": texto,
 					"permisoExtraInfo": permisoExtraInfo,

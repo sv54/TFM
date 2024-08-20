@@ -125,12 +125,52 @@
             android:id="@+id/textError"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toTopOf="@+id/buttonRegister"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textRegisterPrivacyPolicy" />
+
+
+        <CheckBox
+            android:id="@+id/checkBoxTermsPrivacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:text="@string/terms_and_privacy_checkbox"
+            app:layout_constraintEnd_toEndOf="@+id/editRepeatPassword"
+            app:layout_constraintStart_toStartOf="@+id/editRepeatPassword"
             app:layout_constraintTop_toBottomOf="@+id/editRepeatPassword" />
+
+        <TextView
+            android:id="@+id/textRegisterTermsOfUse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="2dp"
+            android:paddingHorizontal="4dp"
+            android:text="@string/menu_terms"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/checkBoxTermsPrivacy"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxTermsPrivacy"
+            app:layout_constraintTop_toBottomOf="@+id/checkBoxTermsPrivacy" />
+
+        <TextView
+            android:id="@+id/textRegisterPrivacyPolicy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="2dp"
+            android:text="@string/menu_privacy"
+            android:textColor="@color/blue_700"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@+id/checkBoxTermsPrivacy"
+            app:layout_constraintStart_toStartOf="@+id/checkBoxTermsPrivacy"
+            app:layout_constraintTop_toBottomOf="@+id/textRegisterTermsOfUse" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

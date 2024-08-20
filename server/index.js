@@ -372,7 +372,7 @@ app.delete('/usuarioDeletePhoto/:id', (req, res) => {
 
         // Verificar si hay una foto anterior para eliminar
         const oldPhotoPath = row.fotoPerfil;
-        if (oldPhotoPath && oldPhotoPath !== 'sinFoto') {
+        if (oldPhotoPath && !oldPhotoPath.includes('SinFoto') && !oldPhotoPath.includes('sinFoto')) {
             const oldPhotoFullPath = path.join(__dirname, 'public', 'imgProfile', oldPhotoPath);
 
             // Eliminar la foto anterior del servidor
@@ -450,7 +450,8 @@ app.put('/usuario/changeFoto/:id', uploadProfile.single('image'), (req, res) => 
 
         // Verificar si hay una foto anterior para eliminar
         const oldPhotoPath = row.fotoPerfil;
-        if (oldPhotoPath && !oldPhotoPath.includes('sinFoto')) {
+        console.log(oldPhotoPath.includes('sinFoto'))
+        if (oldPhotoPath && !oldPhotoPath.includes('SinFoto') && !oldPhotoPath.includes('sinFoto')) {
             const oldPhotoFullPath = path.join(__dirname, 'public', 'imgProfile', oldPhotoPath);
             
             // Eliminar la foto anterior del servidor
@@ -1454,13 +1455,19 @@ app.get('/actividad/:actividadId/recomendar', (req, res) => {
 });
 
 app.get('/actividad/recomendar', (req, res) => {
-
     const actividadIds = req.query.ids;
-
+    console.log("hola")
+    if (typeof actividadIds === 'string') {
+        actividadIds = actividadIds.split(',').map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else if (Array.isArray(actividadIds)) {
+        actividadIds = actividadIds.map(id => parseInt(id, 10)).filter(id => !isNaN(id));
+    } else {
+        res.status(400).send('Formato de IDs no válido.');
+        return;
+    }
     if (!actividadIds) {
         return res.status(400).json({ error: 'IDs de actividades no proporcionados.' });
     }
-
     // Convertir el parámetro de consulta en una lista de IDs
     const idsArray = actividadIds.split(',');
 
@@ -1939,5 +1946,30 @@ app.post('/reportes', (req, res) => {
             // Devolver una respuesta exitosa
             res.status(201).json({ message: 'Reporte creado exitosamente.' });
         });
+    });
+});
+
+app.get('/reportes/:id', (req, res) => {
+    const { id } = req.params;
+    console.log("Hola")
+    // Validar el ID del reporte
+    if (!id) {
+        return res.status(400).json({ error: 'El ID del reporte es requerido.' });
+    }
+
+    // Consultar la base de datos para obtener el reporte
+    const sqlGetReport = 'SELECT * FROM Reporte WHERE id = ?';
+    db.get(sqlGetReport, [id], (err, row) => {
+        if (err) {
+            console.error('Error al obtener el reporte:', err.message);
+            return res.status(500).json({ error: 'Ocurrió un error al obtener el reporte.' });
+        }
+
+        if (!row) {
+            return res.status(404).json({ error: 'El reporte no existe.' });
+        }
+
+        // Devolver el reporte encontrado
+        res.status(200).json(row);
     });
 });

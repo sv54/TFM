@@ -119,6 +119,7 @@ class PostCommentFragment : BottomSheetDialogFragment() {
         val apiService = RetrofitClient.instance.create(ApiService::class.java)
         val userId = sharedPreferences.getInt("UserId", -1)
         val username = sharedPreferences.getString("UserUsername", "")!!
+        val userImage = sharedPreferences.getString("UserPhoto", "")!!
         var diasEstanciaValor = 0
         var gastosTotalValor = 0
         val textoComentarioValor = this.textoComentario.text.toString()
@@ -139,7 +140,7 @@ class PostCommentFragment : BottomSheetDialogFragment() {
         call.enqueue(object : Callback<JsonObject> {
             override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
                 if (response.isSuccessful) {
-                    CommentFragment.addComment(ItemComment(userId, username,textoComentarioValor, permisoInfoInt, diasEstanciaValor, gastosTotalValor, valoracion  ))
+                    CommentFragment.addComment(ItemComment(userId, username,textoComentarioValor, permisoInfoInt, diasEstanciaValor, gastosTotalValor, valoracion, userImage ))
                     dismiss()
                 } else {
                     Log.e("tagg", response.body().toString())

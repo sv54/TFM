@@ -22,7 +22,7 @@ class LoginRegisterActivity : AppCompatActivity() {
 
         val sharedPreferencesSettings = PreferenceManager.getDefaultSharedPreferences(this)
         val themePreference = sharedPreferencesSettings.getString("theme_preference", "system")
-        val languagePreference = sharedPreferencesSettings.getString("language_preference", "es")
+        val languagePreference = sharedPreferencesSettings.getString("language_preference", getSystemLanguage(this))
         val locale = Locale(languagePreference!!)
         Locale.setDefault(locale)
         val config = Configuration()
@@ -49,6 +49,16 @@ class LoginRegisterActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    fun getSystemLanguage(context: Context): String {
+        val configuration = context.resources.configuration
+        val locale = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            configuration.locales[0]
+        } else {
+            configuration.locale
+        }
+        return locale.language
     }
 
     fun replaceFragment(fragment: Fragment){
